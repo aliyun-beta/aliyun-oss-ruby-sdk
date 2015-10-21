@@ -1,18 +1,16 @@
 
-
-
 oss = Aliyun::OSS.new # accesskey, secretkey
 
-oss.buckets.list  # [OSSBucket 对象]
+oss.list_buckets # [OSSBucket 对象]
 
-bucket.objects # 返回 bucket 中对象信息 [OSSObject 对象]
+bucket.list_objects # 返回 bucket 中对象信息 [OSSObject 对象]
 
 bucket.set_acl # 设置 acl
 bucket.enable_logging # 开启日志
 bucket.disable_logging # 关闭日志
 bucket.enable_website(boolean) # 开启网站托管模式
 bucket.disable_website(boolean) # 关闭网站托管模式
-bucket.set_referer(boolean) # 设置防盗链规则
+bucket.set_referer # 设置防盗链规则
 bucket.set_lifecycle  # 设置生命周期
 bucket.remove_lifecycle 删除生命周期规则
 bucket.set_cors
@@ -23,7 +21,7 @@ bucket.preflight # 跨域访问preflight请求
 bucket.get_acl
 bucket.get_location
 bucket.get_logging
-bucket.get_referer
+bucket.get_website
 bucket.get_referer
 bucket.get_lifecycle
 bucket.get_cors
@@ -34,13 +32,6 @@ bucket.get_object 或者 object.get
 bucket.delete_object  或者 object.delete
 bucket.delete_objects
 bucket.get_meta_object 或者 object.get_meta
-
-bucket.start_multipart_upload
-bucket.upload_part
-bucket.copy_upload_part
-bucket.completemultipart_upload
-bucket.list_multipart_uploads
-bucket.list_parts
 
 multipart = bucket.init_multipart # multipart 对象
 multipart.upload
