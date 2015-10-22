@@ -1,9 +1,13 @@
 module Aliyun
   module Oss
-    class Bucket < OpenStruct
+    class Bucket
+      attr_reader :name, :location, :creation_date
 
-      def initialize(client)
+      def initialize(client, name, location, creation_date)
         @client = client
+        @name = name
+        @location = location
+        @creation_date = creation_date
       end
 
       def list_objects

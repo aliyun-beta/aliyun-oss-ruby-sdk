@@ -34,6 +34,7 @@ bucket.delete_objects
 bucket.get_meta_object 或者 object.get_meta
 
 multipart = bucket.init_multipart # multipart 对象
+multipart = oss.get_multipart(id) # 用于不同的请求之间继续上传  更详细的场景
 multipart.upload
 multipart.copy_upload
 multipart.complete
