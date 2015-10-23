@@ -20,8 +20,8 @@ module Aliyun
     class Base
       attr_reader :client
 
-      def initialize(endpoint, access_key, secret_key, options = {})
-        @client = Client.new(endpoint, access_key, secret_key, options)
+      def initialize(access_key, secret_key, options = {})
+        @client = Client.new(access_key, secret_key, options)
       end
 
       def list_buckets *args

@@ -1,61 +1,59 @@
 module Aliyun
   module Oss
-    class Http
+    class Http # nodoc
+      attr_reader :access_key, :secret_key, :endpoint, :host, :options
 
-      def initialize(endpoint, access_key, secret_key, options = {})
-        @endpoint = endpoint
+      def initialize(access_key, secret_key, options = {})
         @access_key = access_key
         @secret_key = secret_key
         @options = options
-        @host = URI(@endpoint).host
+        @endpoint = options[:endpoint]
+        @host = options[:host] || URI(@endpoint).host
       end
 
-      def get(resource, options = {})
-        headers = options.fetch(:headers, {})
-
-        endpoint = "http://#{headers['Host']}"
-        date = Time.now.utc.strftime("%a, %d %b %Y %H:%M:%S GMT")
-        authorization_value = Utils.authorization(@access_key, @secret_key, options.merge(verb: 'GET', headers: headers, date: date))
-        headers.merge!('Authorization' => authorization_value, 'Date' => date)
-
-        response = HTTParty.get(endpoint, options.merge(headers: headers))
-        if response.success?
-          response.parsed_response
-        else
-          puts response
-          response
-        end
+      def get(uri, options = {})
+        response = request('GET', uri, options)
+        response.success? ? response.parsed_response : response
       end
 
-      def post
-        
+      def put(uri, options = {})
+        headers = { 'Content-Type' => 'application/x-www-form-urlencoded' }
+        request('PUT', uri, options.merge(headers: headers))
       end
 
-      def put(resource, options = {})
-        headers = options.delete(:headers) ||n {}
-
-        endpoint = "http://#{headers['Host']}"
-        date = Time.now.utc.strftime("%a, %d %b %Y %H:%M:%S GMT")
-        authorization_value = Utils.authorization(@access_key, @secret_key, options.merge(verb: 'PUT', headers: headers, date: date))
-        headers.merge!('Authorization' => authorization_value, 'Date' => date)
-
-        response = HTTParty.put(endpoint, options.merge(headers: headers))
-        if response.success?
-          response
-        else
-          puts response
-          response
-        end
-       
+      def delete(uri, options = {})
+        headers = { 'Content-Type' => 'application/x-www-form-urlencoded' }
+        request('DELETE', uri, options.merge(headers: headers))
       end
 
-      def delete
-        
+      def options(uri, options = {})
+        request('OPTIONS', uri, options)
       end
 
       private
-      def request
-        
+
+      def request(verb, uri, options = {})
+        uri = "#{endpoint}#{uri}"
+
+        headers = options.delete(:headers) || {}
+        headers = default_headers.merge!(headers)
+        headers.merge!( 'Content-MD5' => Utils.md5_digest(options[:body]) ) if options[:body]
+
+        auth_key = get_auth_key(options.merge(verb: verb, headers: headers, date: headers['Date']))
+        headers.merge!('Authorization' => auth_key)
+
+        response = HTTParty.__send__(verb.downcase, uri, options.merge(headers: headers))
+      end
+
+      def get_auth_key(options)
+        Utils.authorization(access_key, secret_key, options)
+      end
+
+      def default_headers
+        {
+          'Host' => host,
+          'Date' => Time.now.utc.strftime("%a, %d %b %Y %H:%M:%S GMT")
+        }
       end
     end
   end
