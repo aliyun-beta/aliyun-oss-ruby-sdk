@@ -7,18 +7,19 @@ require 'httparty'
 module Aliyun
   module Oss
     class Client
-      attr_reader :access_key, :secret_key, :bucket, :options
+      attr_accessor :access_key, :secret_key, :bucket
 
-      # Initialize a object for Aliyun::Oss::Client
-      # @example:
+      # Initialize a object
+      #
+      # @example
       #   Aliyun::Oss::Client.new("http://oss.aliyuncs.com", "ACCESS_KEY", "SECRET_KEY")
       #
       # @param access_key [String] access_key obtained from aliyun
       # @param secret_key [String] secret_key obtained from aliyun
-      # @param options [Hash] options
-      #   endpoint: Endpoint for bucket's data center
-      #   host: host name for request, default resolved from endpoint
-      #   bucket: bucket name
+      # @option options [String] :endpoint Endpoint for bucket's data center
+      # @option options [String] :host (URI(endpoint).host) Host name for request
+      # @option options [String] :bucket Bucket name
+      #
       # @return [Client] the object
       def initialize(access_key, secret_key, options = {})
         @access_key = access_key
@@ -29,13 +30,14 @@ module Aliyun
 
       # List buckets
       #
-      # @note API: {https://docs.aliyun.com/#/pub/oss/api-reference/service&GetService}
+      # API Doc: {https://docs.aliyun.com/#/pub/oss/api-reference/service&GetService GetService (ListBucket)}
       #
       # @param options [Hash] options
-      #   prefix: filter buckets with prefix.
-      #   marker: bucket name should after marker in alphabetical order.
-      #   max-keys: limit number of buckets, default is 100, the maxinum should <= 1000.
-      # @return
+      # @option options [String] :prefix Filter buckets with prefix
+      # @option options [String] :marker Bucket name should after marker in alphabetical order
+      # @option options [Integer] :max-keys (100) Limit number of buckets, the maxinum should <= 1000
+      #
+      # @return [Object{buckets}]
       def list_buckets(options = {})
         query = options.select {|k, _| ['prefix', 'marker', 'max-keys'].include?(k.to_s) }
         http.get('/', query: query)
@@ -43,15 +45,16 @@ module Aliyun
 
       # List objects in the bucket
       #
-      # @note API: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucket}
+      # API Doc: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucket Get Bucket (List Object)}
       #
       # @param options [Hash] options
-      #   prefix: filter objects with prefix.
-      #   marker: result should after marker in alphabetical order.
-      #   max-keys: limit number of objects, default is 100, the maxinum should <= 1000.
-      #   delimiter: group objects with delimiter.
-      #   encoding-type: encoding type used for unsupported character
-      # @return
+      # @option options [String] :prefix Filter objects with prefix
+      # @option options [String] :marker Result should after marker in alphabetical order
+      # @option options [Integer] :max-keys (100) Limit number of objects, the maxinum should <= 1000
+      # @option options [String] :delimiter Used to group objects with delimiter
+      # @option options [String] :encoding-type Encoding type used for unsupported character
+      #
+      # @return [Object{objects}]
       def bucket_list_objects(options = {})
         query = options.select do |k, _|
           ['prefix', 'marker', 'max-keys', 'delimiter', 'encoding-type'].include?(k.to_s)
@@ -61,10 +64,9 @@ module Aliyun
 
       # Used to modify the bucket access.
       #
-      # @note API: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketACL}
+      # API Doc: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketACL Put Bucket Acl}
       #
       # @param acl [String] supported value: public-read-write | public-read | private
-      # @return
       def bucket_set_acl(acl)
         query = { 'acl' => true }
         headers = { 'x-oss-acl' => acl }
@@ -73,7 +75,7 @@ module Aliyun
 
       # Used to enable access logging.
       #
-      # @note API: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketLogging}
+      # API Doc: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketLogging Put Bucket Logging}
       #
       # @param target_bucket [String] specifies the bucket where you want Aliyun OSS to store server access logs.
       # @param target_prefix [String] this element lets you specify a prefix for the objects that the log files will be stored.
@@ -87,9 +89,7 @@ module Aliyun
 
       # Used to disable access logging.
       #
-      # @note API: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&DeleteBucketLogging}
-      #
-      # @return
+      # API Doc: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&DeleteBucketLogging Delete Bucket Logging}
       def bucket_disable_logging
         query = { 'logging' => false }
         http.delete('/', query: query, sub: query, bucket: bucket)
@@ -97,12 +97,10 @@ module Aliyun
 
       # Used to enable static website hosted mode.
       #
-      # @note API: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketWebsite}
+      # API Doc: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketWebsite Put Bucket Website}
       #
       # @param suffix [String] A suffix that is appended to a request that is for a directory on the website endpoint (e.g. if the suffix is index.html and you make a request to samplebucket/images/ the data that is returned will be for the object with the key name images/index.html) The suffix must not be empty and must not include a slash character.
       # @param key [String] The object key name to use when a 4XX class error occurs
-      #
-      # @return
       def bucket_enable_website(suffix, key = nil)
         query = { 'website' => true }
         website_configuration = { "IndexDocument" => { "Suffix" => suffix } }
@@ -114,9 +112,7 @@ module Aliyun
 
       # Used to disable website hostted mode.
       #
-      # @note API: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&DeleteBucketWebsite}
-      #
-      # @return
+      # API Doc: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&DeleteBucketWebsite Delete Bucket Website}
       def bucket_disable_website
         query = { 'website' => true }
         http.delete('/', query: query, sub: query, bucket: bucket)
@@ -124,12 +120,10 @@ module Aliyun
 
       # Used to set referer for bucket.
       #
-      # @note API: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketReferer Put Bucket Referer}
+      # API Doc: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketReferer Put Bucket Referer}
       #
       # @param referers [Array<String>] white list for allowed referer.
       # @param allowed_empty [Boolean] whether allow empty refer.
-      #
-      # @return
       def bucket_set_referer(referers = [], allowed_empty = false)
         query = { 'referer' => true }
         referer_configuration = { "RefererConfiguration" => { "AllowEmptyReferer" => allowed_empty, "RefererList" => { "Referer" => referers }}}
@@ -140,15 +134,15 @@ module Aliyun
 
       # Used to enable and set lifecycle for bucket
       #
-      # @note API: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketLifecycle Put Bucket Lifecycle}
+      # API Doc: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketLifecycle Put Bucket Lifecycle}
       #
       # @param rules [Array<Hash>] rules for lifecycle
       # each rule contains:
-      #   id: [Integer] optional, rule ID, auto set when not set
-      #   prefix: [String] used for filter objects
-      #   enable: [Boolean] used for set rule status
-      #   days: [Integer] auto delete days after last modified, at least exist one with date
-      #   date: [Time] auto delete at date, at least exist one with date
+      # @option rule [Integer] :id optional, Rule ID, auto set when not set
+      # @option rule [String] :prefix, Used for filter objects
+      # @option rule [Boolean] :enable, Used for set rule status
+      # @option rule [Integer] :days Set auto delete objects after days since last modified, at least exist one with date
+      # @option rule [Time] :date, Set auto auto delete object at given time, at least exist one with days
       def bucket_enable_lifecycle(rules = [])
         rules_configuration = []
         rules.each do |rule|
@@ -173,9 +167,8 @@ module Aliyun
       end
 
       # Used to disable lifecycle for bucket.
-      # @note API: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&DeleteBucketLifecycle Delete Bucket Lifecycle}
-      #
-      # @return
+      # 
+      # API Doc: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&DeleteBucketLifecycle Delete Bucket Lifecycle}
       def bucket_disable_lifecycle
         query = { 'lifecycle' => false }
         http.delete('/', query: query, sub: query, bucket: bucket)
@@ -183,16 +176,15 @@ module Aliyun
 
       # Used to enable CORS and set rules for bucket
       #
-      # @note API: {https://docs.aliyun.com/#/pub/oss/api-reference/cors&PutBucketcors Put Bucket cors}
+      # API Doc: {https://docs.aliyun.com/#/pub/oss/api-reference/cors&PutBucketcors Put Bucket cors}
+      # 
       # @param rules [Array<Hash>] array of rule
-      # for every rule:
-      #   allowed_origins: [Array] allowed origins.
-      #   allowed_methods: [Array] allowed method for cors.
-      #   allowed_headers: [Array] allowed header used in preflight (see #bucket_preflight).
-      #   expose_headers: [Array] allowed used response headers for user.
-      #   max_age_seconds: [Integer] specifies cache time the browser to pre-fetch a particular resource request in seconds.
-      #
-      # @return
+      # each rule contains:
+      # @option rule [Array] :allowed_origins Set allowed origins
+      # @option rule [Array] :allowed_methods Set allowed methods
+      # @option rule [Array] :allowed_headers Set allowed headers used in preflight (see #bucket_preflight)
+      # @option rule [Array] :expose_headers  Set allowed used response headers for user
+      # @option rule [Integer] :max_age_seconds Specifies cache time the browser to pre-fetch a particular resource request in seconds
       def bucket_enable_cors(rules = [])
         rules_configuration = []
         rules.each do |rule|
@@ -215,20 +207,21 @@ module Aliyun
 
       # Used to disable cors and clear rules for bucket
       #
-      # @note API: {https://docs.aliyun.com/#/pub/oss/api-reference/cors&DeleteBucketcors Delete Bucket cors}
+      # API Doc: {https://docs.aliyun.com/#/pub/oss/api-reference/cors&DeleteBucketcors Delete Bucket cors}
       def bucket_disable_cors
         query = { 'cors' => false }
         http.delete('/', query: query, sub: query, bucket: bucket)
       end
 
       # OPTIONS Object
-      # @note corresponding API: https://docs.aliyun.com/#/pub/oss/api-reference/cors&OptionObject
+      # 
+      # API Doc: {https://docs.aliyun.com/#/pub/oss/api-reference/cors&OptionObject OPTIONS Object}
       #
-      # @param bucket [Bucket]
       # @param origin [String] the requested source domain, denoting cross-domain request.
       # @param request_method [String] the actual request method will be used.
       # @param request_headers [Array<String>] the actual used headers except simple headers will be used.
       # @param object_name [String] the object name will be visit.
+      #
       # @return [Response]
       def bucket_preflight(origin, request_method, request_headers = [], object_name = nil)
         uri = object_name ? "/#{object_name}" : "/"
@@ -243,7 +236,8 @@ module Aliyun
 
       # Get ACL for bucket
       #
-      # @note API: https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketAcl
+      # API Doc: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketAcl Get Bucket ACL}
+      #
       # @return [String] public-read-write | public-read | private
       def bucket_get_acl
         query = { 'acl' => true }
@@ -252,7 +246,8 @@ module Aliyun
 
       # Get the location information of the Bucket's data center
       #
-      # @note API: https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketLocation
+      # API Doc: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketLocation Get Bucket Location}
+      #
       # @return [String] one of [oss-cn-hangzhou，oss-cn-qingdao，oss-cn-beijing，oss-cn-hongkong，
       #   oss-cn-shenzhen，oss-cn-shanghai，oss-us-west-1，oss-ap-southeast-1]
       def bucket_get_location
@@ -262,8 +257,9 @@ module Aliyun
 
       # Get the log configuration of Bucket
       #
-      # @note API: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketLogging}
-      # @return [Response] 
+      # API Doc: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketLogging Get Bucket Logging}
+      #
+      # @return [loggingConfiguration] 
       def bucket_get_logging
         query = { 'logging' => true }
         http.get('/', query: query, sub: query, bucket: bucket)
@@ -271,7 +267,9 @@ module Aliyun
 
       # Get the bucket state of static website hosting.
       #
-      # @note API: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketWebsite Get Bucket Website}
+      # API Doc: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketWebsite Get Bucket Website}
+      #
+      # @return [websiteConfiguration]
       def bucket_get_website
         query = { 'website' => true }
         http.get('/', query: query, sub: query, bucket: bucket)
@@ -279,7 +277,9 @@ module Aliyun
 
       # Get the referer configuration of bucket
       #
-      # @note API: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketReferer Get Bucket Referer}
+      # API Doc: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketReferer Get Bucket Referer}
+      #
+      # @return [refererConfiguration]
       def bucket_get_referer
         query = { 'referer' => true }
         http.get('/', query: query, sub: query, bucket: bucket)
@@ -287,7 +287,9 @@ module Aliyun
 
       # Get the lifecycle configuration of bucket
       #
-      # @note API: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketLifecycle Get Bucket Lifecycle}
+      # API Doc: {https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketLifecycle Get Bucket Lifecycle}
+      #
+      # @return [LifeCycleConfiguration]
       def bucket_get_lifecycle
         query = { 'lifecycle' => true }
         http.get('/', query: query, sub: query, bucket: bucket)
@@ -295,7 +297,9 @@ module Aliyun
 
       # Get the CORS rules of bucket
       #
-      # @note API: {https://docs.aliyun.com/#/pub/oss/api-reference/cors&GetBucketcors Get Bucket cors}
+      # API Doc: {https://docs.aliyun.com/#/pub/oss/api-reference/cors&GetBucketcors Get Bucket cors}
+      #
+      # @return [CorsConfiguration]
       def bucket_get_cors
         query = { 'cors' => true }
         http.get('/', query: query, sub: query, bucket: bucket)
@@ -356,7 +360,7 @@ module Aliyun
       private
 
       def http
-        @http = Http.new(access_key, secret_key, options)
+        @http = Http.new(access_key, secret_key, @options)
       end
 
     end
