@@ -4,12 +4,10 @@ require 'pry'
 module Aliyun
   module Oss
     autoload :Utils,        'aliyun/oss/utils'
-    autoload :Bucket,       'aliyun/oss/bucket'
-    autoload :Object,       'aliyun/oss/object'
-    autoload :Multipart,    'aliyun/oss/multipart'
     autoload :Client,       'aliyun/oss/client'
     autoload :Http,         'aliyun/oss/http'
     autoload :XmlBuilder,   'aliyun/oss/xml_builder'
+    autoload :Authorization,'aliyun/oss/authorization'
 
     class << self
       def new *args
