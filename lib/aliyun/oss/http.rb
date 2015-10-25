@@ -1,18 +1,16 @@
 module Aliyun
   module Oss
     class Http # nodoc
-      attr_reader :access_key, :secret_key, :host
+      attr_reader :access_key, :secret_key
 
-      def initialize(access_key, secret_key, options = {})
+      def initialize(access_key, secret_key, host)
         @access_key = access_key
         @secret_key = secret_key
-        @options = options
-        @host = options[:host]
+        @host = host
       end
 
       def get(uri, options = {})
-        response = request('GET', uri, options)
-        response.success? ? response.parsed_response : response
+        request('GET', uri, options)
       end
 
       def put(uri, options = {})
@@ -40,7 +38,7 @@ module Aliyun
 
       private
 
-      def request(verb, uri, options = {})
+      def request(verb, resource, options = {})
         headers = options.delete(:headers) || {}
         headers = default_headers.merge!(headers)
 
@@ -49,18 +47,15 @@ module Aliyun
           headers.merge!( 'Content-Length' => Utils.content_size(options[:body]).to_s ) if !headers.key?('Content-Length')
         end
 
-        if options[:bucket]
-          new_host = headers['Host'].split(".").tap {|a| a[0] = options[:bucket] }.join(".")
-          headers.merge!( 'Host' => new_host )
-        end
-        p headers
-
-        uri = "http://#{headers['Host']}#{uri}"
+        headers.merge!( 'Host' => get_host(options) )
 
         auth_key = get_auth_key(options.merge(verb: verb, headers: headers, date: headers['Date']))
         headers.merge!('Authorization' => auth_key)
 
-        response = HTTParty.__send__(verb.downcase, uri, options.merge(headers: headers))
+        uri = get_uri(headers['Host'], resource)
+        options = Utils.hash_slice(options.merge(headers: headers), :query, :headers, :body)
+
+        HTTParty.__send__(verb.downcase, uri, options)
       end
 
       def get_auth_key(options)
@@ -69,10 +64,25 @@ module Aliyun
 
       def default_headers
         {
-          'Host' => host,
+          'User-Agent' => "aliyun-oss-sdk-ruby/#{Aliyun::Oss::VERSION} (#{RbConfig::CONFIG['host_os']} ruby-#{RbConfig::CONFIG['ruby_version']})",
           'Date' => Time.now.utc.strftime("%a, %d %b %Y %H:%M:%S GMT")
         }
       end
+
+      def get_host(options)
+        if options[:location] && options[:bucket]
+          "#{options[:bucket]}.#{options[:location]}.aliyuncs.com"
+        elsif options[:bucket]
+          "#{options[:bucket]}.#{@host}"
+        else
+          @host
+        end
+      end
+
+      def get_uri(host, resource)
+        "http://#{host}#{resource}"
+      end
+
     end
   end
 end

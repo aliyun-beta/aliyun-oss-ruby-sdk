@@ -9,6 +9,15 @@ module Aliyun
     autoload :XmlBuilder,   'aliyun/oss/xml_builder'
     autoload :Authorization,'aliyun/oss/authorization'
 
+    module Rule
+      autoload :LifeCycle,      'aliyun/oss/rule/lifecycle'
+      autoload :Cors,           'aliyun/oss/rule/cors'
+    end
+
+    module Multipart
+      autoload :Part,           'aliyun/oss/multipart/part'
+    end
+
     class << self
       def new *args
         Base.new(*args)

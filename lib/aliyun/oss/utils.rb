@@ -24,6 +24,23 @@ module Aliyun
         Base64.encode64(Digest::MD5.digest(body)).strip
       end
 
+      # @example
+      #   Utils.hash_slice({ 'a' => 1, 'b' => 2, 'c' => 3 }, 'a', 'c')  # { 'a' => 1, 'c' => 3 }
+      #
+      # @return [Hash]
+      def self.hash_slice(hash, *selected_keys)
+        new_hash = {}
+        selected_keys.each { |k| new_hash[k] = hash[k] if hash.key?(k) }
+        new_hash
+      end
+
+      # Convert File or Bin data to bin data
+      #
+      # @return [Bin data]
+      def self.to_data(file_or_bin)
+        file_or_bin.respond_to?(:read) ? IO.binread(file_or_bin) : file
+      end
+
     end
   end
 end

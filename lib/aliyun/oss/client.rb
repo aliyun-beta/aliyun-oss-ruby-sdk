@@ -12,7 +12,7 @@ module Aliyun
       # Initialize a object
       #
       # @example
-      #   Aliyun::Oss::Client.new("ACCESS_KEY", "SECRET_KEY", host: "#bucket_name#.oss-cn-beijing.aliyuncs.com", bucket: '#bucket_name#')
+      #   Aliyun::Oss::Client.new("ACCESS_KEY", "SECRET_KEY", host: "oss-cn-beijing.aliyuncs.com", bucket: 'oss-sdk-beijing')
       #
       # @param access_key [String] access_key obtained from aliyun
       # @param secret_key [String] secret_key obtained from aliyun
@@ -38,7 +38,7 @@ module Aliyun
       #
       # @return [Object{buckets}]
       def list_buckets(options = {})
-        query = options.select {|k, _| ['prefix', 'marker', 'max-keys'].include?(k.to_s) }
+        query = Utils.hash_slice(options, 'prefix', 'marker', 'max-keys')
         http.get('/', query: query)
       end
 
@@ -55,9 +55,8 @@ module Aliyun
       #
       # @return [Object{objects}]
       def bucket_list_objects(options = {})
-        query = options.select do |k, _|
-          ['prefix', 'marker', 'max-keys', 'delimiter', 'encoding-type'].include?(k.to_s)
-        end
+        accepted_keys = ['prefix', 'marker', 'max-keys', 'delimiter', 'encoding-type']
+        query = Utils.hash_slice(options, *accepted_keys)
         http.get('/', query: query, bucket: bucket)
       end
 
@@ -76,14 +75,13 @@ module Aliyun
       #
       # @return [Response]
       def bucket_create(name, location = 'oss-cn-hangzhou', acl = 'private')
-        host = "#{name}.#{location}.aliyuncs.com"
         query = { 'acl' => true }
-        headers = { 'x-oss-acl' => acl, 'Host' => host }
+        headers = { 'x-oss-acl' => acl }
 
         configuration = { "CreateBucketConfiguration" => { "LocationConstraint" => location }}
         body = XmlBuilder.to_xml(configuration)
 
-        http.put("/", query: query, headers: headers, body: body, bucket: name)
+        http.put("/", query: query, headers: headers, body: body, bucket: name, location: location)
       end
 
       # Delete bucket
@@ -115,10 +113,12 @@ module Aliyun
       # @param target_bucket [String] specifies the bucket where you want Aliyun OSS to store server access logs.
       # @param target_prefix [String] this element lets you specify a prefix for the objects that the log files will be stored.
       def bucket_enable_logging(target_bucket, target_prefix = nil)
+        query = { 'logging' => true }
+
         logging = { "TargetBucket" => target_bucket }
         logging.merge!("TargetPrefix" => target_prefix) if target_prefix
         body = XmlBuilder.to_xml({ "BucketLoggingStatus" => { "LoggingEnabled" => logging }})
-        query = { 'logging' => true }
+
         http.put('/', query: query, body: body, bucket: bucket)
       end
 
@@ -138,18 +138,19 @@ module Aliyun
       # @param key [String] The object key name to use when a 4XX class error occurs
       def bucket_enable_website(suffix, key = nil)
         query = { 'website' => true }
+
         website_configuration = { "IndexDocument" => { "Suffix" => suffix } }
         website_configuration.merge!("ErrorDocument" => { "Key" => key }) if key
         body = XmlBuilder.to_xml({ "WebsiteConfiguration" => website_configuration })
-        headers = { 'Content-Type' => 'application/x-www-form-urlencoded' }
-        http.put('/', query: query, headers: headers, body: body, bucket: bucket)
+
+        http.put('/', query: query, body: body, bucket: bucket)
       end
 
       # Used to disable website hostted mode.
       #
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/bucket&DeleteBucketWebsite Delete Bucket Website
       def bucket_disable_website
-        query = { 'website' => true }
+        query = { 'website' => false }
         http.delete('/', query: query, bucket: bucket)
       end
 
@@ -159,11 +160,14 @@ module Aliyun
       #
       # @param referers [Array<String>] white list for allowed referer.
       # @param allowed_empty [Boolean] whether allow empty refer.
+      #
+      # @return [Response]
       def bucket_set_referer(referers = [], allowed_empty = false)
         query = { 'referer' => true }
+
         referer_configuration = { "RefererConfiguration" => { "AllowEmptyReferer" => allowed_empty, "RefererList" => { "Referer" => referers }}}
         body = XmlBuilder.to_xml(referer_configuration)
-        query = { 'referer' => true }
+
         http.put('/', query: query, body: body, bucket: bucket)
       end
 
@@ -171,32 +175,18 @@ module Aliyun
       #
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketLifecycle Put Bucket Lifecycle
       #
-      # @param rules [Array<Hash>] rules for lifecycle
-      # @option rule [Integer] :id optional, Rule ID, auto set when not set
-      # @option rule [String] :prefix, Used for filter objects
-      # @option rule [Boolean] :enable, Used for set rule status
-      # @option rule [Integer] :days Set auto delete objects after days since last modified, at least exist one with date
-      # @option rule [Time] :date, Set auto auto delete object at given time, at least exist one with days
+      # @param rules [Array<Rule::LifeCycle>] rules for lifecycle
+      #
+      # @return [Response]
       def bucket_enable_lifecycle(rules = [])
-        rules_configuration = []
-        rules.each do |rule|
-          id = rule.fetch("id", "")
-          prefix = rule["prefix"]
-          fail "Missing prefix for rule" unless prefix
-          status = rule.fetch("enable", false) ? 'Enabled' : 'Disabled'
-          expiration =
-            if rule.key?("date") && rule['date'].is_a?(Time)
-              { "Date" => rule['date'].utc.strftime("%Y-%m-%dT00:00:00.000Z") }
-            elsif rule.key?("days") && rule['days'].is_a?(Integer)
-              { "Days" => rule['days'].to_i }
-            else
-              fail "Must contains days or date for rule: days must be integer and date must be a Time Object"
-            end
-          rules_configuration << { "ID" => id, "Prefix" => prefix, "Status" => status, "Expiration" => expiration }
-        end
-        lifecycle_configuration = { "LifecycleConfiguration" => { "Rule" => rules_configuration } }
-        body = XmlBuilder.to_xml(lifecycle_configuration)
         query = { 'lifecycle' => true }
+
+        body = XmlBuilder.to_xml({
+          "LifecycleConfiguration" => {
+            "Rule" => rules.map(&:to_hash)
+          }
+        })
+
         http.put('/', query: query, body: body, bucket: bucket)
       end
 
@@ -212,36 +202,26 @@ module Aliyun
       #
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/cors&PutBucketcors Put Bucket cors
       #
-      # @param rules [Array<Hash>] array of rule
-      # each rule contains:
-      # @option rule [Array] :allowed_origins Set allowed origins
-      # @option rule [Array] :allowed_methods Set allowed methods
-      # @option rule [Array] :allowed_headers Set allowed headers used in preflight (see #bucket_preflight)
-      # @option rule [Array] :expose_headers  Set allowed used response headers for user
-      # @option rule [Integer] :max_age_seconds Specifies cache time the browser to pre-fetch a particular resource request in seconds
+      # @param rules [Array<Rule::Cors>] array of rule
+      #
+      # @return [Response]
       def bucket_enable_cors(rules = [])
-        rules_configuration = []
-        rules.each do |rule|
-          allowed_origins = rule['allowed_origins']
-          fail "Missing allowed_origins for rule" if allowed_origins.nil? || allowed_origins.empty?
-          allowed_methods = rule['allowed_methods']
-          allowed_methods.map!(&:upcase).select! {|method| %w{GET PUT DELETE POST HEAD}.include?(method) }
-          fail "Missing allowed_methods for rule OR allow_methods not in {GET PUT DELETE POST HEAD}" if allowed_methods.nil? || allowed_methods.empty?
-          configuration = { "AllowedOrigin" => allowed_origins, "AllowedMethod" => allowed_methods }
-          configuration.merge!("AllowedHeader" => rule['allowed_headers']) if rule['allowed_headers'] && !rule['allowed_headers'].empty?
-          configuration.merge!("EsposeHeader" => rule['espose_headers']) if rule['espose_headers'] && !rule['espose_headers'].empty?
-          configuration.merge!("MaxAgeSeconds" => rule['max_age_seconds']) if rule['max_age_seconds'] && !rule['max_age_seconds'].empty?
-          rules_configuration << configuration
-        end
-        cors_configuration = { "CORSConfiguration" => { "CORSRule" => rules_configuration } }
-        body = XmlBuilder.to_xml(cors_configuration)
         query = { 'cors' => true }
+
+        body = XmlBuilder.to_xml({
+          "CORSConfiguration" => {
+            "CORSRule" => rules.map(&:to_hash)
+          }
+        })
+
         http.put('/', query: query, body: body, bucket: bucket)
       end
 
       # Used to disable cors and clear rules for bucket
       #
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/cors&DeleteBucketcors Delete Bucket cors
+      #
+      # @return [Response]
       def bucket_disable_cors
         query = { 'cors' => false }
         http.delete('/', query: query, bucket: bucket)
@@ -272,7 +252,7 @@ module Aliyun
       #
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketAcl Get Bucket ACL
       #
-      # @return [String] public-read-write | public-read | private
+      # @return [Response]
       def bucket_get_acl
         query = { 'acl' => true }
         http.get('/', query: query, bucket: bucket)
@@ -282,8 +262,7 @@ module Aliyun
       #
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketLocation Get Bucket Location
       #
-      # @return [String] one of [oss-cn-hangzhou，oss-cn-qingdao，oss-cn-beijing，oss-cn-hongkong，
-      #   oss-cn-shenzhen，oss-cn-shanghai，oss-us-west-1，oss-ap-southeast-1]
+      # @return [Response]
       def bucket_get_location
         query = { 'location' => true }
         http.get('/', query: query, bucket: bucket)
@@ -293,7 +272,7 @@ module Aliyun
       #
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketLogging Get Bucket Logging
       #
-      # @return [loggingConfiguration]
+      # @return [Response]
       def bucket_get_logging
         query = { 'logging' => true }
         http.get('/', query: query, bucket: bucket)
@@ -303,7 +282,7 @@ module Aliyun
       #
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketWebsite Get Bucket Website
       #
-      # @return [websiteConfiguration]
+      # @return [Response]
       def bucket_get_website
         query = { 'website' => true }
         http.get('/', query: query, bucket: bucket)
@@ -313,7 +292,7 @@ module Aliyun
       #
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketReferer Get Bucket Referer
       #
-      # @return [refererConfiguration]
+      # @return [Response]
       def bucket_get_referer
         query = { 'referer' => true }
         http.get('/', query: query, bucket: bucket)
@@ -323,7 +302,7 @@ module Aliyun
       #
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketLifecycle Get Bucket Lifecycle
       #
-      # @return [LifeCycleConfiguration]
+      # @return [Response]
       def bucket_get_lifecycle
         query = { 'lifecycle' => true }
         http.get('/', query: query, bucket: bucket)
@@ -333,7 +312,7 @@ module Aliyun
       #
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/cors&GetBucketcors Get Bucket cors
       #
-      # @return [CorsConfiguration]
+      # @return [Response]
       def bucket_get_cors
         query = { 'cors' => true }
         http.get('/', query: query, bucket: bucket)
@@ -344,7 +323,7 @@ module Aliyun
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/object&PutObject Put Object
       #
       # @param key [String] Specify object name
-      # @param file [File, bin data] Specify need upload resource
+      # @param file [File, Bin data] Specify need upload resource
       # @param [Hash] headers Specify other options
       # @option headers [String] :Content-Type ('application/x-www-form-urlencoded') Specify Content-Type for the object
       # @option headers [String] :Cache-Control Specify the caching behavior when download from browser, ref {https://www.ietf.org/rfc/rfc2616.txt?spm=5176.730001.3.128.Y5W4bu&file=rfc2616.txt RFC2616}
@@ -358,8 +337,7 @@ module Aliyun
       #
       # @return [Response]
       def bucket_create_object(key, file, headers = {})
-        body = file.respond_to?(:read) ? IO.binread(file) : file
-        http.put("/#{key}", headers: headers, body: body, bucket: bucket, key: key)
+        http.put("/#{key}", headers: headers, body: Utils.to_data(file), bucket: bucket, key: key)
       end
 
       # Create object via post
@@ -400,7 +378,7 @@ module Aliyun
       def bucket_append_object(key, file, position = 0, headers = {})
         query = { "append" => true, "position" => position }
 
-        body = file.respond_to?(:read) ? IO.binread(file) : file
+        body = Utils.to_data(file)
 
         http.post("/#{key}", query: query, headers: headers, body: body, bucket: bucket, key: key)
       end
@@ -423,6 +401,8 @@ module Aliyun
       # @option headers [String] :If-Unmodified-Since If the specified time is equal to or later than the file last modification time, normal transfer ans return 200; Otherwise returns 412(precondition)
       # @option headers [String] :If-Match If the specified ETag match the object ETag, normal transfer and return 200; Otherwise return 412(precondition)
       # @option headers [String] :If-None-Match If the specified ETag not match the object ETag, normal transfer and return 200; Otherwise return 304(Not Modified)
+      #
+      # @return [Response]
       def bucket_get_object(key, query = {}, headers = {})
         http.get("/#{key}", query: query, headers: headers, bucket: bucket, key: key)
       end
@@ -527,14 +507,12 @@ module Aliyun
       #
       # @return [Response]
       def bucket_multipart_upload(key, number, upload_id, file)
-        fail("number must not empty!") if number.nil?
-        fail("upload_id must not empty!") if upload_id.nil? || upload_id.empty?
+        fail("number must present!") if number.nil?
+        fail("upload_id must present!") if upload_id.nil? || upload_id.empty?
 
         query = { "partNumber" => number.to_s, "uploadId" => upload_id }
 
-        body = file.respond_to?(:read) ? IO.binread(file) : file
-
-        http.put("/#{key}", query: query, body: body, bucket: bucket, key: key)
+        http.put("/#{key}", query: query, body: Utils.to_data(file), bucket: bucket, key: key)
       end
 
       # Upload a Part from an existing Object Copy data.
@@ -555,18 +533,17 @@ module Aliyun
       #
       # @return [Response]
       def bucket_multipart_copy_upload(key, number, upload_id, options = {})
-        fail("source_bucket must not empty!") if options[:source_bucket].to_s.empty?
-        fail("source_key must not empty!") if options[:source_key].to_s.empty?
+        fail("source_bucket must present!") if options[:source_bucket].to_s.empty?
+        fail("source_key must present!") if options[:source_key].to_s.empty?
 
         query = { "partNumber" => number, "uploadId" => upload_id }
 
-        headers = {}
-
         source_bucket = options.delete(:source_bucket)
         source_key = options.delete(:source_key)
+
+        headers = {}
         headers.merge!( "x-oss-copy-source" => "/#{source_bucket}/#{source_key}" )
         headers.merge!( "x-oss-copy-source-range" => options.delete(:range)) if options.key?(:range)
-
         headers.merge!(options)
 
         http.put("/#{key}", query: query, headers: headers, bucket: bucket, key: key)
@@ -578,19 +555,20 @@ module Aliyun
       #
       # @param key [String] object name
       # @param upload_id [String] the upload ID return by #bucket_init_multipart
-      # @param parts [Array<Hash>] parts
-      # @option part [Integer] :number the part number
-      # @option part [String] :etag the etag for the part
+      # @param parts [Array<Multipart:Part>] parts
       #
       # @return [Response]
       def bucket_complete_multipart(key, upload_id, parts = [])
-        fail("upload_id must not empty!") if upload_id.nil? || upload_id.empty?
-        fail("parts must not empty!") if parts.nil? || parts.empty?
+        fail("parts must present!") if parts.nil? || parts.empty?
+        fail("upload_id must present!") if upload_id.nil?
 
         query = { "uploadId" => upload_id }
 
-        part_objects = parts.map {|part| { "PartNumber" => part[:number], "ETag" => part[:etag] } }
-        body = XmlBuilder.to_xml({ "CompleteMultipartUpload" => { "Part" => part_objects } })
+        body = XmlBuilder.to_xml({
+          "CompleteMultipartUpload" => {
+            "Part" => parts.map(&:to_hash)
+          }
+        })
 
         http.post("/#{key}", query: query, body: body, bucket: bucket, key: key)
       end
@@ -623,12 +601,11 @@ module Aliyun
       # @option options [String] :key-marker with upload-id-marker used to specify the result range.
       # @option options [String] :upload-id-marker with key-marker used to specify the result range.
       #
+      # @return [Response]
       def bucket_list_multiparts(options = {})
-        query = { "uploads" => true }
+        accepted_keys = ['prefix', 'key-marker', 'upload-id-marker', 'max-uploads', 'delimiter', 'encoding-type']
 
-        query.merge!(options.select do |k, _|
-          ['prefix', 'key-marker', 'upload-id-marker', 'max-uploads', 'delimiter', 'encoding-type'].include?(k.to_s)
-        end)
+        query = Utils.hash_slice(options, *accepted_keys).merge( "uploads" => true )
 
         http.get("/", query: query, bucket: bucket)
       end
@@ -646,11 +623,9 @@ module Aliyun
       #
       # @return [Response]
       def bucket_list_parts(key, upload_id, options = {})
-        query = { "uploadId" => upload_id }
+        accepted_keys = ['max-parts', 'part-number-marker', 'encoding-type']
 
-        query.merge(options.select do |k, _|
-          ['max-parts', 'part-number-marker'].include?(k.to_s)
-        end)
+        query = Utils.hash_slice(options, *accepted_keys).merge( "uploadId" => upload_id )
 
         http.get("/#{key}", query: query, bucket: bucket, key: key)
       end
@@ -658,7 +633,7 @@ module Aliyun
       private
 
       def http
-        @http = Http.new(access_key, secret_key, @options)
+        @http = Http.new(access_key, secret_key, @options[:host])
       end
 
     end

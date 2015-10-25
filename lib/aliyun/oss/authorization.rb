@@ -59,11 +59,8 @@ module Aliyun
       #
       # @return [String] the authorization string
       def self.get_authorization(access_key, secret_key, options = {})
-        p options
         content_string = concat_content_string(options[:verb], options[:date], options)
-        p content_string
         signature_string = signature(secret_key, content_string)
-        p signature_string
         "#{PROVIDER} #{access_key}:#{signature_string.strip}"
       end
 
