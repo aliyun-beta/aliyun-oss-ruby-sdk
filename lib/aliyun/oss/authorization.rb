@@ -15,11 +15,11 @@ module Aliyun
       # @param secret_key [String] Secret Key
       # @param expires [Integer] the number of seconds since January 1, 1970 UTC. used to specified expired time
       # @param [Hash] options other options
-      # @option key [String] the object name
-      # @option bucket [String] bucket name
-      # @option verb [String] Request Method
-      # @option query [Hash] Query
-      # @option headers [Hash] Headers
+      # @option options [String] :key the object name
+      # @option options [String] :bucket bucket name
+      # @option options [String] :verb, Request Method
+      # @option options [Hash] :query Query Params
+      # @option options [Hash] :headers Headers Params
       #
       # @return [String]
       def self.get_temporary_signature(secret_key, expire_time, options = {})
@@ -29,13 +29,13 @@ module Aliyun
 
       # Get base64 encoded string, used to fill policy field
       #
-      # @see {https://docs.aliyun.com/#/pub/oss/api-reference/object&PostObject}
+      # @see {https://docs.aliyun.com/#/pub/oss/api-reference/object&PostObject Post Object}
       #
       # @param secret_key [String] Secret Key
       # @param policy [Hash] Policy {https://docs.aliyun.com/#/pub/oss/api-reference/object&PostObject#menu7 Detail}
       #
       # @return [String]
-      def self.get_base64_policy(secret_key, policy)
+      def self.get_base64_policy(policy)
         Base64.encode64(JSON.generate(policy).force_encoding("utf-8")).gsub("\n", "")
       end
 
@@ -48,7 +48,7 @@ module Aliyun
       #
       # @return [String]
       def self.get_policy_signature(secret_key, policy)
-        signature(secret_key, get_base64_policy(secret_key, policy)).strip
+        signature(secret_key, get_base64_policy(policy)).strip
       end
 
       # @private

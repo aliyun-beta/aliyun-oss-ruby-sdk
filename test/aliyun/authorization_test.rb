@@ -69,7 +69,7 @@ describe Aliyun::Oss::Authorization do
         {"key"=>"ABC"}
       ]
     }
-    base64_policy = Aliyun::Oss::Authorization.get_base64_policy("OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV", policy)
+    base64_policy = Aliyun::Oss::Authorization.get_base64_policy(policy)
     assert_equal("eyJleHBpcmF0aW9uIjoiMjAxMy0xMi0wMVQxMjowMDowMFoiLCJjb25kaXRpb25zIjpbWyJjb250ZW50LWxlbmd0aC1yYW5nZSIsMCwxMDQ4NTc2MF0seyJidWNrZXQiOiJhaGFoYSJ9LHsiQSI6ImEifSx7ImtleSI6IkFCQyJ9XX0=", base64_policy)
   end
 

@@ -1,45 +1,195 @@
+# Aliyun OSS SDK
 
-oss = Aliyun::OSS.new # accesskey, secretkey
+[![Coverage Status](https://coveralls.io/repos/zlx/ruby-oss-sdk/badge.svg?branch=master&service=bitbucket)](https://coveralls.io/bitbucket/zlx/ruby-oss-sdk?branch=master)
 
-oss.list_buckets # [OSSBucket 对象]
+-----
 
-bucket.list_objects # 返回 bucket 中对象信息 [OSSObject 对象]
 
-bucket.set_acl # 设置 acl
-bucket.enable_logging # 开启日志
-bucket.disable_logging # 关闭日志
-bucket.enable_website(boolean) # 开启网站托管模式
-bucket.disable_website(boolean) # 关闭网站托管模式
-bucket.set_referer # 设置防盗链规则
-bucket.set_lifecycle  # 设置生命周期
-bucket.remove_lifecycle 删除生命周期规则
-bucket.set_cors
-bucket.remove_cors
-bucket.preflight # 跨域访问preflight请求
+It provide One-to-one Ruby interface for Aliyun OSS Restful API. I try to keep things natural and reasonable, but there are always some places are leaky, welcome to give me advice and modification. Thank you!
 
-# 实时获取
-bucket.get_acl
-bucket.get_location
-bucket.get_logging
-bucket.get_website
-bucket.get_referer
-bucket.get_lifecycle
-bucket.get_cors
 
-bucket.create_object # 创建对象 支持参数 post|put
-bucket.copy_object
-bucket.get_object 或者 object.get
-bucket.delete_object  或者 object.delete
-bucket.delete_objects
-bucket.get_meta_object 或者 object.get_meta
+## Document
 
-multipart = bucket.init_multipart # multipart 对象
-multipart = oss.get_multipart(id) # 用于不同的请求之间继续上传  更详细的场景
-multipart.upload
-multipart.copy_upload
-multipart.complete
-multipart.abort
-multipart.list
++ [ALiyun OSS API](https://docs.aliyun.com/#/pub/oss/api-reference/overview)
++ [Ruby Document]()
 
-bucket.list_multiparts # [multipart 对象]
 
+## Usage    
+
+### Quick Start
+
+    require 'aliyun/oss'
+    
+    # ACCESS_KEY/SECRET_KEY is your access credentials, Aliyun provide three ways, read detail at https://docs.aliyun.com/#/pub/oss/product-documentation/acl&RESTAuthentication
+    # host: your bucket's data center host, eg: oss-cn-hangzhou.aliyuncs.com, visit https://docs.aliyun.com/#/pub/oss/product-documentation/domain-region#menu2 get full list
+    # bucket: your bucket name
+	
+	client = Aliyun::OSS::Client.new('ACCESS_KEY', 'SECRET_KEY', host: 'oss-cn-hangzhou.aliyuncs.com', bucket: 'oss-sdk-dev-hangzhou')
+	
+	# Get all objects in this bucket
+	# use prefix，marker，delimiter, max-keys to filter results
+	client.bucket_list_objects()
+	
+	# Upload objects
+	client.bucket_create_object('image.png', File.new('path/to/image.png'), { 'Content-Type' => 'image/png' })
+	
+	# Get Object
+	client.bucket_get_object('image.png')
+    
+
+### Share your files
+
+Sometimes, you want to share some file in your private bucket with your friends , but you donot want to share your AccessKey, thus, Aliyun provide alternative way: [Put signature in URL](https://docs.aliyun.com/#/pub/oss/api-reference/access-control&signature-url)
+
+We provide a method to calculate signature for you:
+
+    # Return Singature string
+    Aliyun::Oss::Authorization.get_temporary_signature('SECRET_KEY', Time.now.to_i + 60*60, verb: 'GET', bucket: 'bucket-name', key: 'object-name')
+
+
+### Directly POST file to Aliyun OSS
+
+Sometime we may allow user directly upload image or file to Aliyun to improve the upload speed. thus you may need POST form: [Post Object](https://docs.aliyun.com/#/pub/oss/api-reference/object&PostObject)
+
+With Post Form, we need Post Policy to restrict permissions, here we provide two methods that you may interesting:
+
+     # policy your policy in hash
+     # Return base64 string which can used to fill your form field: policy
+     client.get_base64_policy(policy)
+     
+     # Get Signature for policy
+     # Return Signature with policy, can used to fill your form field: Signature
+     client.get_policy_signature(SECRET_KEY, policy)
+
+
+### Full API
+
+
+    ###### Bucket #####
+    
+    # Get all buckets information
+	client.list_buckets
+	
+	# Create new buckets
+	client.bucket_create('oss-sdk-dev-beijing-no1', 'oss-cn-beijing', 'public-read')
+	
+	# Delete bucket
+	client.bucket_delete(name)
+	
+	# Get all objects in this bucket
+	# use prefix，marker，delimiter, max-keys to filter results
+	client.bucket_list_objects()
+	
+		
+	#### Get information of this bucket  ####
+	
+	client.bucket_get_acl
+	client.bucket_get_cors
+	client.bucket_get_lifecycle
+	client.bucket_get_location
+	client.bucket_get_logging
+	client.bucket_get_referer
+	client.bucket_get_website
+	
+	
+	##### Set the bucket properties  ####
+	
+	# set cors for bucket
+	rule = Aliyun::Oss::Rule::Cors.new({ allowed_methods: ['get'], allowed_origins: ['*'] })
+	client.bucket_enable_cors([rule])
+	client.bucket_disable_cors	# Disable and remove existing cors
+	
+	# Set lifecycle for bucket
+	rule1 = Aliyun::Oss::Rule::LifeCycle.new({ prefix: 'logs-prod-', days: 7, enable: true })
+	rule2 = Aliyun::Oss::Rule::LifeCycle.new({ prefix: 'logs-dev', date: Time.now + 24*60*60, enable: true })
+	client.bucket_enable_lifecycle([rule1, rule2])
+	client.bucket_disable_lifecycle  # Disable and remove existing lifecycle
+	
+	# Enable  access logging for bucket
+	client.bucket_enable_logging('logs-oss-sdk', 'logs-')
+	client.bucket_disable_logging  # Disable logging
+	
+	# Set bucket to static web sites hosted mode.
+	client.bucket_enable_website('index.html', 'error.html')
+	client.bucket_disable_website  # Disable static web sites hosted mode
+	
+	# Set Referer for this bucket
+	client.bucket_set_referer(['http://www.aliyun.com'], false)
+	
+	# Set ACL for bucket
+	# supported value: public-read-write | public-read | private
+	client.bucket_set_acl('public-read')
+	
+	
+	#### Object ####
+	
+	# Upload object to bucket
+	client.bucket_create_object("image.png", File.new("path/to/image.png"), { 'Content-Type' => 'image/png' })
+	
+	# Copy object from other bucket
+	client.bucket_copy_object('new_image.png', 'origin-bucket-name', 'origin.png', { 'x-oss-metadata-directive' => 'REPLACE' })
+	
+	# Get a Object
+	client.bucket_get_object("image.png")
+	
+	# Get meta information of object
+	client.bucket_get_meta_object("image.png")
+	
+	# Get object ACL
+	client.bucket_get_object_acl("image.png")
+	
+	# Set object ACL
+	client.bucket_set_object_acl("image.png", 'public-read-write')
+	
+	# upload object with append
+	# it will create a Appendable object
+	# https://docs.aliyun.com/#/pub/oss/api-reference/object&AppendObject
+	client.bucket_append_object("secret.zip", Bin Data, 0)  # return the last position, 100203
+	client.bucket_append_object("secret.zip", Bin Data, 100203)
+	
+	# Delete Object
+	client.bucket_delete_object('secret.zip)
+	
+	# Delete Multiple objects
+	client.bucket_delete_objects(['secret.zip', 'image.png'], true)
+	
+	
+	
+	#### Multipart Upload  ####  
+	
+	# Init a Multipart Upload event
+	client.bucket_init_multipart("Exciting-Ruby.mp4", { 'Content-Type' => 'video/mp4' })  # return upload ID "98A6524428734723BE8F81D72B5295EE"
+	
+	# Upload files
+	client.bucket_multipart_upload("Exciting-Ruby.mp4", 1, "98A6524428734723BE8F81D72B5295EE", file1)  # return etag for use later
+	client.bucket_multipart_upload("Exciting-Ruby.mp4", 2, "98A6524428734723BE8F81D72B5295EE", file2)
+	client.bucket_multipart_upload("Exciting-Ruby.mp4", 3, "98A6524428734723BE8F81D72B5295EE", file3)
+	
+	# Copy from existing object
+	client.bucket_multipart_copy_upload("Exciting-Ruby.mp4", 4, "98A6524428734723BE8F81D72B5295EE", source_bucket: 'original-bucket-name', source_key: 'original-file', range: 'bytes=0-10000')
+	
+	# List uploaded parts for a Multipart Upload event
+	client.bucket_list_parts("sample_multipart.data", "98A6524428734723BE8F81D72B5295EE")  
+	
+	# Complete a Multipart Upload event
+	part1 = Aliyun::Oss::Multipart::Part.new({ number: 1, etag: 'etag1' })
+	part2 = Aliyun::Oss::Multipart::Part.new({ number: 2, etag: 'etag2' })
+	part3 = Aliyun::Oss::Multipart::Part.new({ number: 3, etag: 'etag3' })
+	client.bucket_complete_multipart("Exciting-Ruby.mp4", "98A6524428734723BE8F81D72B5295EE", [part1, part2, part3])
+	
+	# Abort a Multipart Upload event
+	# abort will remove all uploaded parts
+	# invoke a few time to confirm all parts are deleted for concurrency access
+	client.bucket_abort_multipart("Exciting-Ruby.mp4", "9FB6F32C2DC24E04B813963B58E29E68")
+
+
+
+
+## Authors && Contributors
+
+- [Newell Zhu](https://github.com/zlx_star)
+
+
+## License
+
+licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0.html)

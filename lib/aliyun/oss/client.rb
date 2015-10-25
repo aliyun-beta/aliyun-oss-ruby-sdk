@@ -340,13 +340,6 @@ module Aliyun
         http.put("/#{key}", headers: headers, body: Utils.to_data(file), bucket: bucket, key: key)
       end
 
-      # Create object via post
-      #
-      # @see https://docs.aliyun.com/#/pub/oss/api-reference/object&PostObject Post Object
-      def bucket_post_object(key)
-        
-      end
-
       # Copy an existing object in OSS into another object
       #
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/object&CopyObject Copy Object
@@ -354,7 +347,16 @@ module Aliyun
       # @param key [String] the object name
       # @param source_bucket [String] the source bucket name
       # @param source_key [String] the source object name
-      # @option headers (see #bucket_create_object)
+      # @param [Hash] headers
+      # @option options [String] :source_bucket the source bucket name
+      # @option options [String] :source_key the source object name
+      # @option options [String] :x-oss-copy-source-if-match If the specified ETag match the source object ETag, normal transfer and return 200; Otherwise return 412(precondition)
+      # @option options [String] :x-oss-copy-source-if-none-match If the specified ETag not match the source object ETag, normal transfer and return 200; Otherwise return 304(Not Modified)
+      # @option options [String] :x-oss-copy-source-if-unmodified-since If the specified time is equal to or later than the source object last modification time, normal transfer ans return 200; Otherwise returns 412(precondition)
+      # @option options [String] :x-oss-copy-source-if-modified-since If the specified time is earlier than the source object last modification time, normal transfer ans return 200; Otherwise returns 304(not modified)
+      # @option options [String] :x-oss-metadata-directive ('COPY') supported value: COPY, REPLACE; 
+      # @option options [String] :x-oss-server-side-encryption supported value: AES256
+      # @option options [String] :x-oss-object-acl supported value: public-read，private，public-read-write
       #
       # @return [Response]
       def bucket_copy_object(key, source_bucket, source_key, headers = {})
