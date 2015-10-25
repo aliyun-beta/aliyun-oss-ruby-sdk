@@ -1,7 +1,6 @@
 require 'base64'
 require 'openssl'
 require 'digest'
-require 'pry'
 require 'httparty'
 
 module Aliyun
@@ -78,10 +77,10 @@ module Aliyun
         query = { 'acl' => true }
         headers = { 'x-oss-acl' => acl }
 
-        configuration = { "CreateBucketConfiguration" => { "LocationConstraint" => location }}
+        configuration = { 'CreateBucketConfiguration' => { 'LocationConstraint' => location } }
         body = Utils.to_xml(configuration)
 
-        http.put("/", query: query, headers: headers, body: body, bucket: name, location: location)
+        http.put('/', query: query, headers: headers, body: body, bucket: name, location: location)
       end
 
       # Delete bucket
@@ -92,7 +91,7 @@ module Aliyun
       #
       # @return [Response]
       def bucket_delete(name)
-        http.delete("/", bucket: name)
+        http.delete('/', bucket: name)
       end
 
       # Used to modify the bucket access.
@@ -115,9 +114,9 @@ module Aliyun
       def bucket_enable_logging(target_bucket, target_prefix = nil)
         query = { 'logging' => true }
 
-        logging = { "TargetBucket" => target_bucket }
-        logging.merge!("TargetPrefix" => target_prefix) if target_prefix
-        body = Utils.to_xml({ "BucketLoggingStatus" => { "LoggingEnabled" => logging }})
+        logging = { 'TargetBucket' => target_bucket }
+        logging.merge!('TargetPrefix' => target_prefix) if target_prefix
+        body = Utils.to_xml('BucketLoggingStatus' => { 'LoggingEnabled' => logging })
 
         http.put('/', query: query, body: body, bucket: bucket)
       end
@@ -139,9 +138,9 @@ module Aliyun
       def bucket_enable_website(suffix, key = nil)
         query = { 'website' => true }
 
-        website_configuration = { "IndexDocument" => { "Suffix" => suffix } }
-        website_configuration.merge!("ErrorDocument" => { "Key" => key }) if key
-        body = Utils.to_xml({ "WebsiteConfiguration" => website_configuration })
+        website_configuration = { 'IndexDocument' => { 'Suffix' => suffix } }
+        website_configuration.merge!('ErrorDocument' => { 'Key' => key }) if key
+        body = Utils.to_xml('WebsiteConfiguration' => website_configuration)
 
         http.put('/', query: query, body: body, bucket: bucket)
       end
@@ -165,8 +164,13 @@ module Aliyun
       def bucket_set_referer(referers = [], allowed_empty = false)
         query = { 'referer' => true }
 
-        referer_configuration = { "RefererConfiguration" => { "AllowEmptyReferer" => allowed_empty, "RefererList" => { "Referer" => referers }}}
-        body = Utils.to_xml(referer_configuration)
+        body = Utils.to_xml('RefererConfiguration' => {
+                              'AllowEmptyReferer' => allowed_empty,
+                              'RefererList' => {
+                                'Referer' => referers
+                              }
+                            }
+                           )
 
         http.put('/', query: query, body: body, bucket: bucket)
       end
@@ -181,11 +185,9 @@ module Aliyun
       def bucket_enable_lifecycle(rules = [])
         query = { 'lifecycle' => true }
 
-        body = Utils.to_xml({
-          "LifecycleConfiguration" => {
-            "Rule" => rules.map(&:to_hash)
-          }
-        })
+        body = Utils.to_xml('LifecycleConfiguration' => {
+                              'Rule' => rules.map(&:to_hash)
+                            })
 
         http.put('/', query: query, body: body, bucket: bucket)
       end
@@ -208,11 +210,9 @@ module Aliyun
       def bucket_enable_cors(rules = [])
         query = { 'cors' => true }
 
-        body = Utils.to_xml({
-          "CORSConfiguration" => {
-            "CORSRule" => rules.map(&:to_hash)
-          }
-        })
+        body = Utils.to_xml('CORSConfiguration' => {
+                              'CORSRule' => rules.map(&:to_hash)
+                            })
 
         http.put('/', query: query, body: body, bucket: bucket)
       end
@@ -238,7 +238,7 @@ module Aliyun
       #
       # @return [Response]
       def bucket_preflight(origin, request_method, request_headers = [], object_name = nil)
-        uri = object_name ? "/#{object_name}" : "/"
+        uri = object_name ? "/#{object_name}" : '/'
 
         headers = { 'Origin' => origin, 'Access-Control-Request-Method' => request_method }
         unless request_headers.empty?
@@ -354,16 +354,16 @@ module Aliyun
       # @option options [String] :x-oss-copy-source-if-none-match If the specified ETag not match the source object ETag, normal transfer and return 200; Otherwise return 304(Not Modified)
       # @option options [String] :x-oss-copy-source-if-unmodified-since If the specified time is equal to or later than the source object last modification time, normal transfer ans return 200; Otherwise returns 412(precondition)
       # @option options [String] :x-oss-copy-source-if-modified-since If the specified time is earlier than the source object last modification time, normal transfer ans return 200; Otherwise returns 304(not modified)
-      # @option options [String] :x-oss-metadata-directive ('COPY') supported value: COPY, REPLACE; 
+      # @option options [String] :x-oss-metadata-directive ('COPY') supported value: COPY, REPLACE;
       # @option options [String] :x-oss-server-side-encryption supported value: AES256
       # @option options [String] :x-oss-object-acl supported value: public-read，private，public-read-write
       #
       # @return [Response]
       def bucket_copy_object(key, source_bucket, source_key, headers = {})
-        fail("source_bucket must be not empty!") if source_bucket.nil? || source_bucket.empty?
-        fail("source_key must be not empty!") if source_key.nil? || source_key.empty?
+        fail('source_bucket must be not empty!') if source_bucket.nil? || source_bucket.empty?
+        fail('source_key must be not empty!') if source_key.nil? || source_key.empty?
 
-        headers.merge!( "x-oss-copy-source" => "/#{source_bucket}/#{source_key}" )
+        headers.merge!('x-oss-copy-source' => "/#{source_bucket}/#{source_key}")
 
         http.put("/#{key}", headers: headers, bucket: bucket, key: key)
       end
@@ -378,7 +378,7 @@ module Aliyun
       # @option headers (see #bucket_create_object)
       #
       def bucket_append_object(key, file, position = 0, headers = {})
-        query = { "append" => true, "position" => position }
+        query = { 'append' => true, 'position' => position }
 
         body = Utils.to_data(file)
 
@@ -429,12 +429,12 @@ module Aliyun
       #
       # @return [Response]
       def bucket_delete_objects(keys, quiet = false)
-        query = { "delete" => true }
+        query = { 'delete' => true }
 
-        key_objects = keys.map {|key| { "Key" => key } }
-        body = Utils.to_xml({ "Delete" => { "Object" => key_objects, "Quiet" => quiet }})
+        key_objects = keys.map { |key| { 'Key' => key } }
+        body = Utils.to_xml('Delete' => { 'Object' => key_objects, 'Quiet' => quiet })
 
-        http.post("/", query: query, body: body, bucket: bucket)
+        http.post('/', query: query, body: body, bucket: bucket)
       end
 
       # Get meta information of object
@@ -494,7 +494,7 @@ module Aliyun
       #
       # @return [Response]
       def bucket_init_multipart(key, headers = {})
-        query = { "uploads" => true }
+        query = { 'uploads' => true }
         http.post("/#{key}", query: query, headers: headers, bucket: bucket, key: key)
       end
 
@@ -509,10 +509,10 @@ module Aliyun
       #
       # @return [Response]
       def bucket_multipart_upload(key, number, upload_id, file)
-        fail("number must present!") if number.nil?
-        fail("upload_id must present!") if upload_id.nil? || upload_id.empty?
+        fail('number must present!') if number.nil?
+        fail('upload_id must present!') if upload_id.nil? || upload_id.empty?
 
-        query = { "partNumber" => number.to_s, "uploadId" => upload_id }
+        query = { 'partNumber' => number.to_s, 'uploadId' => upload_id }
 
         http.put("/#{key}", query: query, body: Utils.to_data(file), bucket: bucket, key: key)
       end
@@ -535,17 +535,17 @@ module Aliyun
       #
       # @return [Response]
       def bucket_multipart_copy_upload(key, number, upload_id, options = {})
-        fail("source_bucket must present!") if options[:source_bucket].to_s.empty?
-        fail("source_key must present!") if options[:source_key].to_s.empty?
+        fail('source_bucket must present!') if options[:source_bucket].to_s.empty?
+        fail('source_key must present!') if options[:source_key].to_s.empty?
 
-        query = { "partNumber" => number, "uploadId" => upload_id }
+        query = { 'partNumber' => number, 'uploadId' => upload_id }
 
         source_bucket = options.delete(:source_bucket)
         source_key = options.delete(:source_key)
 
         headers = {}
-        headers.merge!( "x-oss-copy-source" => "/#{source_bucket}/#{source_key}" )
-        headers.merge!( "x-oss-copy-source-range" => options.delete(:range)) if options.key?(:range)
+        headers.merge!('x-oss-copy-source' => "/#{source_bucket}/#{source_key}")
+        headers.merge!('x-oss-copy-source-range' => options.delete(:range)) if options.key?(:range)
         headers.merge!(options)
 
         http.put("/#{key}", query: query, headers: headers, bucket: bucket, key: key)
@@ -561,16 +561,14 @@ module Aliyun
       #
       # @return [Response]
       def bucket_complete_multipart(key, upload_id, parts = [])
-        fail("parts must present!") if parts.nil? || parts.empty?
-        fail("upload_id must present!") if upload_id.nil?
+        fail('parts must present!') if parts.nil? || parts.empty?
+        fail('upload_id must present!') if upload_id.nil?
 
-        query = { "uploadId" => upload_id }
+        query = { 'uploadId' => upload_id }
 
-        body = Utils.to_xml({
-          "CompleteMultipartUpload" => {
-            "Part" => parts.map(&:to_hash)
-          }
-        })
+        body = Utils.to_xml('CompleteMultipartUpload' => {
+                              'Part' => parts.map(&:to_hash)
+                            })
 
         http.post("/#{key}", query: query, body: body, bucket: bucket, key: key)
       end
@@ -587,7 +585,7 @@ module Aliyun
       #
       # @return [Response]
       def bucket_abort_multipart(key, upload_id)
-        query = { "uploadId" => upload_id }
+        query = { 'uploadId' => upload_id }
         http.delete("/#{key}", query: query, bucket: bucket, key: key)
       end
 
@@ -607,9 +605,10 @@ module Aliyun
       def bucket_list_multiparts(options = {})
         accepted_keys = ['prefix', 'key-marker', 'upload-id-marker', 'max-uploads', 'delimiter', 'encoding-type']
 
-        query = Utils.hash_slice(options, *accepted_keys).merge( "uploads" => true )
+        query = Utils.hash_slice(options, *accepted_keys)
+                .merge('uploads' => true)
 
-        http.get("/", query: query, bucket: bucket)
+        http.get('/', query: query, bucket: bucket)
       end
 
       # List uploaded parts for Multipart Upload event
@@ -627,7 +626,7 @@ module Aliyun
       def bucket_list_parts(key, upload_id, options = {})
         accepted_keys = ['max-parts', 'part-number-marker', 'encoding-type']
 
-        query = Utils.hash_slice(options, *accepted_keys).merge( "uploadId" => upload_id )
+        query = Utils.hash_slice(options, *accepted_keys).merge('uploadId' => upload_id)
 
         http.get("/#{key}", query: query, bucket: bucket, key: key)
       end
@@ -637,7 +636,6 @@ module Aliyun
       def http
         @http = Http.new(access_key, secret_key, @options[:host])
       end
-
     end
   end
 end

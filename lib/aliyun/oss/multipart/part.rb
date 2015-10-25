@@ -15,7 +15,7 @@ module Aliyun
 
         def to_hash
           if valid?
-            { "PartNumber" => number, "ETag" => etag }
+            { 'PartNumber' => number, 'ETag' => etag }
           else
             {}
           end

@@ -6,7 +6,6 @@ require 'gyoku'
 module Aliyun
   module Oss
     class Utils
-
       # Calculate content length
       #
       # @return [Integer]
@@ -26,7 +25,8 @@ module Aliyun
       end
 
       # @example
-      #   Utils.hash_slice({ 'a' => 1, 'b' => 2, 'c' => 3 }, 'a', 'c')  # { 'a' => 1, 'c' => 3 }
+      #   # { 'a' => 1, 'c' => 3 }
+      #   Utils.hash_slice({ 'a' => 1, 'b' => 2, 'c' => 3 }, 'a', 'c')
       #
       # @return [Hash]
       def self.hash_slice(hash, *selected_keys)
@@ -43,9 +43,8 @@ module Aliyun
       end
 
       def self.to_xml(hash) # nodoc
-        %Q[<?xml version="1.0" encoding="UTF-8"?>#{Gyoku.xml(hash)}]
+        %(<?xml version="1.0" encoding="UTF-8"?>#{Gyoku.xml(hash)})
       end
-
     end
   end
 end

@@ -36,7 +36,7 @@ module Aliyun
       #
       # @return [String]
       def self.get_base64_policy(policy)
-        Base64.encode64(JSON.generate(policy).force_encoding("utf-8")).gsub("\n", "")
+        Base64.encode64(JSON.generate(policy).force_encoding('utf-8')).delete("\n")
       end
 
       # Get Signature for policy
@@ -93,26 +93,25 @@ module Aliyun
       end
 
       def self.signature(secret_key, content_string)
-        utf8_string = content_string.force_encoding("utf-8")
+        utf8_string = content_string.force_encoding('utf-8')
         Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest::SHA1.new, secret_key, utf8_string))
       end
 
       def self.get_cononicalized_oss_headers(headers)
-        oss_headers = (headers||{}).select {|key, _| key.to_s.downcase.start_with?("x-oss-") }
+        oss_headers = (headers || {}).select { |key, _| key.to_s.downcase.start_with?('x-oss-') }
         return if oss_headers.empty?
 
         oss_headers.keys.sort.map { |key| "#{key.downcase}:#{oss_headers[key]}" }.join("\n")
       end
 
       def self.get_cononicalized_resource(bucket, key, query)
-        cononicalized_resource = "/"
+        cononicalized_resource = '/'
         cononicalized_resource += "#{bucket}/" if bucket
         cononicalized_resource += key if key
         return cononicalized_resource if query.nil? || query.empty?
 
-        cononicalized_resource + "?" + query.keys.sort.map {|key| "#{key}=#{query[key]}" }.join("&")
+        cononicalized_resource + '?' + query.keys.sort.map { |key| "#{key}=#{query[key]}" }.join('&')
       end
-
     end
   end
 end

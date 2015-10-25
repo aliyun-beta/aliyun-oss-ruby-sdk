@@ -14,17 +14,17 @@ module Aliyun
       end
 
       def put(uri, options = {})
-        headers = { 'Content-Type' => 'application/x-www-form-urlencoded' }.merge(options[:headers]||{})
+        headers = default_content_type.merge(options[:headers] || {})
         request('PUT', uri, options.merge(headers: headers))
       end
 
       def post(uri, options = {})
-        headers = { 'Content-Type' => 'application/x-www-form-urlencoded' }.merge(options[:headers]||{})
+        headers = default_content_type.merge(options[:headers] || {})
         request('POST', uri, options.merge(headers: headers))
       end
 
       def delete(uri, options = {})
-        headers = { 'Content-Type' => 'application/x-www-form-urlencoded' }.merge(options[:headers]||{})
+        headers = default_content_type.merge(options[:headers] || {})
         request('DELETE', uri, options.merge(headers: headers))
       end
 
@@ -43,13 +43,14 @@ module Aliyun
         headers = default_headers.merge!(headers)
 
         if options[:body]
-          headers.merge!( 'Content-MD5' => Utils.md5_digest(options[:body]) ) if !headers.key?('Content-MD5')
-          headers.merge!( 'Content-Length' => Utils.content_size(options[:body]).to_s ) if !headers.key?('Content-Length')
+          headers.merge!('Content-MD5' => Utils.md5_digest(options[:body])) unless headers.key?('Content-MD5')
+          headers.merge!('Content-Length' => Utils.content_size(options[:body]).to_s) unless headers.key?('Content-Length')
         end
 
-        headers.merge!( 'Host' => get_host(options) )
+        headers.merge!('Host' => get_host(options))
 
-        auth_key = get_auth_key(options.merge(verb: verb, headers: headers, date: headers['Date']))
+        auth_key = get_auth_key(options
+          .merge(verb: verb, headers: headers, date: headers['Date']))
         headers.merge!('Authorization' => auth_key)
 
         uri = get_uri(headers['Host'], resource)
@@ -64,8 +65,9 @@ module Aliyun
 
       def default_headers
         {
-          'User-Agent' => "aliyun-oss-sdk-ruby/#{Aliyun::Oss::VERSION} (#{RbConfig::CONFIG['host_os']} ruby-#{RbConfig::CONFIG['ruby_version']})",
-          'Date' => Time.now.utc.strftime("%a, %d %b %Y %H:%M:%S GMT")
+          'User-Agent' => "aliyun-oss-sdk-ruby/#{Aliyun::Oss::VERSION} " \
+          "(#{RbConfig::CONFIG['host_os']} ruby-#{RbConfig::CONFIG['ruby_version']})",
+          'Date' => Time.now.utc.strftime('%a, %d %b %Y %H:%M:%S GMT')
         }
       end
 
@@ -79,10 +81,13 @@ module Aliyun
         end
       end
 
+      def default_content_type
+        { 'Content-Type' => 'application/x-www-form-urlencoded' }
+      end
+
       def get_uri(host, resource)
         "http://#{host}#{resource}"
       end
-
     end
   end
 end

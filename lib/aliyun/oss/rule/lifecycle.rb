@@ -27,7 +27,12 @@ module Aliyun
 
         def to_hash
           if valid?
-            { "ID" => id||"", "Prefix" => prefix, "Status" => status, "Expiration" => expiration }
+            {
+              'ID' => id || '',
+              'Prefix' => prefix,
+              'Status' => status,
+              'Expiration' => expiration
+            }
           else
             {}
           end
@@ -45,9 +50,9 @@ module Aliyun
 
         def expiration
           if date && date.is_a?(Time)
-            { "Date" => date.utc.strftime("%Y-%m-%dT00:00:00.000Z") }
+            { 'Date' => date.utc.strftime('%Y-%m-%dT00:00:00.000Z') }
           elsif days && days.is_a?(Integer)
-            { "Days" => days.to_i }
+            { 'Days' => days.to_i }
           end
         end
       end

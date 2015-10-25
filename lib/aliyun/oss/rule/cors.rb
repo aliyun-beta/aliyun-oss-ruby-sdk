@@ -2,8 +2,7 @@ module Aliyun
   module Oss
     module Rule
       class Cors
-
-        ACCESSPTED_METHODS = %w{GET PUT DELETE POST HEAD}
+        ACCESSPTED_METHODS = %w(GET PUT DELETE POST HEAD)
 
         # [Array] :allowed_origins Set allowed origins
         attr_accessor :allowed_origins
@@ -15,7 +14,7 @@ module Aliyun
         attr_accessor :allowed_headers
 
         # [Array] :expose_headers  Set allowed used response headers for user
-        attr_accessor  :expose_headers
+        attr_accessor :expose_headers
 
         # [Integer] :max_age_seconds Specifies cache time the browser to pre-fetch a particular resource request in seconds
         attr_accessor :max_age_seconds
@@ -31,12 +30,12 @@ module Aliyun
         def to_hash
           if valid?
             hash = {
-              "AllowedOrigin" => allowed_origins,
-              "AllowedMethod" => allowed_methods
+              'AllowedOrigin' => allowed_origins,
+              'AllowedMethod' => allowed_methods
             }
-            hash.merge!("AllowedHeader" => allowed_headers) if value_present?(allowed_headers)
-            hash.merge!("EsposeHeader" => expose_headers) if value_present?(expose_headers)
-            hash.merge!("MaxAgeSeconds" => max_age_seconds) if max_age_seconds
+            hash.merge!('AllowedHeader' => allowed_headers) if value_present?(allowed_headers)
+            hash.merge!('EsposeHeader' => expose_headers) if value_present?(expose_headers)
+            hash.merge!('MaxAgeSeconds' => max_age_seconds) if max_age_seconds
             hash
           else
             {}
@@ -50,13 +49,14 @@ module Aliyun
         end
 
         def allowed_methods
-          @allowed_methods.map(&:upcase).select {|method| ACCESSPTED_METHODS.include?(method.to_s) }
+          @allowed_methods
+            .map(&:upcase)
+            .select { |method| ACCESSPTED_METHODS.include?(method.to_s) }
         end
 
         def value_present?(value)
           value && !value.empty?
         end
-
       end
     end
   end
