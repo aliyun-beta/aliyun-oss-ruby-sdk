@@ -64,3 +64,4 @@ Now, you want to get a special object:
     # save the response to your local file system
     File.open("file.png", "wb") { |f| f << res.parsed_response }
 
+Next, Visit more about [Bucket](./bucket.md)
