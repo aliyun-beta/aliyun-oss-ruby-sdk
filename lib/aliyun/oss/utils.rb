@@ -1,6 +1,7 @@
 require 'base64'
 require 'openssl'
 require 'digest'
+require 'gyoku'
 
 module Aliyun
   module Oss
@@ -39,6 +40,10 @@ module Aliyun
       # @return [Bin data]
       def self.to_data(file_or_bin)
         file_or_bin.respond_to?(:read) ? IO.binread(file_or_bin) : file
+      end
+
+      def self.to_xml(hash) # nodoc
+        %Q[<?xml version="1.0" encoding="UTF-8"?>#{Gyoku.xml(hash)}]
       end
 
     end

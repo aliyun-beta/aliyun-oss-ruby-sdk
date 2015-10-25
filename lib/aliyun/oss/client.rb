@@ -79,7 +79,7 @@ module Aliyun
         headers = { 'x-oss-acl' => acl }
 
         configuration = { "CreateBucketConfiguration" => { "LocationConstraint" => location }}
-        body = XmlBuilder.to_xml(configuration)
+        body = Utils.to_xml(configuration)
 
         http.put("/", query: query, headers: headers, body: body, bucket: name, location: location)
       end
@@ -117,7 +117,7 @@ module Aliyun
 
         logging = { "TargetBucket" => target_bucket }
         logging.merge!("TargetPrefix" => target_prefix) if target_prefix
-        body = XmlBuilder.to_xml({ "BucketLoggingStatus" => { "LoggingEnabled" => logging }})
+        body = Utils.to_xml({ "BucketLoggingStatus" => { "LoggingEnabled" => logging }})
 
         http.put('/', query: query, body: body, bucket: bucket)
       end
@@ -141,7 +141,7 @@ module Aliyun
 
         website_configuration = { "IndexDocument" => { "Suffix" => suffix } }
         website_configuration.merge!("ErrorDocument" => { "Key" => key }) if key
-        body = XmlBuilder.to_xml({ "WebsiteConfiguration" => website_configuration })
+        body = Utils.to_xml({ "WebsiteConfiguration" => website_configuration })
 
         http.put('/', query: query, body: body, bucket: bucket)
       end
@@ -166,7 +166,7 @@ module Aliyun
         query = { 'referer' => true }
 
         referer_configuration = { "RefererConfiguration" => { "AllowEmptyReferer" => allowed_empty, "RefererList" => { "Referer" => referers }}}
-        body = XmlBuilder.to_xml(referer_configuration)
+        body = Utils.to_xml(referer_configuration)
 
         http.put('/', query: query, body: body, bucket: bucket)
       end
@@ -181,7 +181,7 @@ module Aliyun
       def bucket_enable_lifecycle(rules = [])
         query = { 'lifecycle' => true }
 
-        body = XmlBuilder.to_xml({
+        body = Utils.to_xml({
           "LifecycleConfiguration" => {
             "Rule" => rules.map(&:to_hash)
           }
@@ -208,7 +208,7 @@ module Aliyun
       def bucket_enable_cors(rules = [])
         query = { 'cors' => true }
 
-        body = XmlBuilder.to_xml({
+        body = Utils.to_xml({
           "CORSConfiguration" => {
             "CORSRule" => rules.map(&:to_hash)
           }
@@ -432,7 +432,7 @@ module Aliyun
         query = { "delete" => true }
 
         key_objects = keys.map {|key| { "Key" => key } }
-        body = XmlBuilder.to_xml({ "Delete" => { "Object" => key_objects, "Quiet" => quiet }})
+        body = Utils.to_xml({ "Delete" => { "Object" => key_objects, "Quiet" => quiet }})
 
         http.post("/", query: query, body: body, bucket: bucket)
       end
@@ -566,7 +566,7 @@ module Aliyun
 
         query = { "uploadId" => upload_id }
 
-        body = XmlBuilder.to_xml({
+        body = Utils.to_xml({
           "CompleteMultipartUpload" => {
             "Part" => parts.map(&:to_hash)
           }
