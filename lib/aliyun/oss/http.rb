@@ -54,7 +54,8 @@ module Aliyun
         headers.merge!('Authorization' => auth_key)
 
         uri = get_uri(headers['Host'], resource)
-        options = Utils.hash_slice(options.merge(headers: headers), :query, :headers, :body)
+        options = Utils
+        .hash_slice(options.merge(headers: headers), :query, :headers, :body)
 
         HTTParty.__send__(verb.downcase, uri, options)
       end

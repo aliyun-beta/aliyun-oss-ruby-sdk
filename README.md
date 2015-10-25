@@ -11,8 +11,20 @@ It provide One-to-one Ruby interface for Aliyun OSS Restful API. I try to keep t
 ## Document
 
 + [ALiyun OSS API](https://docs.aliyun.com/#/pub/oss/api-reference/overview)
-+ [Ruby Document]()
++ [Ruby API Document](http://www.rubydoc.info/gems/aliyun-oss-sdk/0.0.1)
 
+## Wiki
+
+There are some more document here, Hope can help you!
+
++ [Installation](./wiki/installation.md)
++ [Get started](./wiki/get_start.md)
++ [Bucket](./wiki/bucket.md)
++ [Objects](./wiki/object.md)
++ [Multipart Upload](./wiki/multipart_upload.md)
++ [CORS](./wiki/cors.md)
++ [Lifecycle](./wiki/lifecycle.md)
++ [Error](./wiki/error.md)
 
 ## Usage    
 

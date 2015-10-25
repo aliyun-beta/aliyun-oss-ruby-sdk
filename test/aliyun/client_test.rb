@@ -38,7 +38,9 @@ describe Aliyun::Oss::Client do
     headers = default_headers.merge(response[:headers] || {}).merge('Host' => new_host)
 
     stub_request1 = stub_request(response[:verb], endpoint)
-                    .with(Aliyun::Oss::Utils.hash_slice(response, :query, :body, :headers).merge(headers: headers))
+                    .with(Aliyun::Oss::Utils
+                          .hash_slice(response, :query, :body, :headers)
+                          .merge(headers: headers))
                     .to_return(status: 200, body: '', headers: {})
     client.send(method, *request)
     assert_requested(stub_request1)
@@ -58,18 +60,21 @@ describe Aliyun::Oss::Client do
   end
 
   it 'should list objects for bucket' do
-    assert_aliyun_api(:bucket_list_objects, ['prefix' => 'test-', 'max-keys' => 10], {
-                        verb: :get,
-                        bucket: bucket,
-                        query: {
-                          'prefix' => 'test-',
-                          'max-keys' => 10
-                        },
-                        headers: {
-                          'Authorization' => /OSS #{access_key}:\S*/,
-                          'Host' => host
-                        }
-                      })
+    assert_aliyun_api(:bucket_list_objects, [
+      'prefix' => 'test-',
+      'max-keys' => 10
+    ],
+      verb: :get,
+      bucket: bucket,
+      query: {
+        'prefix' => 'test-',
+        'max-keys' => 10
+      },
+      headers: {
+        'Authorization' => /OSS #{access_key}:\S*/,
+        'Host' => host
+      }
+     )
   end
 
   it 'should set acl' do
@@ -95,7 +100,7 @@ describe Aliyun::Oss::Client do
                           'logging' => true
                         },
                         body: {
-                          '<?xml version' => "\"1.0\" encoding=\"UTF-8\"?><BucketLoggingStatus><LoggingEnabled><TargetBucket>oss-sdk-dev-beijing</TargetBucket></LoggingEnabled></BucketLoggingStatus>"
+                          "<?xml version"=>"\"1.0\" encoding=\"UTF-8\"?><BucketLoggingStatus><LoggingEnabled><TargetBucket>oss-sdk-dev-beijing</TargetBucket></LoggingEnabled></BucketLoggingStatus>"
                         },
                         headers: {
                           'Authorization' => /OSS #{access_key}:\S*/,
@@ -113,9 +118,6 @@ describe Aliyun::Oss::Client do
                         bucket: bucket,
                         query: {
                           'website' => true
-                        },
-                        body: {
-                          '<?xml version' => "\"1.0\" encoding=\"UTF-8\"?><WebsiteConfiguration><IndexDocument><Suffix>index.html</Suffix></IndexDocument></WebsiteConfiguration>"
                         },
                         headers: {
                           'Authorization' => /OSS #{access_key}:\S*/,
@@ -584,7 +586,10 @@ describe Aliyun::Oss::Client do
   end
 
   it 'should abort multipart' do
-    assert_aliyun_api(:bucket_abort_multipart, ['sample_multipart.data', '9FB6F32C2DC24E04B813963B58E29E68'], {
+    assert_aliyun_api(:bucket_abort_multipart, [
+      'sample_multipart.data',
+      '9FB6F32C2DC24E04B813963B58E29E68'
+    ],
                         verb: :delete,
                         bucket: bucket,
                         key: 'sample_multipart.data',
@@ -596,7 +601,7 @@ describe Aliyun::Oss::Client do
                           'Content-Type' => 'application/x-www-form-urlencoded',
                           'Host' => host
                         }
-                      })
+     )
   end
 
   it 'should list multiparts' do
