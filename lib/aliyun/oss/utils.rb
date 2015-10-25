@@ -39,7 +39,7 @@ module Aliyun
       #
       # @return [Bin data]
       def self.to_data(file_or_bin)
-        file_or_bin.respond_to?(:read) ? IO.binread(file_or_bin) : file
+        file_or_bin.respond_to?(:read) ? IO.binread(file_or_bin) : file_or_bin
       end
 
       def self.to_xml(hash) # nodoc
