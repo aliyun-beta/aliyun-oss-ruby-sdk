@@ -5,26 +5,24 @@
 -----
 
 
-It provide One-to-one Ruby interface for Aliyun OSS Restful API. I try to keep things natural and reasonable, but there are always some places are leaky, welcome to give me advice and modification. Thank you!
+It provide One-to-one Ruby interface for Aliyun OSS Restful API. I try to keep things natural and reasonable, but there are always some places are leaky, welcome to give me advice and modification. Enjoy it!
 
 
-## Document
 
-+ [ALiyun OSS API](https://docs.aliyun.com/#/pub/oss/api-reference/overview)
-+ [Ruby API Document](http://www.rubydoc.info/gems/aliyun-oss-sdk/0.0.1)
+## Installation
 
-## Wiki
+It's a Ruby Gem, so you can install it like any Gem:
 
-There are some more document here, Hope can help you!
+    gem install aliyun-oss-sdk
 
-+ [Installation](./wiki/installation.md)
-+ [Get started](./wiki/get_start.md)
-+ [Bucket](./wiki/bucket.md)
-+ [Objects](./wiki/object.md)
-+ [Multipart Upload](./wiki/multipart_upload.md)
-+ [CORS](./wiki/cors.md)
-+ [Lifecycle](./wiki/lifecycle.md)
-+ [Error](./wiki/error.md)
+If you use Gemfile manage your Gems, Add below to your Gemfile.
+
+    gem "aliyun-oss-sdk"
+
+And run:
+
+    bundle install  
+
 
 ## Usage    
 
@@ -32,21 +30,25 @@ There are some more document here, Hope can help you!
 
     require 'aliyun/oss'
     
-    # ACCESS_KEY/SECRET_KEY is your access credentials, Aliyun provide three ways, read detail at https://docs.aliyun.com/#/pub/oss/product-documentation/acl&RESTAuthentication
-    # host: your bucket's data center host, eg: oss-cn-hangzhou.aliyuncs.com, visit https://docs.aliyun.com/#/pub/oss/product-documentation/domain-region#menu2 get full list
+    # ACCESS_KEY/SECRET_KEY is your access credentials
+    # host: your bucket's data center host, eg: oss-cn-hangzhou.aliyuncs.com
+    # Details: https://docs.aliyun.com/#/pub/oss/product-documentation/domain-region#menu2
     # bucket: your bucket name
 	
 	client = Aliyun::OSS::Client.new('ACCESS_KEY', 'SECRET_KEY', host: 'oss-cn-hangzhou.aliyuncs.com', bucket: 'oss-sdk-dev-hangzhou')
 	
-	# Get all objects in this bucket
-	# use prefix，marker，delimiter, max-keys to filter results
-	client.bucket_list_objects()
 	
 	# Upload objects
 	client.bucket_create_object('image.png', File.new('path/to/image.png'), { 'Content-Type' => 'image/png' })
 	
 	# Get Object
 	client.bucket_get_object('image.png')
+	
+	
+	
+	# Get all objects in this bucket
+	# use prefix，marker，delimiter, max-keys to filter results
+	client.bucket_list_objects()
     
 
 ### Share your files
@@ -194,6 +196,30 @@ With Post Form, we need Post Policy to restrict permissions, here we provide two
 	# invoke a few time to confirm all parts are deleted for concurrency access
 	client.bucket_abort_multipart("Exciting-Ruby.mp4", "9FB6F32C2DC24E04B813963B58E29E68")
 
+
+
+
+## Document
+
+Here is original Restful API, It has the most detailed and authoritative explanation for every API.
+
++ [https://docs.aliyun.com/#/pub/oss/api-reference/overview](https://docs.aliyun.com/#/pub/oss/api-reference/overview)
+
+Here is thr Ruby Document for this Library, use to find more usage for methods.
+
++ [Ruby API Document](http://www.rubydoc.info/gems/aliyun-oss-sdk/0.0.1)
+
+
+Here are some more guides for help you. Welcome to advice.
+
++ [Installation](./wiki/installation.md)
++ [Get started](./wiki/get_start.md)
++ [Bucket](./wiki/bucket.md)
++ [Objects](./wiki/object.md)
++ [Multipart Upload](./wiki/multipart_upload.md)
++ [CORS](./wiki/cors.md)
++ [Lifecycle](./wiki/lifecycle.md)
++ [Error](./wiki/error.md)
 
 
 

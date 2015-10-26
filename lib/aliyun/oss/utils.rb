@@ -43,7 +43,7 @@ module Aliyun
       end
 
       def self.to_xml(hash) # nodoc
-        %(<?xml version="1.0" encoding="UTF-8"?>#{Gyoku.xml(hash)})
+        %|<?xml version="1.0" encoding="UTF-8"?>#{Gyoku.xml(hash)}|
       end
     end
   end
