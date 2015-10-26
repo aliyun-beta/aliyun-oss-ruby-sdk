@@ -318,7 +318,13 @@ describe Aliyun::Oss::Client do
   end
 
   it 'should create object' do
-    assert_aliyun_api(:bucket_create_object, ['sample.txt', file, 'Content-Type' => 'text/plain', 'Expires' => (Time.now + 60 * 60 * 24).to_s, 'x-oss-object-acl' => 'private'], {
+    assert_aliyun_api(:bucket_create_object, [
+      'sample.txt',
+      file,
+      'Content-Type' => 'text/plain',
+      'Expires' => (Time.now + 60 * 60 * 24).to_s,
+      'x-oss-object-acl' => 'private'
+    ], {
                         verb: :put,
                         bucket: bucket,
                         key: 'sample.txt',
@@ -329,7 +335,7 @@ describe Aliyun::Oss::Client do
                           'Content-Md5' => 'm9ZRM//n4gnKcX4iiVVQEQ==',
                           'Content-Type' => 'text/plain',
                           'X-Oss-Object-Acl' => 'private',
-                          'Expires' => '2015-10-26 08:46:00 +0800',
+                          'Expires' => (Time.now + 60 * 60 * 24).to_s,
                           'Host' => host
                         }
                       })

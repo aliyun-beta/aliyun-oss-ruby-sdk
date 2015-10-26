@@ -3,7 +3,6 @@
 [![Build Status](https://travis-ci.org/zlx/aliyun-oss-sdk.svg)](https://travis-ci.org/zlx/aliyun-oss-sdk)
 [![Code Climate](https://codeclimate.com/github/zlx/aliyun-oss-sdk.png)](https://codeclimate.com/github/zlx/aliyun-oss-sdk)
 [![Coverage Status](https://coveralls.io/repos/zlx/aliyun-oss-sdk/badge.svg?branch=master&service=github)](https://coveralls.io/github/zlx/aliyun-oss-sdk?branch=master)
-[![Coverage Status](https://coveralls.io/repos/zlx/aliyun-oss-sdk/badge.svg?branch=master&service=github)](https://coveralls.io/github/zlx/aliyun-oss-sdk?branch=master)
 
 -----
 
@@ -219,9 +218,7 @@ Here are some more guides for help you. Welcome to advice.
 + [Get started](./wiki/get_start.md)
 + [Bucket](./wiki/bucket.md)
 + [Objects](./wiki/object.md)
-+ [Multipart Upload](./wiki/multipart_upload.md)
-+ [CORS](./wiki/cors.md)
-+ [Lifecycle](./wiki/lifecycle.md)
++ [Multipart Upload](./wiki/multipart.md)
 + [Error](./wiki/error.md)
 
 
