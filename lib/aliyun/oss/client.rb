@@ -18,7 +18,7 @@ module Aliyun
       # @option options [String] :host host for bucket's data center
       # @option options [String] :bucket Bucket name
       #
-      # @return [Client] the object
+      # @return [Response]
       def initialize(access_key, secret_key, options = {})
         @access_key = access_key
         @secret_key = secret_key
@@ -35,7 +35,7 @@ module Aliyun
       # @option options [String] :marker Bucket name should after marker in alphabetical order
       # @option options [Integer] :max-keys (100) Limit number of buckets, the maxinum should <= 1000
       #
-      # @return [Object{buckets}]
+      # @return [Response]
       def list_buckets(options = {})
         query = Utils.hash_slice(options, 'prefix', 'marker', 'max-keys')
         http.get('/', query: query)
@@ -52,7 +52,7 @@ module Aliyun
       # @option options [String] :delimiter Used to group objects with delimiter
       # @option options [String] :encoding-type Encoding type used for unsupported character
       #
-      # @return [Object{objects}]
+      # @return [Response]
       def bucket_list_objects(options = {})
         accepted_keys = ['prefix', 'marker', 'max-keys', 'delimiter', 'encoding-type']
         query = Utils.hash_slice(options, *accepted_keys)
