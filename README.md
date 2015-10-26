@@ -215,10 +215,12 @@ Here is thr Ruby Document for this Library, use to find more usage for methods.
 Here are some more guides for help you. Welcome to advice.
 
 + [Installation](./wiki/installation.md)
-+ [Get started](./wiki/get_start.md)
++ [Getting Started](./wiki/get_start.md)
 + [Bucket](./wiki/bucket.md)
-+ [Objects](./wiki/object.md)
++ [Object](./wiki/object.md)
 + [Multipart Upload](./wiki/multipart.md)
++ [CORS](./wiki/cors.md)
++ [LifeCycle](./wiki/lifecycle.md)
 + [Error](./wiki/error.md)
 
 

@@ -121,5 +121,7 @@ Sometimes, you want to know which parts are uploaded.
     
     res = client.bucket_list_parts("Upload ID")
     puts res.success?, res.parsed_response
-    
+
+
+OK, It's time to visit [CORS](./cors.md)    
     
