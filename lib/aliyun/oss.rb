@@ -5,8 +5,8 @@ module Aliyun
     autoload :Utils,            'aliyun/oss/utils'
     autoload :Client,           'aliyun/oss/client'
     autoload :Http,             'aliyun/oss/http'
-    autoload :XmlBuilder,       'aliyun/oss/xml_builder'
     autoload :Authorization,    'aliyun/oss/authorization'
+    autoload :XmlGenerator,     'aliyun/oss/xml_generator'
 
     module Rule
       autoload :LifeCycle,      'aliyun/oss/rule/lifecycle'

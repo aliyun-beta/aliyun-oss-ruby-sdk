@@ -77,8 +77,7 @@ module Aliyun
         query = { 'acl' => true }
         headers = { 'x-oss-acl' => acl }
 
-        configuration = { 'CreateBucketConfiguration' => { 'LocationConstraint' => location } }
-        body = Utils.to_xml(configuration)
+        body = XmlGenerator.generate_create_bucket_xml(location)
 
         http.put('/', query: query, headers: headers, body: body, bucket: name, location: location)
       end
@@ -114,9 +113,8 @@ module Aliyun
       def bucket_enable_logging(target_bucket, target_prefix = nil)
         query = { 'logging' => true }
 
-        logging = { 'TargetBucket' => target_bucket }
-        logging.merge!('TargetPrefix' => target_prefix) if target_prefix
-        body = Utils.to_xml('BucketLoggingStatus' => { 'LoggingEnabled' => logging })
+        body = XmlGenerator.generate_enable_logging_xml(target_bucket,
+                                                        target_prefix)
 
         http.put('/', query: query, body: body, bucket: bucket)
       end
@@ -138,9 +136,7 @@ module Aliyun
       def bucket_enable_website(suffix, key = nil)
         query = { 'website' => true }
 
-        website_configuration = { 'IndexDocument' => { 'Suffix' => suffix } }
-        website_configuration.merge!('ErrorDocument' => { 'Key' => key }) if key
-        body = Utils.to_xml('WebsiteConfiguration' => website_configuration)
+        body = XmlGenerator.generate_enable_website_xml(suffix, key)
 
         http.put('/', query: query, body: body, bucket: bucket)
       end
@@ -164,13 +160,7 @@ module Aliyun
       def bucket_set_referer(referers = [], allowed_empty = false)
         query = { 'referer' => true }
 
-        body = Utils.to_xml('RefererConfiguration' => {
-                              'AllowEmptyReferer' => allowed_empty,
-                              'RefererList' => {
-                                'Referer' => referers
-                              }
-                            }
-                           )
+        body = XmlGenerator.generate_set_referer_xml(referers, allowed_empty)
 
         http.put('/', query: query, body: body, bucket: bucket)
       end
@@ -185,9 +175,7 @@ module Aliyun
       def bucket_enable_lifecycle(rules = [])
         query = { 'lifecycle' => true }
 
-        body = Utils.to_xml('LifecycleConfiguration' => {
-                              'Rule' => rules.map(&:to_hash)
-                            })
+        body = XmlGenerator.generate_lifecycle_rules(rules)
 
         http.put('/', query: query, body: body, bucket: bucket)
       end
@@ -210,9 +198,7 @@ module Aliyun
       def bucket_enable_cors(rules = [])
         query = { 'cors' => true }
 
-        body = Utils.to_xml('CORSConfiguration' => {
-                              'CORSRule' => rules.map(&:to_hash)
-                            })
+        body = XmlGenerator.generate_cors_rules(rules)
 
         http.put('/', query: query, body: body, bucket: bucket)
       end
@@ -431,8 +417,7 @@ module Aliyun
       def bucket_delete_objects(keys, quiet = false)
         query = { 'delete' => true }
 
-        key_objects = keys.map { |key| { 'Key' => key } }
-        body = Utils.to_xml('Delete' => { 'Object' => key_objects, 'Quiet' => quiet })
+        body = XmlGenerator.generate_delete_objects_xml(keys, quiet)
 
         http.post('/', query: query, body: body, bucket: bucket)
       end
@@ -566,9 +551,7 @@ module Aliyun
 
         query = { 'uploadId' => upload_id }
 
-        body = Utils.to_xml('CompleteMultipartUpload' => {
-                              'Part' => parts.map(&:to_hash)
-                            })
+        body = XmlGenerator.generate_complete_multipart_xml(parts)
 
         http.post("/#{key}", query: query, body: body, bucket: bucket, key: key)
       end
