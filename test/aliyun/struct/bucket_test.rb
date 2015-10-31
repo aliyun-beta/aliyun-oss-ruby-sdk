@@ -24,13 +24,13 @@ describe Aliyun::Oss::Struct::Bucket do
   end
 
   it '#location! should get via HTTP' do
-    stub_get_request(endpoint + '?location', 'bucket/location.xml')
+    stub_get_request(endpoint + '?location=true', 'bucket/location.xml')
     assert_equal('oss-cn-hangzhou', bucket.location!)
   end
 
   describe '#logging!' do
     it 'should get via HTTP' do
-      stub_get_request(endpoint + '?logging', 'bucket/logging.xml')
+      stub_get_request(endpoint + '?logging=true', 'bucket/logging.xml')
       logging = bucket.logging!
 
       assert_kind_of(Aliyun::Oss::Struct::Logging, logging)
@@ -40,7 +40,7 @@ describe Aliyun::Oss::Struct::Bucket do
     end
 
     it 'when not set logging' do
-      stub_get_request(endpoint + '?logging', 'bucket/no_logging.xml')
+      stub_get_request(endpoint + '?logging=true', 'bucket/no_logging.xml')
       logging = bucket.logging!
 
       assert_kind_of(Aliyun::Oss::Struct::Logging, logging)
@@ -49,12 +49,12 @@ describe Aliyun::Oss::Struct::Bucket do
   end
 
   it '#acl! should get via HTTP' do
-    stub_get_request(endpoint + '?acl', 'bucket/acl.xml')
+    stub_get_request(endpoint + '?acl=true', 'bucket/acl.xml')
     assert_equal('private', bucket.acl!)
   end
 
   it '#website! should get via HTTP' do
-    stub_get_request(endpoint + '?website', 'bucket/website.xml')
+    stub_get_request(endpoint + '?website=true', 'bucket/website.xml')
     obj = bucket.website!
 
     assert_kind_of(Aliyun::Oss::Struct::Website, obj)
@@ -64,7 +64,7 @@ describe Aliyun::Oss::Struct::Bucket do
 
   describe '#referer!' do
     it 'should get via HTTP' do
-      stub_get_request(endpoint + '?referer', 'bucket/referer.xml')
+      stub_get_request(endpoint + '?referer=true', 'bucket/referer.xml')
       obj = bucket.referer!
 
       assert_kind_of(Aliyun::Oss::Struct::Referer, obj)
@@ -78,7 +78,7 @@ describe Aliyun::Oss::Struct::Bucket do
     end
 
     it 'when not set referer' do
-      stub_get_request(endpoint + '?referer', 'bucket/no_referer.xml')
+      stub_get_request(endpoint + '?referer=true', 'bucket/no_referer.xml')
       obj = bucket.referer!
 
       assert_kind_of(Aliyun::Oss::Struct::Referer, obj)
@@ -88,7 +88,7 @@ describe Aliyun::Oss::Struct::Bucket do
 
   describe '#lifecycle!' do
     it 'for days lifecycle' do
-      stub_get_request(endpoint + '?lifecycle', 'bucket/days_lifecycle.xml')
+      stub_get_request(endpoint + '?lifecycle=true', 'bucket/days_lifecycle.xml')
       bucket.lifecycle!.each do |obj|
         assert_kind_of(Aliyun::Oss::Struct::LifeCycle, obj)
         assert_equal('delete after one day', obj.id)
@@ -99,7 +99,7 @@ describe Aliyun::Oss::Struct::Bucket do
     end
 
     it 'for date lifecycle' do
-      stub_get_request(endpoint + '?lifecycle', 'bucket/date_lifecycle.xml')
+      stub_get_request(endpoint + '?lifecycle=true', 'bucket/date_lifecycle.xml')
       bucket.lifecycle!.each do |obj|
         assert_kind_of(Aliyun::Oss::Struct::LifeCycle, obj)
         assert_equal('delete at date', obj.id)
@@ -110,7 +110,7 @@ describe Aliyun::Oss::Struct::Bucket do
     end
 
     it 'when not set lifecycle' do
-      path = endpoint + '?lifecycle'
+      path = endpoint + '?lifecycle=true'
       stub_get_request(path, 'bucket/no_lifecycle.xml', status: 404)
       assert_raises(Aliyun::Oss::RequestError) do
         bucket.lifecycle!
@@ -119,7 +119,7 @@ describe Aliyun::Oss::Struct::Bucket do
   end
 
   it '#cors! should get via HTTP' do
-    stub_get_request(endpoint + '?cors', 'bucket/cors.xml')
+    stub_get_request(endpoint + '?cors=true', 'bucket/cors.xml')
 
     bucket.cors!.each do |obj|
       assert_kind_of(Aliyun::Oss::Struct::Cors, obj)
@@ -132,7 +132,7 @@ describe Aliyun::Oss::Struct::Bucket do
   end
 
   it '#enable_lifecycle should invoke #bucket_enable_lifecycle & return true' do
-    stub_put_request(endpoint + '?lifecycle', '')
+    stub_put_request(endpoint + '?lifecycle=true', '')
     rule = Aliyun::Oss::Struct::LifeCycle.new(
       prefix: 'oss-sdk',
       enabled: false,
@@ -142,7 +142,7 @@ describe Aliyun::Oss::Struct::Bucket do
   end
 
   it '#enable_cors should invoke #bucket_enable_cors & return true' do
-    stub_put_request(endpoint + '?cors', '')
+    stub_put_request(endpoint + '?cors=true', '')
     rule = Aliyun::Oss::Struct::Cors.new(
       allowed_method: ['get'],
       allowed_origin: ['*']
@@ -151,12 +151,12 @@ describe Aliyun::Oss::Struct::Bucket do
   end
 
   it '#enable_logging should invoke #bucket_enable_logging & return true' do
-    stub_put_request(endpoint + '?logging', '')
+    stub_put_request(endpoint + '?logging=true', '')
     assert bucket.enable_logging('oss-sdk-dev-beijing')
   end
 
   it '#enable_website should invoke #bucket_enable_website & return true' do
-    stub_put_request(endpoint + '?website', '')
+    stub_put_request(endpoint + '?website=true', '')
     assert bucket.enable_website('index.html')
   end
 
@@ -168,12 +168,12 @@ describe Aliyun::Oss::Struct::Bucket do
   end
 
   it '#set_referer should invoke #bucket_set_referer & return true' do
-    stub_put_request(endpoint + '?referer', '')
+    stub_put_request(endpoint + '?referer=true', '')
     assert bucket.set_referer(['http://aliyun.com'], true)
   end
 
   it '#set_acl should invoke #bucket_set_acl & return true' do
-    stub_put_request(endpoint + '?acl', '')
+    stub_put_request(endpoint + '?acl=true', '')
     assert bucket.set_acl('private')
   end
 

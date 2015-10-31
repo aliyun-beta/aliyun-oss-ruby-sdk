@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'Aliyun OSS Ruby SDK'
   spec.description   = 'Aliyun OSS Ruby SDK'
-  spec.homepage      = 'http://github.com/zlx/ruby-oss-sdk'
+  spec.homepage      = 'https://github.com/zlx/aliyun-oss-sdk'
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.bindir        = 'exe'
@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'minitest'
   spec.add_development_dependency 'mocha'
-  spec.add_development_dependency 'pry-byebug'
+  spec.add_development_dependency 'pry-byebug' if RUBY_VERSION > '2.0.0'
   spec.add_development_dependency 'webmock'
   spec.add_development_dependency 'timecop'
   spec.add_development_dependency 'rubocop'

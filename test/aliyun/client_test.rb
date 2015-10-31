@@ -1,10 +1,12 @@
 require 'test_helper'
 
 describe Aliyun::Oss::Client do
-  let(:host) { 'oss-cn-beijing.aliyuncs.com' }
-  let(:bucket) { 'oss-sdk-dev-beijing' }
-  let(:access_key) { '44CF9590006BF252F707' }
-  let(:secret_key) { 'OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV' }
+  let(:bucket) { 'bucket-name' }
+  let(:bucket_location) { 'oss-cn-beijing' }
+  let(:host) { "#{bucket_location}.aliyuncs.com" }
+  let(:endpoint) { "http://#{bucket}.#{host}/" }
+  let(:access_key) { 'AASSJJKKW94324JJJJ' }
+  let(:secret_key) { 'OtSSSSxIsf111A7SwPzILwy8Bw21TLhquhboDYROV' }
   let(:default_headers) do
     {
       'User-Agent' => "aliyun-oss-sdk-ruby/#{Aliyun::Oss::VERSION} " \
@@ -375,7 +377,9 @@ describe Aliyun::Oss::Client do
                       verb: :put,
                       bucket: bucket,
                       key: 'sample.txt',
-                      body: "Hello Aliyun!\n",
+                      body: {
+                        "Hello Aliyun!\n" => true
+                      },
                       headers: {
                         'Authorization' => /OSS #{access_key}:\S*/,
                         'Content-Length' => '14',

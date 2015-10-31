@@ -13,7 +13,6 @@ require 'minitest/autorun'
 require 'mocha/mini_test'
 require 'webmock/minitest'
 require 'timecop'
-require 'pry'
 
 def stub_get_request(path, file_path, options = {})
   stub_client_request(:get, path, file_path, options)

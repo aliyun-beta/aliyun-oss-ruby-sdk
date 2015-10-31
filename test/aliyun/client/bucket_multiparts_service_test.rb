@@ -1,10 +1,12 @@
 require 'test_helper'
 
 describe Aliyun::Oss::Client::BucketMultipartsService do
-  let(:host) { 'oss-cn-beijing.aliyuncs.com' }
-  let(:bucket) { 'oss-sdk-dev-beijing' }
-  let(:access_key) { '44CF9590006BF252F707' }
-  let(:secret_key) { 'OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV' }
+  let(:bucket) { 'bucket-name' }
+  let(:bucket_location) { 'oss-cn-beijing' }
+  let(:host) { "#{bucket_location}.aliyuncs.com" }
+  let(:endpoint) { "http://#{bucket_name}.#{host}/" }
+  let(:access_key) { 'AASSJJKKW94324JJJJ' }
+  let(:secret_key) { 'OtSSSSxIsf111A7SwPzILwy8Bw21TLhquhboDYROV' }
   let(:client) { Aliyun::Oss::Client.new(access_key, secret_key, host: host, bucket: bucket) }
 
   let(:object_key) { 'multiparts.data' }
