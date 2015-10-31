@@ -119,7 +119,7 @@ module Aliyun
 
       def default_content_type
         {
-          'Content-Type' => 'application/x-www-form-urlencoded'
+          'Content-Type' => 'application/xml'
         }
       end
 

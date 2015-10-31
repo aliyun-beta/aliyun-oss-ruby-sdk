@@ -14,6 +14,10 @@ module Aliyun
         # reference to client
         attr_accessor :client
 
+        def host
+          "#{location}.aliyuncs.com"
+        end
+
         # Get the location
         #
         # @return [String]

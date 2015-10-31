@@ -3,8 +3,7 @@ require 'aliyun/oss/client/clients'
 module Aliyun
   module Oss
     class Client
-      attr_reader :access_key, :secret_key
-      attr_accessor :bucket
+      attr_reader :access_key, :secret_key, :bucket
 
       # Initialize a object
       #
@@ -699,7 +698,7 @@ module Aliyun
       private
 
       def http
-        @http = Http.new(access_key, secret_key, @options[:host])
+        @http ||= Http.new(access_key, secret_key, @options[:host])
       end
 
       def copy_upload_headers(source_bucket, source_key, range, options)

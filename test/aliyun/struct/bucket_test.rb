@@ -24,13 +24,13 @@ describe Aliyun::Oss::Struct::Bucket do
   end
 
   it '#location! should get via HTTP' do
-    stub_get_request(endpoint + '?location=true', 'bucket/location.xml')
+    stub_get_request(endpoint, 'bucket/location.xml', query: { location: true })
     assert_equal('oss-cn-hangzhou', bucket.location!)
   end
 
   describe '#logging!' do
     it 'should get via HTTP' do
-      stub_get_request(endpoint + '?logging=true', 'bucket/logging.xml')
+      stub_get_request(endpoint, 'bucket/logging.xml', query: { logging: true })
       logging = bucket.logging!
 
       assert_kind_of(Aliyun::Oss::Struct::Logging, logging)
@@ -40,7 +40,7 @@ describe Aliyun::Oss::Struct::Bucket do
     end
 
     it 'when not set logging' do
-      stub_get_request(endpoint + '?logging=true', 'bucket/no_logging.xml')
+      stub_get_request(endpoint, 'bucket/no_logging.xml', query: { logging: true })
       logging = bucket.logging!
 
       assert_kind_of(Aliyun::Oss::Struct::Logging, logging)

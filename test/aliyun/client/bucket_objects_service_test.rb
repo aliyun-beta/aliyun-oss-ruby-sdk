@@ -51,15 +51,16 @@ describe Aliyun::Oss::Client::BucketObjectsService do
   end
 
   describe '#delete_multiple' do
-    let(:path) { "http://#{bucket}.#{host}/?delete=true" }
+    let(:path) { "http://#{bucket}.#{host}/" }
+    let(:query) { { delete: true } }
 
     it 'when 200 response' do
-      stub_post_request(path, '')
+      stub_post_request(path, '', query: query)
       assert client.bucket_objects.delete_multiple([object_key])
     end
 
     it 'when 400 Response' do
-      stub_post_request(path, 'error/400.xml', status: 400)
+      stub_post_request(path, 'error/400.xml', status: 400, query: query)
       assert_raises(Aliyun::Oss::RequestError) do
         client.bucket_objects.delete_multiple([object_key])
       end
@@ -91,8 +92,8 @@ describe Aliyun::Oss::Client::BucketObjectsService do
   end
 
   it '#append should return true' do
-    path = "http://#{bucket}.#{host}/#{object_key}?append&position=100"
-    stub_post_request(path, '')
+    path = "http://#{bucket}.#{host}/#{object_key}"
+    stub_post_request(path, '', query: { append: true, position: 100 })
     assert client.bucket_objects.append(object_key, 'Hello', 100)
   end
 end

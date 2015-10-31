@@ -15,11 +15,7 @@ module Aliyun
 
           bucket_keys = %w(ListAllMyBucketsResult Buckets Bucket)
           Utils.wrap(Utils.dig_value(result, *bucket_keys)).map do |bucket_hash|
-            Struct::Bucket.new(bucket_hash).tap do |bucket|
-              dup_client = client.clone
-              dup_client.bucket = bucket.name
-              bucket.client = dup_client
-            end
+            build_bucket(bucket_hash, client)
           end
         end
 
@@ -43,6 +39,16 @@ module Aliyun
         # @see Client#bucket_delete
         def delete(*args)
           !!client.bucket_delete(*args)
+        end
+
+        private
+
+        def build_bucket(bucket_hash, client)
+          Struct::Bucket.new(bucket_hash).tap do |bucket|
+            bucket.client = Client.new(
+              client.access_key, client.secret_key, host: bucket.host, bucket: bucket.name
+            )
+          end
         end
       end
     end

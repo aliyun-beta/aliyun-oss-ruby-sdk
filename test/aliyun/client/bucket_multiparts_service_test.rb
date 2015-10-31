@@ -12,8 +12,9 @@ describe Aliyun::Oss::Client::BucketMultipartsService do
   let(:object_key) { 'multiparts.data' }
 
   it '#list should return multiparts' do
-    path = "http://#{bucket}.#{host}/?uploads"
-    stub_get_request(path, 'bucket_multiparts/list.xml')
+    path = "http://#{bucket}.#{host}/"
+    query = { uploads: true }
+    stub_get_request(path, 'bucket_multiparts/list.xml', query: query)
     client.bucket_multiparts.list.each do |obj|
       assert_kind_of(Aliyun::Oss::Struct::Multipart, obj)
       assert_equal('multipart.data', obj.key)
@@ -23,8 +24,9 @@ describe Aliyun::Oss::Client::BucketMultipartsService do
   end
 
   it '#init should return multipart' do
-    path = "http://#{bucket}.#{host}/#{object_key}?uploads"
-    stub_post_request(path, 'bucket_multiparts/init.xml')
+    path = "http://#{bucket}.#{host}/#{object_key}"
+    query = { uploads: true }
+    stub_post_request(path, 'bucket_multiparts/init.xml', query: query)
     obj = client.bucket_multiparts.init(object_key)
 
     assert_kind_of(Aliyun::Oss::Struct::Multipart, obj)

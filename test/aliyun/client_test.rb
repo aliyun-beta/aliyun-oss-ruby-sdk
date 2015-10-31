@@ -83,7 +83,7 @@ describe Aliyun::Oss::Client do
                         },
                         headers: {
                           'Authorization' => /OSS #{access_key}:\S*/,
-                          'Content-Type' => 'application/x-www-form-urlencoded',
+                          'Content-Type' => 'application/xml',
                           'Host' => host
                         }
                        )
@@ -129,7 +129,7 @@ describe Aliyun::Oss::Client do
                       },
                       headers: {
                         'Authorization' => /OSS #{access_key}:\S*/,
-                        'Content-Type' => 'application/x-www-form-urlencoded',
+                        'Content-Type' => 'application/xml',
                         'Host' => host
                       })
   end
@@ -143,14 +143,15 @@ describe Aliyun::Oss::Client do
                       query: {
                         'logging' => true
                       },
-                      body: {
-                        '<?xml version' => "\"1.0\" encoding=\"UTF-8\"?><BucketLoggingStatus><LoggingEnabled><TargetBucket>oss-sdk-dev-beijing</TargetBucket></LoggingEnabled></BucketLoggingStatus>"
-                      },
+                      body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" \
+                      '<BucketLoggingStatus><LoggingEnabled>' \
+                      '<TargetBucket>oss-sdk-dev-beijing</TargetBucket>' \
+                      '</LoggingEnabled></BucketLoggingStatus>',
                       headers: {
                         'Authorization' => /OSS #{access_key}:\S*/,
                         'Content-Length' => '162',
                         'Content-Md5' => 'CjCvBqCfaTvwyyYko+mvGQ==',
-                        'Content-Type' => 'application/x-www-form-urlencoded',
+                        'Content-Type' => 'application/xml',
                         'Host' => host
                       }
                      )
@@ -169,7 +170,7 @@ describe Aliyun::Oss::Client do
                         'Authorization' => /OSS #{access_key}:\S*/,
                         'Content-Length' => '141',
                         'Content-Md5' => '2XgAS1GvtZHgjAJxFzd2Ew==',
-                        'Content-Type' => 'application/x-www-form-urlencoded',
+                        'Content-Type' => 'application/xml',
                         'Host' => host
                       }
                      )
@@ -185,14 +186,17 @@ describe Aliyun::Oss::Client do
                       query: {
                         'referer' => true
                       },
-                      body: {
-                        '<?xml version' => "\"1.0\" encoding=\"UTF-8\"?><RefererConfiguration><AllowEmptyReferer>true</AllowEmptyReferer><RefererList><Referer>http://aliyun.com</Referer></RefererList></RefererConfiguration>"
-                      },
+                      body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" \
+                      '<RefererConfiguration>' \
+                      '<AllowEmptyReferer>true</AllowEmptyReferer>' \
+                      '<RefererList>' \
+                      '<Referer>http://aliyun.com</Referer>' \
+                      '</RefererList></RefererConfiguration>',
                       headers: {
                         'Authorization' => /OSS #{access_key}:\S*/,
                         'Content-Length' => '189',
                         'Content-Md5' => 'PcZd/oWyIQiSbnmz6it1Yg==',
-                        'Content-Type' => 'application/x-www-form-urlencoded',
+                        'Content-Type' => 'application/xml',
                         'Host' => host
                       }
                      )
@@ -211,14 +215,17 @@ describe Aliyun::Oss::Client do
                         query: {
                           'lifecycle' => true
                         },
-                        body: {
-                          '<?xml version' => "\"1.0\" encoding=\"UTF-8\"?><LifecycleConfiguration><Rule><ID></ID><Prefix>oss-sdk</Prefix><Status>Enabled</Status><Expiration><Days>2</Days></Expiration></Rule></LifecycleConfiguration>"
-                        },
+                        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" \
+                        '<LifecycleConfiguration>' \
+                        '<Rule>' \
+                        '<ID></ID><Prefix>oss-sdk</Prefix><Status>Enabled</Status>' \
+                        '<Expiration><Days>2</Days></Expiration>' \
+                        '</Rule></LifecycleConfiguration>',
                         headers: {
                           'Authorization' => /OSS #{access_key}:\S*/,
                           'Content-Length' => '196',
                           'Content-Md5' => 'bd4TR+aF4bYcGgU9ZEIZHA==',
-                          'Content-Type' => 'application/x-www-form-urlencoded',
+                          'Content-Type' => 'application/xml',
                           'Host' => host
                         }
                        )
@@ -236,14 +243,17 @@ describe Aliyun::Oss::Client do
                         query: {
                           'lifecycle' => true
                         },
-                        body: {
-                          '<?xml version' => "\"1.0\" encoding=\"UTF-8\"?><LifecycleConfiguration><Rule><ID></ID><Prefix>oss-sdk</Prefix><Status>Disabled</Status><Expiration><Date>2015-10-25T00:00:00.000Z</Date></Expiration></Rule></LifecycleConfiguration>"
-                        },
+                        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" \
+                        '<LifecycleConfiguration>' \
+                        '<Rule>' \
+                        '<ID></ID><Prefix>oss-sdk</Prefix><Status>Disabled</Status>' \
+                        '<Expiration><Date>2015-10-25T00:00:00.000Z</Date></Expiration>' \
+                        '</Rule></LifecycleConfiguration>',
                         headers: {
                           'Authorization' => /OSS #{access_key}:\S*/,
                           'Content-Length' => '220',
                           'Content-Md5' => 'sGaWdrpJauJCWQyLLgpwhQ==',
-                          'Content-Type' => 'application/x-www-form-urlencoded',
+                          'Content-Type' => 'application/xml',
                           'Host' => host
                         })
     end
@@ -263,14 +273,17 @@ describe Aliyun::Oss::Client do
                         query: {
                           'lifecycle' => true
                         },
-                        body: {
-                          '<?xml version' => "\"1.0\" encoding=\"UTF-8\"?><LifecycleConfiguration><Rule><ID>1</ID><Prefix>oss-sdk</Prefix><Status>Disabled</Status><Expiration><Date>2015-10-25T00:00:00.000Z</Date></Expiration></Rule></LifecycleConfiguration>"
-                        },
+                        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" \
+                        '<LifecycleConfiguration>' \
+                        '<Rule>' \
+                        '<ID>1</ID><Prefix>oss-sdk</Prefix><Status>Disabled</Status>' \
+                        '<Expiration><Date>2015-10-25T00:00:00.000Z</Date></Expiration>' \
+                        '</Rule></LifecycleConfiguration>',
                         headers: {
                           'Authorization' => /OSS #{access_key}:\S*/,
                           'Content-Length' => '221',
                           'Content-Md5' => 'bo7NQXBC+und0jZOF6mzhw==',
-                          'Content-Type' => 'application/x-www-form-urlencoded',
+                          'Content-Type' => 'application/xml',
                           'Host' => host
                         }
                        )
@@ -296,14 +309,17 @@ describe Aliyun::Oss::Client do
                         verb: :put,
                         bucket: bucket,
                         query: { 'cors' => true },
-                        body: {
-                          '<?xml version' => "\"1.0\" encoding=\"UTF-8\"?><CORSConfiguration><CORSRule><AllowedOrigin>*</AllowedOrigin><AllowedMethod>GET</AllowedMethod></CORSRule></CORSConfiguration>"
-                        },
+                        body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" \
+                        '<CORSConfiguration>' \
+                        '<CORSRule>' \
+                        '<AllowedOrigin>*</AllowedOrigin>' \
+                        '<AllowedMethod>GET</AllowedMethod>' \
+                        '</CORSRule></CORSConfiguration>',
                         headers: {
                           'Authorization' => /OSS #{access_key}:\S*/,
                           'Content-Length' => '164',
                           'Content-Md5' => 'WkO98hpPTvaWHVX6JdU94A==',
-                          'Content-Type' => 'application/x-www-form-urlencoded',
+                          'Content-Type' => 'application/xml',
                           'Host' => host
                         })
     end
@@ -340,14 +356,15 @@ describe Aliyun::Oss::Client do
                       query: {
                         'acl' => true
                       },
-                      body: {
-                        '<?xml version' => "\"1.0\" encoding=\"UTF-8\"?><CreateBucketConfiguration><LocationConstraint>oss-cn-hangzhou</LocationConstraint></CreateBucketConfiguration>"
-                      },
+                      body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" \
+                      '<CreateBucketConfiguration>' \
+                      '<LocationConstraint>oss-cn-hangzhou</LocationConstraint>' \
+                      '</CreateBucketConfiguration>',
                       headers: {
                         'Authorization' => /OSS #{access_key}:\S*/,
                         'Content-Length' => '149',
                         'Content-Md5' => 'xWIloG4+cjhzOjKOfM+neA==',
-                        'Content-Type' => 'application/x-www-form-urlencoded',
+                        'Content-Type' => 'application/xml',
                         'X-Oss-Acl' => 'private',
                         'Host' => 'oss-sdk-dev-beijingasdf1.oss-cn-hangzhou.aliyuncs.com'
                       }
@@ -360,7 +377,7 @@ describe Aliyun::Oss::Client do
                       bucket: 'oss-sdk-dev-beijingasdf1',
                       headers: {
                         'Authorization' => /OSS #{access_key}:\S*/,
-                        'Content-Type' => 'application/x-www-form-urlencoded',
+                        'Content-Type' => 'application/xml',
                         'Host' => 'oss-sdk-dev-beijingasdf1.oss-cn-beijing.aliyuncs.com'
                       }
                      )
@@ -377,9 +394,7 @@ describe Aliyun::Oss::Client do
                       verb: :put,
                       bucket: bucket,
                       key: 'sample.txt',
-                      body: {
-                        "Hello Aliyun!\n" => true
-                      },
+                      body: "Hello Aliyun!\n",
                       headers: {
                         'Authorization' => /OSS #{access_key}:\S*/,
                         'Content-Length' => '14',
@@ -399,7 +414,7 @@ describe Aliyun::Oss::Client do
                       key: 'sample.txt',
                       headers: {
                         'Authorization' => /OSS #{access_key}:\S*/,
-                        'Content-Type' => 'application/x-www-form-urlencoded',
+                        'Content-Type' => 'application/xml',
                         'Host' => host
                       }
                      )
@@ -412,14 +427,17 @@ describe Aliyun::Oss::Client do
                       query: {
                         'delete' => true
                       },
-                      body: {
-                        '<?xml version' => "\"1.0\" encoding=\"UTF-8\"?><Delete><Object><Key>sample.txt</Key></Object><Object><Key>1.png</Key></Object><Quiet>false</Quiet></Delete>"
-                      },
+                      body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" \
+                      '<Delete>' \
+                      '<Object><Key>sample.txt</Key></Object>' \
+                      '<Object><Key>1.png</Key></Object>' \
+                      '<Quiet>false</Quiet>' \
+                      '</Delete>',
                       headers: {
                         'Authorization' => /OSS #{access_key}:\S*/,
                         'Content-Length' => '146',
                         'Content-Md5' => '8lzvY5zEmkiZPH/k5SeZew==',
-                        'Content-Type' => 'application/x-www-form-urlencoded',
+                        'Content-Type' => 'application/xml',
                         'Host' => host
                       }
                      )
@@ -458,7 +476,7 @@ describe Aliyun::Oss::Client do
                       },
                       headers: {
                         'Authorization' => /OSS #{access_key}:\S*/,
-                        'Content-Type' => 'application/x-www-form-urlencoded',
+                        'Content-Type' => 'application/xml',
                         'x-oss-object-acl' => 'public-write',
                         'Host' => host
                       })
@@ -523,14 +541,12 @@ describe Aliyun::Oss::Client do
                         'append' => true,
                         'position' => 0
                       },
-                      body: {
-                        "Hello Aliyun!\n" => true
-                      },
+                      body: "Hello Aliyun!\n",
                       headers: {
                         'Authorization' => /OSS #{access_key}:\S*/,
                         'Content-Length' => '14',
                         'Content-Md5' => 'm9ZRM//n4gnKcX4iiVVQEQ==',
-                        'Content-Type' => 'application/x-www-form-urlencoded',
+                        'Content-Type' => 'application/xml',
                         'Host' => host
                       }
                      )
@@ -559,8 +575,7 @@ describe Aliyun::Oss::Client do
       number: 1, etag: 'EDB4BC6E69180BC4759633E7B0EED0E0'
     )
     part2 = Aliyun::Oss::Struct::Part.new(
-      number: 2,
-      etag: 'EDB4BC6E69180BC4759633E7B0ESJKHW'
+      number: 2, etag: 'EDB4BC6E69180BC4759633E7B0ESJKHW'
     )
     assert_aliyun_api(:bucket_complete_multipart, [
       '98A6524428734723BE8F81D72B5295EE',
@@ -573,14 +588,21 @@ describe Aliyun::Oss::Client do
                       query: {
                         'uploadId' => '98A6524428734723BE8F81D72B5295EE'
                       },
-                      body: {
-                        '<?xml version' => "\"1.0\" encoding=\"UTF-8\"?><CompleteMultipartUpload><Part><PartNumber>1</PartNumber><ETag>EDB4BC6E69180BC4759633E7B0EED0E0</ETag></Part><Part><PartNumber>2</PartNumber><ETag>EDB4BC6E69180BC4759633E7B0ESJKHW</ETag></Part></CompleteMultipartUpload>"
-                      },
+                      body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" \
+                      '<CompleteMultipartUpload>' \
+                      '<Part>' \
+                      '<PartNumber>1</PartNumber>' \
+                      '<ETag>EDB4BC6E69180BC4759633E7B0EED0E0</ETag>' \
+                      '</Part>' \
+                      '<Part>' \
+                      '<PartNumber>2</PartNumber>' \
+                      '<ETag>EDB4BC6E69180BC4759633E7B0ESJKHW</ETag>' \
+                      '</Part></CompleteMultipartUpload>',
                       headers: {
                         'Authorization' => /OSS #{access_key}:\S*/,
                         'Content-Length' => '257',
                         'Content-Md5' => 'tUnMAspz0Ipv/7qrTr038w==',
-                        'Content-Type' => 'application/x-www-form-urlencoded',
+                        'Content-Type' => 'application/xml',
                         'Host' => host
                       })
   end
@@ -617,14 +639,12 @@ describe Aliyun::Oss::Client do
                         'partNumber' => 1,
                         'uploadId' => '98A6524428734723BE8F81D72B5295EE'
                       },
-                      body: {
-                        "Hello Aliyun!\n" => true
-                      },
+                      body: "Hello Aliyun!\n",
                       headers: {
                         'Authorization' => /OSS #{access_key}:\S*/,
                         'Content-Length' => '14',
                         'Content-Md5' => 'm9ZRM//n4gnKcX4iiVVQEQ==',
-                        'Content-Type' => 'application/x-www-form-urlencoded',
+                        'Content-Type' => 'application/xml',
                         'Host' => host
                       })
   end
@@ -649,7 +669,7 @@ describe Aliyun::Oss::Client do
                       },
                       headers: {
                         'Authorization' => /OSS #{access_key}:\S*/,
-                        'Content-Type' => 'application/x-www-form-urlencoded',
+                        'Content-Type' => 'application/xml',
                         'X-Oss-Copy-Source' => '/oss-sdk-dev-beijing/sample.png',
                         'X-Oss-Copy-Source-Range' => 'bytes=0-100',
                         'Host' => host
@@ -669,7 +689,7 @@ describe Aliyun::Oss::Client do
                       },
                       headers: {
                         'Authorization' => /OSS #{access_key}:\S*/,
-                        'Content-Type' => 'application/x-www-form-urlencoded',
+                        'Content-Type' => 'application/xml',
                         'Host' => host
                       })
   end
