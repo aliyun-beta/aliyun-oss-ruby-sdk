@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'Aliyun OSS Ruby SDK'
   spec.description   = 'Aliyun OSS Ruby SDK'
-  spec.homepage      = 'http://github.com/aliyun/ruby-oss-sdk'
+  spec.homepage      = 'http://github.com/zlx/ruby-oss-sdk'
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.bindir        = 'exe'
