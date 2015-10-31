@@ -19,13 +19,13 @@ Each rule contains:
 + Status: defined the status for the rule, Only support Enabled and Disabled.
 + Expiration: Date or Days, used to specify expired date or specify expired after x days from last modified date.
 
-In our Library, to use Rule::LifeCycle to define a rule:
+In our Library, to use Struct::LifeCycle to define a rule:
 
      # Define a rule to auto delete objects with prefix: logs-prod- after 7 days since last modified date
-    rule1 = Aliyun::Oss::Rule::LifeCycle.new({ prefix: 'logs-prod-', days: 7, enable: true })
+    rule1 = Aliyun::Oss::Struct::LifeCycle.new({ prefix: 'logs-prod-', days: 7, enable: true })
 	
 	# Defome a ri;e tp auto delete objects with prefix: logs-dev- at Time.now + 24*60*60
-	rule2 = Aliyun::Oss::Rule::LifeCycle.new({ prefix: 'logs-dev', date: Time.now + 24*60*60, enable: true })
+	rule2 = Aliyun::Oss::Struct::LifeCycle.new({ prefix: 'logs-dev', date: Time.now + 24*60*60, enable: true })
 	
 
 To set your LifeCycle with this rules:

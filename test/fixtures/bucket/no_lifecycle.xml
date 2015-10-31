@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Error>
+  <BucketName>oss-example</BucketName>
+  <Code>NoSuchLifecycle</Code>
+  <Message>No Row found in Lifecycle Table.</Message>
+  <RequestId>534B372974E88A4D89060099</RequestId>
+  <HostId> oss-example.oss.aliyuncs.com</HostId>
+</Error>

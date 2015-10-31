@@ -1,12 +1,10 @@
-require 'base64'
-require 'openssl'
-require 'digest'
-require 'httparty'
+require 'aliyun/oss/client/clients'
 
 module Aliyun
   module Oss
     class Client
-      attr_reader :access_key, :secret_key, :bucket
+      attr_reader :access_key, :secret_key
+      attr_accessor :bucket
 
       # Initialize a object
       #
@@ -24,6 +22,8 @@ module Aliyun
         @secret_key = secret_key
         @options = options
         @bucket = options[:bucket]
+
+        @services = {}
       end
 
       # List buckets
@@ -72,6 +72,8 @@ module Aliyun
       #   oss-cn-shenzhen,oss-cn-shanghai,oss-us-west-1 ,oss-ap-southeast-1
       # @param acl [String] Specify the bucket's access. (see #bucket_set_acl)
       #
+      # @raise [RequestError]
+      #
       # @return [Response]
       def bucket_create(name, location = 'oss-cn-hangzhou', acl = 'private')
         query = { 'acl' => true }
@@ -88,6 +90,8 @@ module Aliyun
       #
       # @param name [String] bucket name want to delete
       #
+      # @raise [RequestError]
+      #
       # @return [Response]
       def bucket_delete(name)
         http.delete('/', bucket: name)
@@ -98,6 +102,9 @@ module Aliyun
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketACL Put Bucket Acl
       #
       # @param acl [String] supported value: public-read-write | public-read | private
+      # @raise [RequestError]
+      #
+      # @return [Response]
       def bucket_set_acl(acl)
         query = { 'acl' => true }
         headers = { 'x-oss-acl' => acl }
@@ -110,6 +117,10 @@ module Aliyun
       #
       # @param target_bucket [String] specifies the bucket where you want Aliyun OSS to store server access logs.
       # @param target_prefix [String] this element lets you specify a prefix for the objects that the log files will be stored.
+      #
+      # @raise [RequestError]
+      #
+      # @return [Response]
       def bucket_enable_logging(target_bucket, target_prefix = nil)
         query = { 'logging' => true }
 
@@ -122,6 +133,10 @@ module Aliyun
       # Used to disable access logging.
       #
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/bucket&DeleteBucketLogging Delete Bucket Logging
+      #
+      # @raise [RequestError]
+      #
+      # @return [Response]
       def bucket_disable_logging
         query = { 'logging' => false }
         http.delete('/', query: query, bucket: bucket)
@@ -133,6 +148,10 @@ module Aliyun
       #
       # @param suffix [String] A suffix that is appended to a request that is for a directory on the website endpoint (e.g. if the suffix is index.html and you make a request to samplebucket/images/ the data that is returned will be for the object with the key name images/index.html) The suffix must not be empty and must not include a slash character.
       # @param key [String] The object key name to use when a 4XX class error occurs
+      #
+      # @raise [RequestError]
+      #
+      # @return [Response]
       def bucket_enable_website(suffix, key = nil)
         query = { 'website' => true }
 
@@ -144,6 +163,10 @@ module Aliyun
       # Used to disable website hostted mode.
       #
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/bucket&DeleteBucketWebsite Delete Bucket Website
+      #
+      # @raise [RequestError]
+      #
+      # @return [Response]
       def bucket_disable_website
         query = { 'website' => false }
         http.delete('/', query: query, bucket: bucket)
@@ -155,6 +178,8 @@ module Aliyun
       #
       # @param referers [Array<String>] white list for allowed referer.
       # @param allowed_empty [Boolean] whether allow empty refer.
+      #
+      # @raise [RequestError]
       #
       # @return [Response]
       def bucket_set_referer(referers = [], allowed_empty = false)
@@ -169,11 +194,23 @@ module Aliyun
       #
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketLifecycle Put Bucket Lifecycle
       #
-      # @param rules [Array<Rule::LifeCycle>] rules for lifecycle
+      # @param rules [Array<Aliyun::Oss::Struct::LifeCycle>] rules for lifecycle
+      #
+      # @raise [RequestError]
+      # @raise [Aliyun::Oss::InvalidLifeCycleRuleError]
+      #   if rule invalid
       #
       # @return [Response]
       def bucket_enable_lifecycle(rules = [])
         query = { 'lifecycle' => true }
+
+        rules = Utils.wrap(rules)
+
+        rules.each do |rule|
+          unless rule.valid?
+            raise Aliyun::Oss::InvalidLifeCycleRuleError.new(rule.inspect)
+          end
+        end
 
         body = XmlGenerator.generate_lifecycle_rules(rules)
 
@@ -192,11 +229,23 @@ module Aliyun
       #
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/cors&PutBucketcors Put Bucket cors
       #
-      # @param rules [Array<Rule::Cors>] array of rule
+      # @param rules [Array<Aliyun::Oss::Struct::Cors>] array of rule
+      #
+      # @raise [RequestError]
+      # @raise [InvalidCorsRule]
+      #   if rule invalid
       #
       # @return [Response]
       def bucket_enable_cors(rules = [])
         query = { 'cors' => true }
+
+        rules = Utils.wrap(rules)
+
+        rules.each do |rule|
+          unless rule.valid?
+            raise Aliyun::Oss::InvalidCorsRuleError.new(rule.inspect)
+          end
+        end
 
         body = XmlGenerator.generate_cors_rules(rules)
 
@@ -206,6 +255,8 @@ module Aliyun
       # Used to disable cors and clear rules for bucket
       #
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/cors&DeleteBucketcors Delete Bucket cors
+      #
+      # @raise [RequestError]
       #
       # @return [Response]
       def bucket_disable_cors
@@ -217,21 +268,28 @@ module Aliyun
       #
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/cors&OptionObject OPTIONS Object
       #
+      # @param object_key [String] the object name want to visit.
       # @param origin [String] the requested source domain, denoting cross-domain request.
       # @param request_method [String] the actual request method will be used.
       # @param request_headers [Array<String>] the actual used headers except simple headers will be used.
-      # @param object_name [String] the object name will be visit.
+      #
+      # @raise [RequestError]
       #
       # @return [Response]
-      def bucket_preflight(origin, request_method, request_headers = [], object_name = nil)
-        uri = object_name ? "/#{object_name}" : '/'
+      def bucket_preflight(object_key, origin, request_method, request_headers = [])
+        path = object_key ? "/#{object_key}" : '/'
 
-        headers = { 'Origin' => origin, 'Access-Control-Request-Method' => request_method }
+        headers = {
+          'Origin' => origin,
+          'Access-Control-Request-Method' => request_method
+        }
+
         unless request_headers.empty?
-          headers.merge!('Access-Control-Request-Headers' => request_headers.join(','))
+          value = request_headers.join(',')
+          headers.merge!('Access-Control-Request-Headers' => value)
         end
 
-        http.options(uri, headers: headers, bucket: bucket, key: object_name)
+        http.options(path, headers: headers, bucket: bucket, key: object_key)
       end
 
       # Get ACL for bucket
@@ -257,6 +315,8 @@ module Aliyun
       # Get the log configuration of Bucket
       #
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketLogging Get Bucket Logging
+      #
+      # @raise [RequestError]
       #
       # @return [Response]
       def bucket_get_logging
@@ -344,6 +404,8 @@ module Aliyun
       # @option options [String] :x-oss-server-side-encryption supported value: AES256
       # @option options [String] :x-oss-object-acl supported value: public-read，private，public-read-write
       #
+      # @raise [RequestError]
+      #
       # @return [Response]
       def bucket_copy_object(key, source_bucket, source_key, headers = {})
         fail('source_bucket must be not empty!') if source_bucket.nil? || source_bucket.empty?
@@ -363,6 +425,9 @@ module Aliyun
       # @param position [Integer] append to position of object
       # @option headers (see #bucket_create_object)
       #
+      # @raise [RequestError]
+      #
+      # @return [Response]
       def bucket_append_object(key, file, position = 0, headers = {})
         query = { 'append' => true, 'position' => position }
 
@@ -433,6 +498,8 @@ module Aliyun
       # @option headers [String] :If-Match If the specified ETag match the object ETag, normal transfer and return 200; Otherwise return 412(precondition)
       # @option headers [String] :If-None-Match If the specified ETag not match the object ETag, normal transfer and return 200; Otherwise return 304(Not Modified)
       #
+      # @raise [RequestError]
+      #
       # @return [Response]
       def bucket_get_meta_object(key, headers = {})
         http.head("/#{key}", headers: headers, bucket: bucket, key: key)
@@ -443,6 +510,8 @@ module Aliyun
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/object&GetObjectACL Get Object ACL
       #
       # @param key [String] object name
+      #
+      # @raise [RequestError]
       #
       # @return [Response]
       def bucket_get_object_acl(key)
@@ -456,6 +525,8 @@ module Aliyun
       #
       # @param key [String] object name
       # @param acl [String] access value, supported value: private, public-read, public-read-write
+      #
+      # @raise [RequestError]
       #
       # @return [Response]
       def bucket_set_object_acl(key, acl)
@@ -492,10 +563,14 @@ module Aliyun
       # @param upload_id [String] the upload ID return by #bucket_init_multipart
       # @param file [File, bin data] the upload data
       #
+      # @raise [RequestError]
+      # @raise [MultipartPartNumberEmptyError]
+      # @raise [MultipartUploadIdEmptyError]
+      #
       # @return [Response]
-      def bucket_multipart_upload(key, number, upload_id, file)
-        fail('number must present!') if number.nil?
-        fail('upload_id must present!') if upload_id.nil? || upload_id.empty?
+      def bucket_multipart_upload(upload_id, key, number, file)
+        raise MultipartPartNumberEmptyError.new if number.nil?
+        raise MultipartUploadIdEmptyError.new if upload_id.nil? || upload_id.empty?
 
         query = { 'partNumber' => number.to_s, 'uploadId' => upload_id }
 
@@ -512,16 +587,20 @@ module Aliyun
       # @param options [Hash] options
       # @option options [String] :source_bucket the source bucket name
       # @option options [String] :source_key the source object name
-      # @option options [String] :range the Range bytes, not set means the whole object
+      # @option options [String] :range the Range bytes, not set means the whole object, eg: bytes=100-6291756
       # @option options [String] :x-oss-copy-source-if-match If the specified ETag match the source object ETag, normal transfer and return 200; Otherwise return 412(precondition)
       # @option options [String] :x-oss-copy-source-if-none-match If the specified ETag not match the source object ETag, normal transfer and return 200; Otherwise return 304(Not Modified)
       # @option options [String] :x-oss-copy-source-if-unmodified-since If the specified time is equal to or later than the source object last modification time, normal transfer ans return 200; Otherwise returns 412(precondition)
       # @option options [String] :x-oss-copy-source-if-modified-since If the specified time is earlier than the source object last modification time, normal transfer ans return 200; Otherwise returns 304(not modified)
       #
+      # @raise [RequestError]
+      # @raise [MultipartSourceBucketEmptyError]
+      # @raise [MultipartSourceKeyEmptyError]
+      #
       # @return [Response]
-      def bucket_multipart_copy_upload(key, number, upload_id, options = {})
-        fail('source_bucket must present!') if options[:source_bucket].to_s.empty?
-        fail('source_key must present!') if options[:source_key].to_s.empty?
+      def bucket_multipart_copy_upload(upload_id, key, number, options = {})
+        raise MultipartSourceBucketEmptyError.new if options[:source_bucket].to_s.empty?
+        raise MultipartSourceKeyEmptyError.new if options[:source_key].to_s.empty?
 
         query = { 'partNumber' => number, 'uploadId' => upload_id }
 
@@ -542,12 +621,16 @@ module Aliyun
       #
       # @param key [String] object name
       # @param upload_id [String] the upload ID return by #bucket_init_multipart
-      # @param parts [Array<Multipart:Part>] parts
+      # @param parts [Array<Aliyun::Oss::Multipart:Part>] parts
+      #
+      # @raise [RequestError]
+      # @raise [MultipartPartsEmptyError]
+      # @raise [MultipartUploadIdEmptyError]
       #
       # @return [Response]
-      def bucket_complete_multipart(key, upload_id, parts = [])
-        fail('parts must present!') if parts.nil? || parts.empty?
-        fail('upload_id must present!') if upload_id.nil?
+      def bucket_complete_multipart(upload_id, key, parts = [])
+        raise MultipartPartsEmptyError.new if parts.nil? || parts.empty?
+        raise MultipartUploadIdEmptyError.new if upload_id.nil?
 
         query = { 'uploadId' => upload_id }
 
@@ -566,8 +649,10 @@ module Aliyun
       # @param key [String] the object name
       # @param upload_id [String] the upload ID return by #bucket_init_multipart
       #
+      # @raise [RequestError]
+      #
       # @return [Response]
-      def bucket_abort_multipart(key, upload_id)
+      def bucket_abort_multipart(upload_id, key)
         query = { 'uploadId' => upload_id }
         http.delete("/#{key}", query: query, bucket: bucket, key: key)
       end
@@ -599,14 +684,14 @@ module Aliyun
       # @see https://docs.aliyun.com/#/pub/oss/api-reference/multipart-upload&ListParts List Parts
       #
       # @param key [String] the object name
-      # @param upload_id [String] the upload ID return by #bucket_init_multipart
+      # @param upload_id [Integer] the upload ID return by #bucket_init_multipart
       # @param options [Hash] options
       # @option options [Integer] :max-parts (1000) Limit number of parts, the maxinum should <= 1000
       # @option options [Integer] :part-number-marker Specify the start part, return parts which number large than the specified value
       # @option options [String] :encoding-type Encoding type used for unsupported character in xml 1.0
       #
       # @return [Response]
-      def bucket_list_parts(key, upload_id, options = {})
+      def bucket_list_parts(upload_id, key, options = {})
         accepted_keys = ['max-parts', 'part-number-marker', 'encoding-type']
 
         query = Utils.hash_slice(options, *accepted_keys).merge('uploadId' => upload_id)

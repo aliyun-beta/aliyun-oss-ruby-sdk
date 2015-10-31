@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebsiteConfiguration xmlns="http://doc.oss-cn-hangzhou.aliyuncs.com">
+  <IndexDocument>
+    <Suffix>index.html</Suffix>
+  </IndexDocument>
+  <ErrorDocument>
+    <Key>error.html</Key>
+  </ErrorDocument>
+</WebsiteConfiguration>

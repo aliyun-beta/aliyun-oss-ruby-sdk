@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompleteMultipartUploadResult xmlns="http://doc.oss-cn-hangzhou.aliyuncs.com">
+    <Location>http://bucket-name.oss-cn-beijing.aliyuncs.com/multipart.data</Location>
+    <Bucket>bucket-name</Bucket>
+    <Key>multipart.data</Key>
+    <ETag>B864DB6A936D376F9F8D3ED3BBE540DD-3</ETag>
+</CompleteMultipartUploadResult>

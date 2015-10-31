@@ -68,13 +68,13 @@ It can used to upload part to a object. Please note:
     bucket = "bucket-name"
     client = Aliyun::Oss::Client.new(access_key, secret_key, host: host, bucket: bucket)
     
-    part1 = Aliyun::Oss::Multipart::Part.new({ number: 1, etag: 'etag1' })
-	part2 = Aliyun::Oss::Multipart::Part.new({ number: 2, etag: 'etag2' })
-	part3 = Aliyun::Oss::Multipart::Part.new({ number: 3, etag: 'etag3' })
+    part1 = Aliyun::Oss::Struct::Part.new({ number: 1, etag: 'etag1' })
+	part2 = Aliyun::Oss::Struct::Part.new({ number: 2, etag: 'etag2' })
+	part3 = Aliyun::Oss::Struct::Part.new({ number: 3, etag: 'etag3' })
 	res = client.bucket_complete_multipart("Exciting-Ruby.mp4", "Upload ID", [part1, part2, part3])
 	
 
-Here, we create Aliyun::Oss::Multipart::Part to build your part, use Part#valid? to valid the object.
+Here, we create Aliyun::Oss::Struct::Part to build your part, use Part#valid? to valid the object.
 
 ### Abort Multipart Upload
 

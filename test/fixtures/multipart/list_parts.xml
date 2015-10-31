@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListPartsResult xmlns="http://doc.oss-cn-hangzhou.aliyuncs.com">
+    <Bucket>multipart_upload</Bucket>
+    <Key>multipart.data</Key>
+    <UploadId>0004B999EF5A239BB9138C6227D69F95</UploadId>
+    <NextPartNumberMarker>5</NextPartNumberMarker>
+    <MaxParts>1000</MaxParts>
+    <IsTruncated>false</IsTruncated>
+    <Part>
+        <PartNumber>5</PartNumber>
+        <LastModified>2012-02-23T07:02:03.000Z</LastModified>
+        <ETag>&quot;7265F4D211B56873A381D321F586E4A9&quot;</ETag>
+        <Size>1024</Size>
+    </Part>
+</ListPartsResult>
