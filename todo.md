@@ -1,6 +1,8 @@
 ## TODO
 
 + Command Line Tool
++ Custom Domain Support
++ Get Download URL
 + API based on object
 
    client.buckets  => [bucket]

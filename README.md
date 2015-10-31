@@ -111,13 +111,13 @@ With Post Form, we need Post Policy to restrict permissions, here we provide two
 	##### Set the bucket properties  ####
 	
 	# set cors for bucket
-	rule = Aliyun::Oss::Rule::Cors.new({ allowed_methods: ['get'], allowed_origins: ['*'] })
+	rule = Aliyun::Oss::Struct::Cors.new({ allowed_methods: ['get'], allowed_origins: ['*'] })
 	client.bucket_enable_cors([rule])
 	client.bucket_disable_cors	# Disable and remove existing cors
 	
 	# Set lifecycle for bucket
-	rule1 = Aliyun::Oss::Rule::LifeCycle.new({ prefix: 'logs-prod-', days: 7, enable: true })
-	rule2 = Aliyun::Oss::Rule::LifeCycle.new({ prefix: 'logs-dev', date: Time.now + 24*60*60, enable: true })
+	rule1 = Aliyun::Oss::Struct::LifeCycle.new({ prefix: 'logs-prod-', days: 7, enable: true })
+	rule2 = Aliyun::Oss::Struct::LifeCycle.new({ prefix: 'logs-dev', date: Time.now + 24*60*60, enable: true })
 	client.bucket_enable_lifecycle([rule1, rule2])
 	client.bucket_disable_lifecycle  # Disable and remove existing lifecycle
 	
@@ -188,9 +188,9 @@ With Post Form, we need Post Policy to restrict permissions, here we provide two
 	client.bucket_list_parts("sample_multipart.data", "98A6524428734723BE8F81D72B5295EE")  
 	
 	# Complete a Multipart Upload event
-	part1 = Aliyun::Oss::Multipart::Part.new({ number: 1, etag: 'etag1' })
-	part2 = Aliyun::Oss::Multipart::Part.new({ number: 2, etag: 'etag2' })
-	part3 = Aliyun::Oss::Multipart::Part.new({ number: 3, etag: 'etag3' })
+	part1 = Aliyun::Oss::Struct::Part.new({ number: 1, etag: 'etag1' })
+	part2 = Aliyun::Oss::Struct::Part.new({ number: 2, etag: 'etag2' })
+	part3 = Aliyun::Oss::Struct::Part.new({ number: 3, etag: 'etag3' })
 	client.bucket_complete_multipart("Exciting-Ruby.mp4", "98A6524428734723BE8F81D72B5295EE", [part1, part2, part3])
 	
 	# Abort a Multipart Upload event

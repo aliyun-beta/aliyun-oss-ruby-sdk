@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<Error xmlns="http://doc.oss-cn-hangzhou.aliyuncs.com">
+  <Code>
+    BucketNotEmpty
+  </Code>
+  <Message>
+    Bucket Not Empty
+  </Message>
+  <RequestId>
+    4e63c87a-71dc-87f7-11b5-583a600e0038
+  </RequestId>
+  <HostId>
+    oss-cn-hangzhou.aliyuncs.com
+  </HostId>
+</Error>

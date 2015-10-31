@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<AccessControlPolicy>
+    <Owner>
+        <ID>00220120222</ID>
+        <DisplayName>00220120222</DisplayName>
+    </Owner>
+    <AccessControlList>
+        <Grant>public-read </Grant>
+    </AccessControlList>
+</AccessControlPolicy>

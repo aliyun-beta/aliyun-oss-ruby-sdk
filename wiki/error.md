@@ -24,35 +24,46 @@ Here,
 
 # Error Code
 
-| code  |  summary |
+| code  |  summary |  HTTP Status|
 |---|---|
-|AccessDenied	|Access denied |
-|BucketAlreadyExists	| Bucket Already Exist|
-|BucketNotEmpty	|Bucket Not Empty|
-|EntityTooLarge	| Entry Too Large|
-|EntityTooSmall	| Entry Too Small|
-|FileGroupTooLarge	|File Group Too Large|
-|FilePartNotExist	|File Part Not Exist|
-|FilePartStale	| File Part Expired|
-|InvalidArgument	|Invalid Argument|
-|InvalidAccessKeyId | Access Key ID Not Exist|
-|InvalidBucketName	| The specified bucket is not valid.|
-|InvalidDigest	| Invalid Digest |
-|InvalidObjectName	|Invalid Object Name|
-|InvalidPart	| Invalid Part|
-|InvalidPartOrder	|Invalid Part Order|
-|InvalidTargetBucketForLogging	|Invalid Target Bucket For Logging|
-|InternalError	|Internal Error|
-|MalformedXML	|Malformed XML|
-|MethodNotAllowed	|Method Not Allowed|
-|MissingArgument	|Missing Argument|
-|MissingContentLength	|Missing Content Length|
-|NoSuchBucket	|No Such Bucket|
-|NoSuchKey	|No Such Key|
-|NoSuchUpload	|Multipart Upload ID Not Exist|
-|NotImplemented	|Not Implemented|
-|PreconditionFailed	|Precondition Failed|
-|RequestTimeTooSkewed	|Request Time Large Than 15 minutes|
-|RequestTimeout	|Request Timeout|
-|SignatureDoesNotMatch	|Signature Does Not Match|
-|TooManyBuckets	|Too Many Buckets|
+|AccessDenied	|Access denied | 403|
+|BucketAlreadyExists	| Bucket Already Exist|	409|
+|BucketNotEmpty	|Bucket Not Empty|	409|
+|EntityTooLarge	| Entry Too Large|	400|
+|EntityTooSmall	| Entry Too Small|	400|
+|FileGroupTooLarge	|File Group Too Large|	400|
+|InvalidLinkName	| Object Link Same With Object| 400|
+|LinkPartNotExist	| Object Not Exist| 400|
+|ObjectLinkTooLarge	| Object Too Much | 400|
+|FieldItemTooLong	| Field Too Large| 400|
+|FilePartInterity	| File Part Already Changed| 400|
+|FilePartNotExist	|File Part Not Exist|	400|
+|FilePartStale	| File Part Expired|	400|
+|IncorrectNumberOfFilesInPOSTRequest|	File Count Invalid| 400|
+|InvalidArgument	|Invalid Argument|	400|
+|InvalidAccessKeyId | Access Key ID Not Exist| 403|
+|InvalidBucketName	| The specified bucket is not valid.| 400|
+|InvalidDigest	| Invalid Digest | 400|
+|InvalidEncryptionAlgorithmError	| Specified Encoding-Type Error | 400|
+|InvalidObjectName	|Invalid Object Name| 400
+|InvalidPart	| Invalid Part| 400|
+|InvalidPartOrder	|Invalid Part Order| 400|
+|InvalidPolicyDocument	| Invalid Policy| 400|
+|InvalidTargetBucketForLogging	|Invalid Target Bucket For Logging| 400|
+|InternalError	|Internal Error| 500|
+|MalformedXML	|	XML Invalid| 400|
+|MalformedPOSTRequest | Requested XML Invalid | 400|
+|MaxPOSTPreDataLengthExceededError	| Body except file Too Large | 400|
+|MethodNotAllowed	|Method Not Allowed| 405|
+|MissingArgument	|Missing Argument| 411|
+|MissingContentLength	|Missing Content Length| 411|
+|NoSuchBucket	|No Such Bucket| 404|
+|NoSuchKey	|No Such Key| 404|
+|NoSuchUpload	|Multipart Upload ID Not Exist| 404|
+|NotImplemented	|Not Implemented| 501|
+|PreconditionFailed	|Precondition Failed| 412|
+|RequestTimeTooSkewed	|Request Time Large Than 15 minutes| 403|
+|RequestTimeout	|Request Timeout| 400|
+|RequestIsNotMultiPartContent | Content-Type Invalid| 400|
+|SignatureDoesNotMatch	|Signature Does Not Match|403|
+|TooManyBuckets	|Too Many Buckets| 400|

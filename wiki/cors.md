@@ -15,11 +15,11 @@ With Client#bucket_enable_cors, you can set cors easily:
     bucket = "bucket-name"
     client = Aliyun::Oss::Client.new(access_key, secret_key, host: host, bucket: bucket)
     
-    rule = Aliyun::Oss::Rule::Cors.new(allowed_methods: ['get'], allowed_origins: ['*'])
+    rule = Aliyun::Oss::Struct::Cors.new(allowed_methods: ['get'], allowed_origins: ['*'])
 	res = client.bucket_enable_cors([rule])
     puts res.success?, res.headers
 
-More about the rules, visit [OSS API](https://docs.aliyun.com/#/pub/oss/api-reference/cors&PutBucketcors) and [Rule::Cors](http://www.rubydoc.info/gems/aliyun-oss-sdk/Aliyun/Oss/Rule/Cors)
+More about the rules, visit [OSS API](https://docs.aliyun.com/#/pub/oss/api-reference/cors&PutBucketcors) and [Struct::Cors]()
 
 
 ### Get CORS Rules

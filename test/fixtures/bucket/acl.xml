@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<AccessControlPolicy>
+    <Owner>
+        <ID>00220120222</ID>
+        <DisplayName>user_example</DisplayName>
+    </Owner>
+    <AccessControlList>
+        <Grant>private</Grant>
+    </AccessControlList>
+</AccessControlPolicy>

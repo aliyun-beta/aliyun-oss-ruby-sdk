@@ -1,3 +1,6 @@
+require 'httparty'
+require 'aliyun/oss/error'
+
 module Aliyun
   module Oss
     class Http # nodoc
@@ -43,8 +46,13 @@ module Aliyun
         headers = default_headers.merge!(headers)
 
         if options[:body]
-          headers.merge!('Content-MD5' => Utils.md5_digest(options[:body])) unless headers.key?('Content-MD5')
-          headers.merge!('Content-Length' => Utils.content_size(options[:body]).to_s) unless headers.key?('Content-Length')
+          unless headers.key?('Content-MD5')
+            headers.merge!('Content-MD5' => Utils.md5_digest(options[:body]))
+          end
+
+          unless headers.key?('Content-Length')
+            headers.merge!('Content-Length' => Utils.content_size(options[:body]).to_s)
+          end
         end
 
         headers.merge!('Host' => get_host(options))
@@ -53,11 +61,18 @@ module Aliyun
           .merge(verb: verb, headers: headers, date: headers['Date']))
         headers.merge!('Authorization' => auth_key)
 
-        path = get_uri(headers['Host'], resource)
+        path = api_endpoint(headers['Host']) + resource
+
         options = Utils
         .hash_slice(options.merge(headers: headers), :query, :headers, :body)
 
-        HTTParty.__send__(verb.downcase, path, options)
+        response = HTTParty.__send__(verb.downcase, path, options)
+        case response.code
+        when 200..299
+          response
+        else
+          raise RequestError.new(response)
+        end
       end
 
       def get_auth_key(options)
@@ -66,8 +81,7 @@ module Aliyun
 
       def default_headers
         {
-          'User-Agent' => "aliyun-oss-sdk-ruby/#{Aliyun::Oss::VERSION} " \
-          "(#{RbConfig::CONFIG['host_os']} ruby-#{RbConfig::CONFIG['ruby_version']})",
+          'User-Agent' => user_agent,
           'Date' => Time.now.utc.strftime('%a, %d %b %Y %H:%M:%S GMT')
         }
       end
@@ -83,11 +97,18 @@ module Aliyun
       end
 
       def default_content_type
-        { 'Content-Type' => 'application/x-www-form-urlencoded' }
+        {
+          'Content-Type' => 'application/x-www-form-urlencoded'
+        }
       end
 
-      def get_uri(host, resource)
-        "http://#{host}#{resource}"
+      def api_endpoint(host)
+        "http://#{host}"
+      end
+
+      def user_agent
+        "aliyun-oss-sdk-ruby/#{Aliyun::Oss::VERSION} " \
+        "(#{RbConfig::CONFIG['host_os']} ruby-#{RbConfig::CONFIG['ruby_version']})"
       end
     end
   end

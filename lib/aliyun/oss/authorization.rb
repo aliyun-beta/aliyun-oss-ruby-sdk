@@ -13,7 +13,7 @@ module Aliyun
       # @see {https://docs.aliyun.com/#/pub/oss/api-reference/access-control&signature-url Tempoorary Signature}
       #
       # @param secret_key [String] Secret Key
-      # @param expires [Integer] the number of seconds since January 1, 1970 UTC. used to specified expired time
+      # @param expire_time [Integer] the number of seconds since January 1, 1970 UTC. used to specified expired time
       # @param [Hash] options other options
       # @option options [String] :key the object name
       # @option options [String] :bucket bucket name
@@ -31,7 +31,6 @@ module Aliyun
       #
       # @see {https://docs.aliyun.com/#/pub/oss/api-reference/object&PostObject Post Object}
       #
-      # @param secret_key [String] Secret Key
       # @param policy [Hash] Policy {https://docs.aliyun.com/#/pub/oss/api-reference/object&PostObject#menu7 Detail}
       #
       # @return [String]

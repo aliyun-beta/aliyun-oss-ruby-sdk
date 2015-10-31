@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LifecycleConfiguration>
+  <Rule>
+    <ID>delete after one day</ID>
+    <Prefix>logs/</Prefix>
+    <Status>Enabled</Status>
+    <Expiration>
+      <Days>1</Days>
+    </Expiration>
+  </Rule>
+</LifecycleConfiguration>
