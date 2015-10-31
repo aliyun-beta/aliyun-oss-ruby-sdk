@@ -1,8 +1,8 @@
 # Aliyun OSS SDK
 
-[![Build Status](https://travis-ci.org/zlx/aliyun-oss-sdk.svg)](https://travis-ci.org/zlx/aliyun-oss-sdk)
-[![Code Climate](https://codeclimate.com/github/zlx/aliyun-oss-sdk/badges/gpa.svg)](https://codeclimate.com/github/zlx/aliyun-oss-sdk)
-[![Coverage Status](https://coveralls.io/repos/zlx/aliyun-oss-sdk/badge.svg?branch=master&service=github)](https://coveralls.io/github/zlx/aliyun-oss-sdk?branch=master)
+[![Build Status](https://travis-ci.org/zlx/aliyun-oss-sdk.svg?branch=develop)](https://travis-ci.org/zlx/aliyun-oss-sdk)
+[![Code Climate](https://codeclimate.com/repos/56349060695680028b00b4a5/badges/fccd40948ea96a4eb507/gpa.svg)](https://codeclimate.com/repos/56349060695680028b00b4a5/feed)
+[![Coverage Status](https://coveralls.io/repos/zlx/aliyun-oss-sdk/badge.svg?branch=develop&service=github)](https://coveralls.io/github/zlx/aliyun-oss-sdk?branch=develop)
 
 -----
 

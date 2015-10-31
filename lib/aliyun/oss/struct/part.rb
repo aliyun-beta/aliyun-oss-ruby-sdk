@@ -4,9 +4,11 @@ module Aliyun
       class Part < Base
         # [Integer] :number the part number
         attr_accessor :number
+        alias_method :part_number=, :number=
 
         # [String] :etag the etag for the part
         attr_accessor :etag
+        alias_method :e_tag=, :etag=
 
         # Last Modified time
         attr_accessor :last_modified
@@ -16,14 +18,6 @@ module Aliyun
 
         def last_modified=(last_modified)
           @last_modified = Time.parse(last_modified)
-        end
-
-        def part_number=(part_number)
-          @number = part_number
-        end
-
-        def e_tag=(e_tag)
-          @etag = e_tag
         end
 
         def to_hash
