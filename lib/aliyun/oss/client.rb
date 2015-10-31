@@ -208,7 +208,7 @@ module Aliyun
 
         rules.each do |rule|
           unless rule.valid?
-            fail Aliyun::Oss::InvalidLifeCycleRuleError.new(rule.inspect)
+            fail Aliyun::Oss::InvalidLifeCycleRuleError, rule.inspect
           end
         end
 
@@ -243,7 +243,7 @@ module Aliyun
 
         rules.each do |rule|
           unless rule.valid?
-            fail Aliyun::Oss::InvalidCorsRuleError.new(rule.inspect)
+            fail Aliyun::Oss::InvalidCorsRuleError, rule.inspect
           end
         end
 
@@ -402,7 +402,7 @@ module Aliyun
       # @option options [String] :x-oss-copy-source-if-modified-since If the specified time is earlier than the source object last modification time, normal transfer ans return 200; Otherwise returns 304(not modified)
       # @option options [String] :x-oss-metadata-directive ('COPY') supported value: COPY, REPLACE;
       # @option options [String] :x-oss-server-side-encryption supported value: AES256
-      # @option options [String] :x-oss-object-acl supported value: public-read，private，public-read-write
+      # @option options [String] :x-oss-object-acl supported value: public-read, private, public-read-write
       #
       # @raise [RequestError]
       #
@@ -569,8 +569,8 @@ module Aliyun
       #
       # @return [Response]
       def bucket_multipart_upload(upload_id, key, number, file)
-        fail MultipartPartNumberEmptyError.new if number.nil?
-        fail MultipartUploadIdEmptyError.new if upload_id.nil? || upload_id.empty?
+        fail MultipartPartNumberEmptyError if number.nil?
+        fail MultipartUploadIdEmptyError if upload_id.nil? || upload_id.empty?
 
         query = { 'partNumber' => number.to_s, 'uploadId' => upload_id }
 
@@ -599,18 +599,15 @@ module Aliyun
       #
       # @return [Response]
       def bucket_multipart_copy_upload(upload_id, key, number, options = {})
-        fail MultipartSourceBucketEmptyError.new if options[:source_bucket].to_s.empty?
-        fail MultipartSourceKeyEmptyError.new if options[:source_key].to_s.empty?
+        source_bucket = options.delete(:source_bucket).to_s
+        source_key = options.delete(:source_key).to_s
+        range = options.delete(:range)
+
+        fail MultipartSourceBucketEmptyError if source_bucket.empty?
+        fail MultipartSourceKeyEmptyError if source_key.empty?
 
         query = { 'partNumber' => number, 'uploadId' => upload_id }
-
-        source_bucket = options.delete(:source_bucket)
-        source_key = options.delete(:source_key)
-
-        headers = {}
-        headers.merge!('x-oss-copy-source' => "/#{source_bucket}/#{source_key}")
-        headers.merge!('x-oss-copy-source-range' => options.delete(:range)) if options.key?(:range)
-        headers.merge!(options)
+        headers = copy_upload_headers(source_bucket, source_key, range, options)
 
         http.put("/#{key}", query: query, headers: headers, bucket: bucket, key: key)
       end
@@ -629,8 +626,8 @@ module Aliyun
       #
       # @return [Response]
       def bucket_complete_multipart(upload_id, key, parts = [])
-        fail MultipartPartsEmptyError.new if parts.nil? || parts.empty?
-        fail MultipartUploadIdEmptyError.new if upload_id.nil?
+        fail MultipartPartsEmptyError if parts.nil? || parts.empty?
+        fail MultipartUploadIdEmptyError if upload_id.nil?
 
         query = { 'uploadId' => upload_id }
 
@@ -703,6 +700,16 @@ module Aliyun
 
       def http
         @http = Http.new(access_key, secret_key, @options[:host])
+      end
+
+      def copy_upload_headers(source_bucket, source_key, range, options)
+        copy_source = "/#{source_bucket}/#{source_key}"
+
+        headers = {}
+        headers.merge!('x-oss-copy-source' => copy_source)
+        headers.merge!('x-oss-copy-source-range' => range) if range
+        headers.merge!(options)
+        headers
       end
     end
   end

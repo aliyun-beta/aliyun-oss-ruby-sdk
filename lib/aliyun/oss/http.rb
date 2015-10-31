@@ -42,37 +42,58 @@ module Aliyun
       private
 
       def request(verb, resource, options = {})
-        headers = options.delete(:headers) || {}
-        headers = default_headers.merge!(headers)
+        query = options.fetch(:query, {})
+        headers = options.fetch(:headers, {})
+        body = options.delete(:body)
 
-        if options[:body]
-          unless headers.key?('Content-MD5')
-            headers.merge!('Content-MD5' => Utils.md5_digest(options[:body]))
-          end
-
-          unless headers.key?('Content-Length')
-            headers.merge!('Content-Length' => Utils.content_size(options[:body]).to_s)
-          end
-        end
-
-        headers.merge!('Host' => get_host(options))
-
-        auth_key = get_auth_key(options
-          .merge(verb: verb, headers: headers, date: headers['Date']))
-        headers.merge!('Authorization' => auth_key)
+        append_headers!(headers, verb, body, options)
 
         path = api_endpoint(headers['Host']) + resource
+        options = { headers: headers, query: query, body: body }
 
-        options = Utils
-                  .hash_slice(options.merge(headers: headers), :query, :headers, :body)
+        wrap(HTTParty.__send__(verb.downcase, path, options))
+      end
 
-        response = HTTParty.__send__(verb.downcase, path, options)
+      def wrap(response)
         case response.code
         when 200..299
           response
         else
-          fail RequestError.new(response)
+          fail RequestError, response
         end
+      end
+
+      def append_headers!(headers, verb, body, options)
+        append_default_headers!(headers)
+        append_body_headers!(headers, body)
+        append_host_headers!(headers, options[:bucket], options[:location])
+        append_authorization_headers!(headers, verb, options)
+      end
+
+      def append_default_headers!(headers)
+        headers.merge!(default_headers)
+      end
+
+      def append_body_headers!(headers, body)
+        return headers unless body
+
+        unless headers.key?('Content-MD5')
+          headers.merge!('Content-MD5' => Utils.md5_digest(body))
+        end
+
+        return if headers.key?('Content-Length')
+        headers.merge!('Content-Length' => Utils.content_size(body).to_s)
+      end
+
+      def append_host_headers!(headers, bucket, location)
+        headers.merge!('Host' => get_host(bucket, location))
+      end
+
+      def append_authorization_headers!(headers, verb, options)
+        auth_key = get_auth_key(
+          options.merge(verb: verb, headers: headers, date: headers['Date'])
+        )
+        headers.merge!('Authorization' => auth_key)
       end
 
       def get_auth_key(options)
@@ -86,11 +107,11 @@ module Aliyun
         }
       end
 
-      def get_host(options)
-        if options[:location] && options[:bucket]
-          "#{options[:bucket]}.#{options[:location]}.aliyuncs.com"
-        elsif options[:bucket]
-          "#{options[:bucket]}.#{@host}"
+      def get_host(bucket, location)
+        if location && bucket
+          "#{bucket}.#{location}.aliyuncs.com"
+        elsif bucket
+          "#{bucket}.#{@host}"
         else
           @host
         end

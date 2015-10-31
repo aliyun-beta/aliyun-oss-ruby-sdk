@@ -30,25 +30,23 @@ module Aliyun
         end
 
         def to_hash
-          if valid?
-            {
-              'ID' => id || '',
-              'Prefix' => prefix,
-              'Status' => status,
-              'Expiration' => expiration
-            }
-          else
-            {}
-          end
+          return {} unless valid?
+
+          {
+            'ID' => id || '',
+            'Prefix' => prefix,
+            'Status' => status,
+            'Expiration' => expiration
+          }
         end
 
         def expiration=(expiration)
-          if expiration.is_a?(Hash)
-            if expiration.key?('Days')
-              self.days = expiration['Days']
-            elsif expiration.key?('Date')
-              self.date = expiration['Date']
-            end
+          return unless expiration.is_a?(Hash)
+
+          if expiration.key?('Days')
+            self.days = expiration['Days']
+          elsif expiration.key?('Date')
+            self.date = expiration['Date']
           end
         end
 

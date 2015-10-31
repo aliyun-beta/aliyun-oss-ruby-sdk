@@ -17,20 +17,15 @@ module Aliyun
         end
 
         def logging_enabled=(logging_enabled)
-          if logging_enabled.is_a?(Hash)
+          return @logging_enabled = false unless logging_enabled.is_a?(Hash)
 
-            if logging_enabled.key?('TargetBucket')
-              @target_bucket = logging_enabled['TargetBucket']
-            end
-
-            if logging_enabled.key?('TargetPrefix')
-              @target_prefix = logging_enabled['TargetPrefix']
-            end
-
-            @logging_enabled = true
-          else
-            @logging_enabled = false
+          if logging_enabled.key?('TargetBucket')
+            @target_bucket = logging_enabled['TargetBucket']
           end
+          if logging_enabled.key?('TargetPrefix')
+            @target_prefix = logging_enabled['TargetPrefix']
+          end
+          @logging_enabled = true
         end
       end
     end

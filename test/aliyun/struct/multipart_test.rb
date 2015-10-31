@@ -16,8 +16,8 @@ describe Aliyun::Oss::Struct::Multipart do
     )
   end
 
-  let(:upload_id) { "DFGHJRGHJTRHYJCVBNMCVBNGHJ" }
-  let(:object_key) { "multipart.data" }
+  let(:upload_id) { 'DFGHJRGHJTRHYJCVBNMCVBNGHJ' }
+  let(:object_key) { 'multipart.data' }
   let(:multipart) do
     Aliyun::Oss::Struct::Multipart.new(
       upload_id: upload_id,
@@ -26,18 +26,18 @@ describe Aliyun::Oss::Struct::Multipart do
     )
   end
 
-  it "#upload should return true" do
-    path = endpoint + "multipart.data"
-    query = { "partNumber" => 1, "uploadId" => upload_id }
-    stub_put_request(path, "", query: query)
+  it '#upload should return true' do
+    path = endpoint + 'multipart.data'
+    query = { 'partNumber' => 1, 'uploadId' => upload_id }
+    stub_put_request(path, '', query: query)
 
-    assert multipart.upload(1, "hello")
+    assert multipart.upload(1, 'hello')
   end
 
-  it "#copy should return true" do
+  it '#copy should return true' do
     path = endpoint + object_key
-    query = { "partNumber" => 1, "uploadId" => upload_id }
-    stub_put_request(path, "", query: query)
+    query = { 'partNumber' => 1, 'uploadId' => upload_id }
+    stub_put_request(path, '', query: query)
 
     options = {
       source_bucket: 'source-bucket-name',
@@ -45,13 +45,13 @@ describe Aliyun::Oss::Struct::Multipart do
       range: 'bytes=1-100'
     }
 
-    assert multipart.copy(1,options)
+    assert multipart.copy(1, options)
   end
 
-  it "#list_parts should return parts" do
+  it '#list_parts should return parts' do
     path = endpoint + object_key
-    query = { "uploadId" => upload_id }
-    stub_get_request(path, "multipart/list_parts.xml", query: query)
+    query = { 'uploadId' => upload_id }
+    stub_get_request(path, 'multipart/list_parts.xml', query: query)
 
     multipart.list_parts.each do |part|
       assert_kind_of(Aliyun::Oss::Struct::Part, part)
@@ -62,7 +62,7 @@ describe Aliyun::Oss::Struct::Multipart do
     end
   end
 
-  it "#complete should return the complete object" do
+  it '#complete should return the complete object' do
     part1 = Aliyun::Oss::Struct::Part.new(
       number: 1, etag: 'EDB4BC6E69180BC4759633E7B0EED0E0'
     )
@@ -71,8 +71,8 @@ describe Aliyun::Oss::Struct::Multipart do
     )
 
     path = endpoint + object_key
-    query = { "uploadId" => upload_id }
-    stub_post_request(path, "multipart/complete.xml", query: query)
+    query = { 'uploadId' => upload_id }
+    stub_post_request(path, 'multipart/complete.xml', query: query)
 
     obj = multipart.complete([part1, part2])
 
@@ -82,12 +82,11 @@ describe Aliyun::Oss::Struct::Multipart do
     assert_equal(object_key, obj.key)
   end
 
-  it "#abort should return true" do
+  it '#abort should return true' do
     path = endpoint + object_key
-    query = { "uploadId" => upload_id }
-    stub_delete_request(path, "", query: query)
+    query = { 'uploadId' => upload_id }
+    stub_delete_request(path, '', query: query)
 
     assert multipart.abort
   end
-
 end

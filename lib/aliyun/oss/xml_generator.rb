@@ -29,19 +29,19 @@ module Aliyun
       #  <CORSConfiguration>
       #      <CORSRule>
       #        <AllowedOrigin>the origin you want allow CORS request from</AllowedOrigin>
-      #        <AllowedOrigin>…</AllowedOrigin>
+      #        <AllowedOrigin>...AllowedOrigin>
       #        <AllowedMethod>HTTP method</AllowedMethod>
-      #        <AllowedMethod>…</AllowedMethod>
+      #        <AllowedMethod>...AllowedMethod>
       #          <AllowedHeader> headers that allowed browser to send</AllowedHeader>
-      #            <AllowedHeader>…</AllowedHeader>
+      #            <AllowedHeader>...AllowedHeader>
       #            <ExposeHeader> headers in response that can access from client app</ExposeHeader>
-      #            <ExposeHeader>…</ExposeHeader>
+      #            <ExposeHeader>...ExposeHeader>
       #            <MaxAgeSeconds>time to cache pre-fight response</MaxAgeSeconds>
       #      </CORSRule>
       #      <CORSRule>
-      #        …
+      #      ...
       #      </CORSRule>
-      #  …
+      #  ...
       #  </CORSConfiguration >
       #
       def self.generate_cors_rules(rules)
@@ -60,12 +60,12 @@ module Aliyun
       #    <Object>
       #      <Key>key</Key>
       #    </Object>
-      #  …
+      #  ...
       #  </Delete>
       #
       def self.generate_delete_objects_xml(keys, quiet)
         key_objects = keys.map { |key| { 'Key' => key } }
-        body = Utils.to_xml(
+        Utils.to_xml(
           'Delete' => {
             'Object' => key_objects,
             'Quiet' => quiet

@@ -7,7 +7,6 @@ else
   Coveralls.wear!
 end
 
-
 require 'aliyun/oss'
 
 require 'minitest/autorun'
@@ -43,15 +42,15 @@ end
 def stub_client_request(verb, path, file_path, options = {})
   body = file_path.empty? ? file_path : File.new(fixture_path(file_path))
   headers = options.fetch(:response_headers, {})
-                   .merge(content_type: 'application/xml')
+            .merge(content_type: 'application/xml')
 
   stub_request(verb, path)
-  .with(query: options.fetch(:query, {}))
-  .to_return(
-    status: options[:status]||200,
-    headers: headers,
-    body: body
-  )
+    .with(query: options.fetch(:query, {}))
+    .to_return(
+      status: options[:status] || 200,
+      headers: headers,
+      body: body
+    )
 end
 
 def fixture_path(path)

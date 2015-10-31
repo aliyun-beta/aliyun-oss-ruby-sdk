@@ -7,9 +7,9 @@ describe Aliyun::Oss::Client::BucketMultipartsService do
   let(:secret_key) { 'OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV' }
   let(:client) { Aliyun::Oss::Client.new(access_key, secret_key, host: host, bucket: bucket) }
 
-  let(:object_key) { "multiparts.data" }
+  let(:object_key) { 'multiparts.data' }
 
-  it "#list should return multiparts" do
+  it '#list should return multiparts' do
     path = "http://#{bucket}.#{host}/?uploads"
     stub_get_request(path, 'bucket_multiparts/list.xml')
     client.bucket_multiparts.list.each do |obj|
@@ -20,7 +20,7 @@ describe Aliyun::Oss::Client::BucketMultipartsService do
     end
   end
 
-  it "#init should return multipart" do
+  it '#init should return multipart' do
     path = "http://#{bucket}.#{host}/#{object_key}?uploads"
     stub_post_request(path, 'bucket_multiparts/init.xml')
     obj = client.bucket_multiparts.init(object_key)
@@ -28,5 +28,4 @@ describe Aliyun::Oss::Client::BucketMultipartsService do
     assert_kind_of(Aliyun::Oss::Struct::Multipart, obj)
     assert_equal(client, obj.client)
   end
-
 end

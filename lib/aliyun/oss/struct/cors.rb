@@ -38,18 +38,16 @@ module Aliyun
         end
 
         def to_hash
-          if valid?
-            attrs = {
-              'AllowedOrigin' => allowed_origin,
-              'AllowedMethod' => allowed_method
-            }
-            attrs.merge!('AllowedHeader' => allowed_header) if value_present?(allowed_header)
-            attrs.merge!('EsposeHeader' => expose_header) if value_present?(expose_header)
-            attrs.merge!('MaxAgeSeconds' => max_age_seconds) if max_age_seconds
-            attrs
-          else
-            {}
-          end
+          return {} unless valid?
+
+          attrs = {
+            'AllowedOrigin' => allowed_origin,
+            'AllowedMethod' => allowed_method
+          }
+          attrs.merge!('AllowedHeader' => allowed_header) if value_present?(allowed_header)
+          attrs.merge!('EsposeHeader' => expose_header) if value_present?(expose_header)
+          attrs.merge!('MaxAgeSeconds' => max_age_seconds) if max_age_seconds
+          attrs
         end
 
         def valid?
