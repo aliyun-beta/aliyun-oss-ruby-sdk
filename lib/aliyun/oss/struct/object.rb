@@ -2,7 +2,6 @@ module Aliyun
   module Oss
     module Struct
       class Object < Base
-
         # Key of object
         attr_accessor :key
 
@@ -40,7 +39,7 @@ module Aliyun
         # @return [String]
         def acl!
           result = client.bucket_get_object_acl(key).parsed_response
-          acl_keys = %w{AccessControlPolicy AccessControlList Grant}
+          acl_keys = %w(AccessControlPolicy AccessControlList Grant)
           Utils.dig_value(result, *acl_keys).strip
         end
 
@@ -66,7 +65,6 @@ module Aliyun
         def meta!(*args)
           client.bucket_get_meta_object(*args.unshift(key)).headers
         end
-
       end
     end
   end

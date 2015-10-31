@@ -2,7 +2,6 @@ module Aliyun
   module Oss
     class Client
       module BucketMultiparts
-
         # Init a Multipart Upload Event
         #
         # @param (see #bucket_init_multipart)
@@ -33,12 +32,11 @@ module Aliyun
         def list(*args)
           result = client.bucket_list_multiparts(*args).parsed_response
 
-          multipart_keys = %w{ListMultipartUploadsResult Upload}
+          multipart_keys = %w(ListMultipartUploadsResult Upload)
           Utils.wrap(Utils.dig_value(result, *multipart_keys)).map do |multipart|
             Struct::Multipart.new(multipart.merge(client: client))
           end
         end
-
       end
     end
   end

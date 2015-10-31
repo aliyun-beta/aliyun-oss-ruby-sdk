@@ -2,7 +2,6 @@ module Aliyun
   module Oss
     module Struct
       class Bucket < Base
-
         # Bucket Name
         attr_accessor :name
 
@@ -64,7 +63,7 @@ module Aliyun
         # @see Client#bucket_get_acl
         def acl!
           result = client.bucket_get_acl.parsed_response
-          acl_keys = %w{AccessControlPolicy AccessControlList Grant}
+          acl_keys = %w(AccessControlPolicy AccessControlList Grant)
           Utils.dig_value(result, *acl_keys)
         end
 
@@ -88,7 +87,7 @@ module Aliyun
         # @see Client#bucket_get_cors
         def cors!
           result = client.bucket_get_cors.parsed_response
-          cors_keys = %w{CORSConfiguration CORSRule}
+          cors_keys = %w(CORSConfiguration CORSRule)
           Utils.wrap(Utils.dig_value(result, *cors_keys)).map do |cors|
             Struct::Cors.new(cors)
           end
@@ -129,8 +128,8 @@ module Aliyun
         # @see Client#bucket_get_website
         def website!
           result = client.bucket_get_website.parsed_response
-          suffix_keys = %w{WebsiteConfiguration IndexDocument Suffix}
-          error_keys = %w{WebsiteConfiguration ErrorDocument Key}
+          suffix_keys = %w(WebsiteConfiguration IndexDocument Suffix)
+          error_keys = %w(WebsiteConfiguration ErrorDocument Key)
           Aliyun::Oss::Struct::Website.new(
             suffix: Utils.dig_value(result, *suffix_keys),
             error_key: Utils.dig_value(result, *error_keys)
@@ -172,8 +171,8 @@ module Aliyun
         # @see Client#bucket_get_referer
         def referer!
           result = client.bucket_get_referer.parsed_response
-          allow_empty = %w{RefererConfiguration AllowEmptyReferer}
-          referers = %w{RefererConfiguration RefererList Referer}
+          allow_empty = %w(RefererConfiguration AllowEmptyReferer)
+          referers = %w(RefererConfiguration RefererList Referer)
           Aliyun::Oss::Struct::Referer.new(
             allow_empty: Utils.dig_value(result, *allow_empty),
             referers: Utils.dig_value(result, *referers)
@@ -202,7 +201,7 @@ module Aliyun
         # @see Client#bucket_get_lifecycle
         def lifecycle!
           result = client.bucket_get_lifecycle.parsed_response
-          lifecycle_keys = %w{LifecycleConfiguration Rule}
+          lifecycle_keys = %w(LifecycleConfiguration Rule)
           Utils.wrap(Utils.dig_value(result, *lifecycle_keys)).map do |lifecycle|
             Struct::LifeCycle.new(lifecycle)
           end
@@ -247,7 +246,6 @@ module Aliyun
           !!client.bucket_preflight(*args)
         end
         alias_method :options, :preflight
-
       end
     end
   end

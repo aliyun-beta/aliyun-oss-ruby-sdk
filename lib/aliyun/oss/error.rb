@@ -4,7 +4,6 @@ module Aliyun
 
     # [Aliyun::Oss::RequestError] when OSS give a Non 2xx response
     class RequestError < Error
-
       # Error Code defined by OSS
       attr_reader :code
 

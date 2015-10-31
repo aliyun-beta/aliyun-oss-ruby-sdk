@@ -2,7 +2,6 @@ module Aliyun
   module Oss
     class Client
       module BucketObjects
-
         # List objects of bucket
         #
         # @param (see #bucket_list_objects)
@@ -17,7 +16,7 @@ module Aliyun
         def list(*args)
           result = client.bucket_list_objects(*args).parsed_response
 
-          object_keys = %w{ListBucketResult Contents}
+          object_keys = %w(ListBucketResult Contents)
           Utils.wrap(Utils.dig_value(result, *object_keys)).map do |object|
             Struct::Object.new(object.merge(client: client))
           end
@@ -106,7 +105,6 @@ module Aliyun
         def append(*args)
           !!client.bucket_append_object(*args)
         end
-
       end
     end
   end

@@ -208,7 +208,7 @@ module Aliyun
 
         rules.each do |rule|
           unless rule.valid?
-            raise Aliyun::Oss::InvalidLifeCycleRuleError.new(rule.inspect)
+            fail Aliyun::Oss::InvalidLifeCycleRuleError.new(rule.inspect)
           end
         end
 
@@ -243,7 +243,7 @@ module Aliyun
 
         rules.each do |rule|
           unless rule.valid?
-            raise Aliyun::Oss::InvalidCorsRuleError.new(rule.inspect)
+            fail Aliyun::Oss::InvalidCorsRuleError.new(rule.inspect)
           end
         end
 
@@ -569,8 +569,8 @@ module Aliyun
       #
       # @return [Response]
       def bucket_multipart_upload(upload_id, key, number, file)
-        raise MultipartPartNumberEmptyError.new if number.nil?
-        raise MultipartUploadIdEmptyError.new if upload_id.nil? || upload_id.empty?
+        fail MultipartPartNumberEmptyError.new if number.nil?
+        fail MultipartUploadIdEmptyError.new if upload_id.nil? || upload_id.empty?
 
         query = { 'partNumber' => number.to_s, 'uploadId' => upload_id }
 
@@ -599,8 +599,8 @@ module Aliyun
       #
       # @return [Response]
       def bucket_multipart_copy_upload(upload_id, key, number, options = {})
-        raise MultipartSourceBucketEmptyError.new if options[:source_bucket].to_s.empty?
-        raise MultipartSourceKeyEmptyError.new if options[:source_key].to_s.empty?
+        fail MultipartSourceBucketEmptyError.new if options[:source_bucket].to_s.empty?
+        fail MultipartSourceKeyEmptyError.new if options[:source_key].to_s.empty?
 
         query = { 'partNumber' => number, 'uploadId' => upload_id }
 
@@ -629,8 +629,8 @@ module Aliyun
       #
       # @return [Response]
       def bucket_complete_multipart(upload_id, key, parts = [])
-        raise MultipartPartsEmptyError.new if parts.nil? || parts.empty?
-        raise MultipartUploadIdEmptyError.new if upload_id.nil?
+        fail MultipartPartsEmptyError.new if parts.nil? || parts.empty?
+        fail MultipartUploadIdEmptyError.new if upload_id.nil?
 
         query = { 'uploadId' => upload_id }
 

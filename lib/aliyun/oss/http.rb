@@ -64,14 +64,14 @@ module Aliyun
         path = api_endpoint(headers['Host']) + resource
 
         options = Utils
-        .hash_slice(options.merge(headers: headers), :query, :headers, :body)
+                  .hash_slice(options.merge(headers: headers), :query, :headers, :body)
 
         response = HTTParty.__send__(verb.downcase, path, options)
         case response.code
         when 200..299
           response
         else
-          raise RequestError.new(response)
+          fail RequestError.new(response)
         end
       end
 

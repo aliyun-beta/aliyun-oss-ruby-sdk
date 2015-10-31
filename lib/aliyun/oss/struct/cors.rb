@@ -25,8 +25,8 @@ module Aliyun
 
         def allowed_method=(allowed_method)
           @allowed_method = Utils.wrap(allowed_method)
-            .map(&:upcase)
-            .select { |method| ACCESSPTED_METHODS.include?(method.to_s) }
+                            .map(&:upcase)
+                            .select { |method| ACCESSPTED_METHODS.include?(method.to_s) }
         end
 
         def allowed_header=(allowed_header)

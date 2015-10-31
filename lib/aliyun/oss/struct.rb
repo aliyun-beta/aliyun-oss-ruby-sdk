@@ -5,7 +5,7 @@ module Aliyun
         def initialize(attributes = {})
           attributes.each do |key, value|
             m = "#{Utils.underscore(key)}=".to_sym
-            self.send(m, value) if self.respond_to?(m)
+            send(m, value) if self.respond_to?(m)
           end
         end
       end

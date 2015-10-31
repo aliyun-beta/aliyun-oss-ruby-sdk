@@ -2,7 +2,6 @@ module Aliyun
   module Oss
     class Client
       module Buckets
-
         # List buckets
         #
         # @param (see #list_buckets)
@@ -14,7 +13,7 @@ module Aliyun
         def list(options = {})
           result = client.list_buckets(options).parsed_response
 
-          bucket_keys = %w{ListAllMyBucketsResult Buckets Bucket}
+          bucket_keys = %w(ListAllMyBucketsResult Buckets Bucket)
           Utils.wrap(Utils.dig_value(result, *bucket_keys)).map do |bucket_hash|
             Struct::Bucket.new(bucket_hash).tap do |bucket|
               dup_client = client.clone
@@ -45,7 +44,6 @@ module Aliyun
         def delete(*args)
           !!client.bucket_delete(*args)
         end
-
       end
     end
   end

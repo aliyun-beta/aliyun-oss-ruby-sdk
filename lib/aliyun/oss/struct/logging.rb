@@ -2,7 +2,6 @@ module Aliyun
   module Oss
     module Struct
       class Logging < Base
-
         # Container for logging information. This element and its children are present when logging is enabled; otherwise, this element and its children are absent.
         attr_accessor :logging_enabled
 
@@ -33,7 +32,6 @@ module Aliyun
             @logging_enabled = false
           end
         end
-
       end
     end
   end

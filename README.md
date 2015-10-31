@@ -26,7 +26,7 @@ And run:
     bundle install  
 
 
-## Usage    
+## Usage
 
 ### Quick Start
 

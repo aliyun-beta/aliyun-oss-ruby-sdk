@@ -1,7 +1,6 @@
 module Aliyun
   module Oss
     class XmlGenerator
-
       # Generate xml from rules
       #
       # @example
@@ -170,7 +169,6 @@ module Aliyun
             }
           })
       end
-
     end
   end
 end

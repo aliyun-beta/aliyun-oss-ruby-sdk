@@ -2,7 +2,6 @@ module Aliyun
   module Oss
     module Struct
       class Multipart < Base
-
         # UUID for the Multipart Upload Event
         attr_accessor :upload_id
 
@@ -61,9 +60,9 @@ module Aliyun
         # @see Client#bucket_list_parts
         def list_parts(options = {})
           result = client.bucket_list_parts(upload_id, key, options)
-                         .parsed_response
+                   .parsed_response
 
-          parts_keys = %w{ListPartsResult Part}
+          parts_keys = %w(ListPartsResult Part)
           Utils.wrap(Utils.dig_value(result, *parts_keys)).map do |part|
             Struct::Part.new(part)
           end
@@ -80,7 +79,7 @@ module Aliyun
         # @see Client#bucket_complete_multipart
         def complete(parts = [])
           resp = client.bucket_complete_multipart(upload_id, key, parts)
-          keys = %w{CompleteMultipartUploadResult}
+          keys = %w(CompleteMultipartUploadResult)
           Struct::Object.new(
             Utils.dig_value(resp.parsed_response, *keys).merge(client: client)
           )
@@ -96,7 +95,6 @@ module Aliyun
         def abort
           !!client.bucket_abort_multipart(upload_id, key)
         end
-
       end
     end
   end

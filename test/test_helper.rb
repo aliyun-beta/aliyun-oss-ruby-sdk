@@ -1,6 +1,12 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
-#require 'coveralls'
-#Coveralls.wear!
+if ENV['TESTLOCAL']
+  require 'simplecov'
+  SimpleCov.start
+else
+  require 'coveralls'
+  Coveralls.wear!
+end
+
 
 require 'aliyun/oss'
 

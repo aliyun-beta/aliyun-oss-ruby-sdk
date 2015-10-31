@@ -2,7 +2,6 @@ module Aliyun
   module Oss
     module Struct
       class Referer < Base
-
         # specify allow empty referer access
         attr_accessor :allow_empty
 

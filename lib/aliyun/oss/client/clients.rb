@@ -1,25 +1,22 @@
 module Aliyun
   module Oss
-=begin
-
-Here is some services used to make object based API possible, they are all contains a reference to instance of client, which used to do the real job.
-
-buckets: used to do many buckets operations eg: #list, #create, #delete
-
-  client.buckets
-
-bucket_objects: used to do some operation on objects eg: #list, #create, :delete, #copy
-
-  client.bucket_objects
-
-bucket_multiparts: used to do some operation for multiparts eg: #init, #list
-
-  client.bucket_multiparts
-
-
-=end
+    #
+    # Here is some services used to make object based API possible, they are all contains a reference to instance of client, which used to do the real job.
+    #
+    # buckets: used to do many buckets operations eg: #list, #create, #delete
+    #
+    #   client.buckets
+    #
+    # bucket_objects: used to do some operation on objects eg: #list, #create, :delete, #copy
+    #
+    #   client.bucket_objects
+    #
+    # bucket_multiparts: used to do some operation for multiparts eg: #init, #list
+    #
+    #   client.bucket_multiparts
+    #
+    #
     class Client
-
       def buckets
         @services[:buckets] ||= Client::BucketsService.new(self)
       end
@@ -53,7 +50,6 @@ bucket_multiparts: used to do some operation for multiparts eg: #init, #list
       class BucketMultipartsService < ClientService
         include Client::BucketMultiparts
       end
-
     end
   end
 end
