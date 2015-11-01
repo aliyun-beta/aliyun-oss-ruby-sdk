@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RefererConfiguration>
+<AllowEmptyReferer>false</AllowEmptyReferer>
+<RefererList>
+<Referer> http://www.aliyun.com</Referer>
+<Referer> https://www.aliyun.com</Referer>
+<Referer> http://www.*.com</Referer>
+<Referer> https://www.?.aliyuncs.com</Referer>
+</RefererList>
+</RefererConfiguration>

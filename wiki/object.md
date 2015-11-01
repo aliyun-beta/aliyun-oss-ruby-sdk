@@ -32,7 +32,7 @@ Client#bucket_create_object support file or bin data to upload.
     puts res.success?, res.headers
     
 
-The Upload limit Data to 5 GB, if large than it, use [Multipart Upload](./multipart.md).
+The Upload limit Data to 5 GB, if large than, visit [Multipart Upload](./multipart.md).
 
 
 ### Create a folder
@@ -49,12 +49,12 @@ To Create a folder, it's easy, just pass key with "/" at last:
     res = client.bucket_create_object("images/", "")
     puts res.success?, res.headers
 
-Create simulations folder nature created a size of 0 object.Uploads and downloads, for this object can only console to end with "/" object to display the folder. So the user can use this way to implement to create simulation folder. And access to the folder can see files below the folder.
+Create simulations folder nature created a object with size equals 0. Uploads and downloads, for this object can only console to end with "/" object to display the folder. So the user can use this way to implement to create simulation folder. And access to the folder can see files below the folder.
 
     
 ### Customize Http Header for object
 
-OSS service allow users to customize the http headers of object. The following code set the expiration time for the Object:
+OSS allow users to customize the http headers of object. The following code set the expiration time for the Object:
 
     require 'aliyun/oss'
     
@@ -64,15 +64,15 @@ OSS service allow users to customize the http headers of object. The following c
     client = Aliyun::Oss::Client.new(access_key, secret_key, host: host, bucket: bucket)
     
     file = File.new("path/to/image.png")
-    res = client.bucket_create_object("image.png", file, { 'Content-Type' => 'image/png', "Expires" => "Fri, 28 Feb 2012 05:38:42 GMT" })
+    res = client.bucket_create_object("image.png", file, { 'Content-Type' => 'image/png', "Expires" => "Sun, 25 Oct 2015 05:38:42 GMT" })
     puts res.success?, res.headers
  
-Except Expires, also support Cache-Control, Content-Disposition, Content-Encoding, Content-MD5, more details visit: [Client#bucket_create_object]().
+Except Expires, it also support Cache-Control, Content-Disposition, Content-Encoding, Content-MD5, more details visit: [Client#bucket_create_object](http://www.rubydoc.info/gems/aliyun-oss-sdk/Aliyun%2FOss%2FClient%3Abucket_create_object).
 
 
 ### Set User Meta
 
-OSS Support meta information for object.
+OSS Support set some user meta information for object. Here we set x-oss-meta-user to username for object:
 
     require 'aliyun/oss'
     
@@ -86,14 +86,14 @@ OSS Support meta information for object.
     puts res.success?, res.headers
 
 
-user meta is information with "x-oss-meta" stored in headers, the maxinum limit is 2KB.
+user meta information stored as headers with prefix: "x-oss-meta", the maxinum limit is 2KB for all meta information.
 
 Note: the user meta key is case-insensitive, but value is case-sensitive.
 
 
 ### Append Upload
 
-OSS Allow users to append data to a object, but only for appendable object, Objects created with Append Upload is Appendable object, Upload via simple upload is Normal object:
+OSS Allow users to append data to a object, but only for appendable object, Objects created with Append Upload is Appendable object, Upload via Simple Upload is Normal object:
 
 
     require 'aliyun/oss'
@@ -114,9 +114,11 @@ OSS Allow users to append data to a object, but only for appendable object, Obje
     res = client.bucket_append_object("secret.zip", "append information", position)
     puts res.success?, res.headers
     
-Users upload with Append mode, the important is to set position correctly. When a user creates an Appendable Object, additional position to 0. When the Appendable Object for additional content, additional location as the Object of the current length. There are two ways to get the Object length: one is through return after the upload additional content. Another is fetch by head object(Client#bucket_get_meta_object). the next position is store with header: x-oss-next-append.
+Users upload with Append mode, the most important is to set position correctly. When a user creates an Appendable Object, additional position to 0. When the Append additional content for Object, the postion is the current length of the object. There are two ways to get the Object length: one is through response after the append upload. Another is fetch with [Client#bucket_get_meta_object(http://www.rubydoc.info/gems/aliyun-oss-sdk/Aliyun/Oss/Client#bucket_get_meta_object-instance_method). the next position information is stored with key --- x-oss-next-append in headers.
 
-Note: Only when create the appendable object can set object meta. Later if you need to change the object meta, can use copy object interface(Client#bucket_copy_object) -- source and destination for the same Object.  
+Note: You can set meta information only when create appendable object(the first append). Later, if you want to change the meta, use [Client#bucket_copy_object](http://www.rubydoc.info/gems/aliyun-oss-sdk/Aliyun%2FOss%2FClient%3Abucket_copy_object) -- set source and destination for the same Object.
+
+
 
 ## List objects in Bucket
 
@@ -149,7 +151,8 @@ the method support many Parameters to get flexible results:
     res = client.bucket_list_objects(prefix: 'pic', delimiter: '/')
     puts res.success?, res.parsed_response
 
-It list results with prefix: pic and end with "/", for example: "pic-people/". More about the Paramters, visit: [Client#bucket_list_objects]()
+It list results with prefix: pic and end with "/", for example: "pic-people/". More about the Paramters, visit: [Client#bucket_list_objects](http://www.rubydoc.info/gems/aliyun-oss-sdk/Aliyun%2FOss%2FClient%3Abucket_list_objects)
+
 
 ### Get Object
 
@@ -163,7 +166,7 @@ It list results with prefix: pic and end with "/", for example: "pic-people/". M
     res = client.bucket_get_object('image.png')
     puts res.success?, res.parsed_response
     
-It Support much Parameters, Range, If-Modified-Since, If-Unmodified-Since, If-Match, If-None-Match. With Range, we can get data from a object, it's useful for download partly and so on.
+It Support Parameters, Range, If-Modified-Since, If-Unmodified-Since, If-Match, If-None-Match. With Range, we can get range data from a object, it's useful for download partly and so on.
 
     
 ### Get Meta Object
@@ -179,6 +182,7 @@ To get meta information of a object, use Client#get_meta_object:
     
     res = client.bucket_get_meta_object('image.png')
     puts res.success?, res.headers
+
 
 ### Delete Object
 

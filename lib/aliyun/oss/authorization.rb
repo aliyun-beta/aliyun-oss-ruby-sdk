@@ -13,7 +13,7 @@ module Aliyun
       # @see {https://docs.aliyun.com/#/pub/oss/api-reference/access-control&signature-url Tempoorary Signature}
       #
       # @param secret_key [String] Secret Key
-      # @param expires [Integer] the number of seconds since January 1, 1970 UTC. used to specified expired time
+      # @param expire_time [Integer] the number of seconds since January 1, 1970 UTC. used to specified expired time
       # @param [Hash] options other options
       # @option options [String] :key the object name
       # @option options [String] :bucket bucket name
@@ -31,7 +31,6 @@ module Aliyun
       #
       # @see {https://docs.aliyun.com/#/pub/oss/api-reference/object&PostObject Post Object}
       #
-      # @param secret_key [String] Secret Key
       # @param policy [Hash] Policy {https://docs.aliyun.com/#/pub/oss/api-reference/object&PostObject#menu7 Detail}
       #
       # @return [String]
@@ -57,6 +56,16 @@ module Aliyun
       #
       # @see {https://docs.aliyun.com/#/pub/oss/api-reference/access-control&signature-header Authorization}
       #
+      # @param access_key [String] Access Key
+      # @param secret_key [String] Secret Key
+      # @param options [Hash] Options
+      # @option options [String] :verb VERB, request method
+      # @option options [String] :date Request Time in formate: '%a, %d %b %Y %H:%M:%S GMT'
+      # @option options [String] :bucket Bucket Name
+      # @option options [String] :key Object Name
+      # @option options [Hash] :query Query key-value pair
+      # @option options [Hash] :headers Headers
+      #
       # @return [String] the authorization string
       def self.get_authorization(access_key, secret_key, options = {})
         content_string = concat_content_string(options[:verb], options[:date], options)
@@ -64,44 +73,66 @@ module Aliyun
         "#{PROVIDER} #{access_key}:#{signature_string.strip}"
       end
 
-      private
-
       def self.concat_content_string(verb, time, options = {})
         headers = options.fetch(:headers, {})
 
-        cononicalized_oss_headers = get_cononicalized_oss_headers(headers)
-        cononicalized_resource = get_cononicalized_resource(*options.values_at(:bucket, :key, :query))
+        conon_headers = get_cononicalized_oss_headers(headers)
+        conon_resource = get_cononicalized_resource(
+          *options.values_at(:bucket, :key, :query)
+        )
 
-        if cononicalized_oss_headers
-          [
-            verb.upcase,
-            headers['Content-MD5'],
-            headers['Content-Type'],
-            time,
-            cononicalized_oss_headers,
-            cononicalized_resource
-          ].join("\n")
+        join_values(verb.upcase, time, headers, conon_headers, conon_resource)
+      end
+
+      def self.join_values(verb, time, headers, conon_headers, resource)
+        if conon_headers
+          join_with_conon_headers(verb, time, headers, conon_headers, resource)
         else
-          [
-            verb.upcase,
-            headers['Content-MD5'],
-            headers['Content-Type'],
-            time,
-            cononicalized_resource
-          ].join("\n")
+          join_without_conon_headers(verb, time, headers, resource)
         end
+      end
+
+      def self.join_with_conon_headers(verb, time, headers, c_headers, resource)
+        [
+          verb,
+          headers['Content-MD5'],
+          headers['Content-Type'],
+          time,
+          c_headers,
+          resource
+        ].join("\n")
+      end
+
+      def self.join_without_conon_headers(verb, time, headers, resource)
+        [
+          verb,
+          headers['Content-MD5'],
+          headers['Content-Type'],
+          time,
+          resource
+        ].join("\n")
       end
 
       def self.signature(secret_key, content_string)
         utf8_string = content_string.force_encoding('utf-8')
-        Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest::SHA1.new, secret_key, utf8_string))
+        Base64.encode64(
+          OpenSSL::HMAC.digest(
+            OpenSSL::Digest::SHA1.new,
+            secret_key,
+            utf8_string
+          )
+        )
       end
 
       def self.get_cononicalized_oss_headers(headers)
-        oss_headers = (headers || {}).select { |key, _| key.to_s.downcase.start_with?('x-oss-') }
+        oss_headers = (headers || {}).select do |key, _|
+          key.to_s.downcase.start_with?('x-oss-')
+        end
         return if oss_headers.empty?
 
-        oss_headers.keys.sort.map { |key| "#{key.downcase}:#{oss_headers[key]}" }.join("\n")
+        oss_headers.keys.sort.map do |key|
+          "#{key.downcase}:#{oss_headers[key]}"
+        end.join("\n")
       end
 
       def self.get_cononicalized_resource(bucket, key, query)
@@ -110,7 +141,8 @@ module Aliyun
         cononicalized_resource += key if key
         return cononicalized_resource if query.nil? || query.empty?
 
-        cononicalized_resource + '?' + query.keys.sort.map { |key| "#{key}=#{query[key]}" }.join('&')
+        query_str = query.keys.sort.map { |k| "#{k}=#{query[k]}" }.join('&')
+        cononicalized_resource + '?' + query_str
       end
     end
   end

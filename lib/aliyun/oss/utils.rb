@@ -43,7 +43,47 @@ module Aliyun
       end
 
       def self.to_xml(hash) # nodoc
-        %|<?xml version="1.0" encoding="UTF-8"?>#{Gyoku.xml(hash)}|
+        %(<?xml version="1.0" encoding="UTF-8"?>#{Gyoku.xml(hash)})
+      end
+
+      # Dig values in deep hash
+      #
+      # @example
+      #   dig_value({ 'a' => { 'b' => { 'c' => 3 } } }, 'a', 'b', 'c')  # => 3
+      #
+      def self.dig_value(hash, *keys)
+        new_hash = hash.dup
+
+        keys.each do |key|
+          if new_hash.is_a?(Hash) && new_hash.key?(key)
+            new_hash = new_hash[key]
+          else
+            return nil
+          end
+        end
+        new_hash
+      end
+
+      # @see {http://apidock.com/rails/String/underscore String#underscore}
+      def self.underscore(str)
+        word = str.to_s.dup
+        word.gsub!(/::/, '/')
+        word.gsub!(/([A-Z\d]+)([A-Z][a-z])/, '\1_\2')
+        word.gsub!(/([a-z\d])([A-Z])/, '\1_\2')
+        word.tr!('-', '_')
+        word.downcase!
+        word
+      end
+
+      # Copy from {https://github.com/rails/rails/blob/14254d82a90b8aa4bd81f7eeebe33885bf83c378/activesupport/lib/active_support/core_ext/array/wrap.rb#L36 ActiveSupport::Array#wrap}
+      def self.wrap(object)
+        if object.nil?
+          []
+        elsif object.respond_to?(:to_ary)
+          object.to_ary || [object]
+        else
+          [object]
+        end
       end
     end
   end

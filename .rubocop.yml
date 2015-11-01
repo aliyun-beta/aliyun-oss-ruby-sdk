@@ -1,0 +1,17 @@
+# This is the configuration used to check the rubocop source code.
+
+Metrics/LineLength:
+  Max: 100
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/DoubleNegation:
+  Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Style/AccessorMethodName:
+  Enabled: false

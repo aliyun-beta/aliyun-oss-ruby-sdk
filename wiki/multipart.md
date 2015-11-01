@@ -42,7 +42,7 @@ Upload ID is the UUID for the Multipart Upload Event, store it for use later.
     bucket = "bucket-name"
     client = Aliyun::Oss::Client.new(access_key, secret_key, host: host, bucket: bucket)
     
-    res = client.bucket_multipart_upload("Exciting-Ruby.mp4", 1, "Upload ID", file_or_bin)
+    res = client.bucket_multipart_upload("Upload ID", "Exciting-Ruby.mp4", 1, file_or_bin)
     
     if res.success?
       puts "etag: #{res.headers['etag']}"
@@ -68,13 +68,13 @@ It can used to upload part to a object. Please note:
     bucket = "bucket-name"
     client = Aliyun::Oss::Client.new(access_key, secret_key, host: host, bucket: bucket)
     
-    part1 = Aliyun::Oss::Multipart::Part.new({ number: 1, etag: 'etag1' })
-	part2 = Aliyun::Oss::Multipart::Part.new({ number: 2, etag: 'etag2' })
-	part3 = Aliyun::Oss::Multipart::Part.new({ number: 3, etag: 'etag3' })
-	res = client.bucket_complete_multipart("Exciting-Ruby.mp4", "Upload ID", [part1, part2, part3])
+    part1 = Aliyun::Oss::Struct::Part.new({ number: 1, etag: 'etag1' })
+	part2 = Aliyun::Oss::Struct::Part.new({ number: 2, etag: 'etag2' })
+	part3 = Aliyun::Oss::Struct::Part.new({ number: 3, etag: 'etag3' })
+	res = client.bucket_complete_multipart("Upload ID", "Exciting-Ruby.mp4", [part1, part2, part3])
 	
 
-Here, we create Aliyun::Oss::Multipart::Part to build your part, use Part#valid? to valid the object.
+Here, we create Aliyun::Oss::Struct::Part to build your part, use Part#valid? to valid the object.
 
 ### Abort Multipart Upload
 
@@ -87,7 +87,7 @@ If some Problem occurs, you may want to abort a Multipart Upload:
     bucket = "bucket-name"
     client = Aliyun::Oss::Client.new(access_key, secret_key, host: host, bucket: bucket)
     
-    res = client.bucket_abort_multipart("Exciting-Ruby.mp4", "Upload ID")
+    res = client.bucket_abort_multipart("Upload ID", "Exciting-Ruby.mp4")
     
 After abort a multipart, all uploaded parts will be destroyed, But Note: If some others are upload parts to this object when your abort, they may be missing, so invoke a few times if you have access in concurrent.
 
@@ -121,5 +121,7 @@ Sometimes, you want to know which parts are uploaded.
     
     res = client.bucket_list_parts("Upload ID")
     puts res.success?, res.parsed_response
-    
+
+
+OK, It's time to visit [CORS](./cors.md)    
     
