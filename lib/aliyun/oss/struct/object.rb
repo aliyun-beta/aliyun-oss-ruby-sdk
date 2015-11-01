@@ -61,7 +61,7 @@ module Aliyun
         #
         # @raise [RequestError]
         #
-        # @return [Hash]
+        # @return [HTTParty::Response::Headers]
         def meta!(*args)
           client.bucket_get_meta_object(*args.unshift(key)).headers
         end

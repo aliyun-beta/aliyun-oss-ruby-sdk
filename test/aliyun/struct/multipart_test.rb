@@ -26,12 +26,15 @@ describe Aliyun::Oss::Struct::Multipart do
     )
   end
 
-  it '#upload should return true' do
+  it '#upload should return headers' do
     path = endpoint + 'multipart.data'
     query = { 'partNumber' => 1, 'uploadId' => upload_id }
-    stub_put_request(path, '', query: query)
+    headers = { 'ETag' => 'HFGHJRTYHJVBNMFGHJFGHJ' }
+    stub_put_request(path, '', query: query, response_headers: headers)
 
-    assert multipart.upload(1, 'hello')
+    result = multipart.upload(1, 'hello')
+    assert_kind_of(HTTParty::Response::Headers, result)
+    assert_equal('HFGHJRTYHJVBNMFGHJFGHJ', result['ETag'])
   end
 
   it '#copy should return true' do

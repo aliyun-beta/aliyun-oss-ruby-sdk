@@ -99,11 +99,11 @@ module Aliyun
         #
         # @raise (see #bucket_append_object)
         #
-        # @return [true]
+        # @return [HTTParty::Response::Headers]
         #
         # @see Client#bucket_append_object
         def append(*args)
-          !!client.bucket_append_object(*args)
+          client.bucket_append_object(*args).headers
         end
       end
     end

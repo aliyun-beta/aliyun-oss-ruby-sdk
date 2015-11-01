@@ -28,9 +28,9 @@ module Aliyun
         #
         # @raise (see #bucket_multipart_upload)
         #
-        # @return [true]
+        # @return [HTTParty::Response::Headers]
         def upload(*args)
-          !!client.bucket_multipart_upload(*args.unshift(upload_id, key))
+          client.bucket_multipart_upload(*args.unshift(upload_id, key)).headers
         end
 
         # Copy exsting object to Multipart Upload Event

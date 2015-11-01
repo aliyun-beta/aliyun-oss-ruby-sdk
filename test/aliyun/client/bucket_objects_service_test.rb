@@ -91,9 +91,14 @@ describe Aliyun::Oss::Client::BucketObjectsService do
     assert_equal 'Hello' * 1000, client.bucket_objects.get(object_key)
   end
 
-  it '#append should return true' do
+  it '#append should return headers' do
     path = "http://#{bucket}.#{host}/#{object_key}"
-    stub_post_request(path, '', query: { append: true, position: 100 })
-    assert client.bucket_objects.append(object_key, 'Hello', 100)
+    query = { append: true, position: 100 }
+    headers = { 'x-oss-next-append-position' => 100 }
+    stub_post_request(path, '', query: query, response_headers: headers)
+
+    result = client.bucket_objects.append(object_key, 'Hello', 100)
+    assert_kind_of(HTTParty::Response::Headers, result)
+    assert_equal('100', result['x-oss-next-append-position'])
   end
 end
