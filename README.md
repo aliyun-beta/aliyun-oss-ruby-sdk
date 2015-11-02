@@ -160,7 +160,7 @@ Note:
 
 
 | Restful API  |  Function Based |  Object Based |
-|---|---|
+| ------------ | --------------- | ------------- |
 |[GetService (ListBucket)](https://docs.aliyun.com/#/pub/oss/api-reference/service&GetService)	|bucket_list	|buckets#list	|
 |[Put Bucket](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucket)		|bucket_create	|	buckets#create|
 |[Put Bucket Acl](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketACL)	|bucket_set_acl	|	bucket#set_acl|
