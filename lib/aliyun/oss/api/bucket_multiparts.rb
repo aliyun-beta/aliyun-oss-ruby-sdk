@@ -17,6 +17,7 @@ module Aliyun
         #
         # @return [Response]
         def bucket_init_multipart(key, headers = {})
+          Utils.stringify_keys!(headers)
           query = { 'uploads' => true }
           http.post("/#{key}", query: query, headers: headers, bucket: bucket, key: key)
         end
@@ -66,9 +67,10 @@ module Aliyun
         #
         # @return [Response]
         def bucket_multipart_copy_upload(upload_id, key, number, options = {})
-          source_bucket = options.delete(:source_bucket).to_s
-          source_key = options.delete(:source_key).to_s
-          range = options.delete(:range)
+          Utils.stringify_keys!(options)
+          source_bucket = options.delete('source_bucket').to_s
+          source_key = options.delete('source_key').to_s
+          range = options.delete('range')
 
           fail MultipartSourceBucketEmptyError if source_bucket.empty?
           fail MultipartSourceKeyEmptyError if source_key.empty?
@@ -135,6 +137,7 @@ module Aliyun
         #
         # @return [Response]
         def bucket_list_multiparts(options = {})
+          Utils.stringify_keys!(options)
           accepted_keys = ['prefix', 'key-marker', 'upload-id-marker', 'max-uploads', 'delimiter', 'encoding-type']
 
           query = Utils.hash_slice(options, *accepted_keys)
@@ -156,6 +159,7 @@ module Aliyun
         #
         # @return [Response]
         def bucket_list_parts(upload_id, key, options = {})
+          Utils.stringify_keys!(options)
           accepted_keys = ['max-parts', 'part-number-marker', 'encoding-type']
 
           query = Utils.hash_slice(options, *accepted_keys).merge('uploadId' => upload_id)

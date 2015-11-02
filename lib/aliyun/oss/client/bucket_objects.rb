@@ -5,7 +5,6 @@ module Aliyun
         # List objects of bucket
         #
         # @param (see #bucket_list_objects)
-        #
         # @option (see #bucket_list_objects)
         #
         # @raise [RequestError]
@@ -17,9 +16,9 @@ module Aliyun
           result = client.bucket_list_objects(*args).parsed_response
 
           object_keys = %w(ListBucketResult Contents)
-          Utils.wrap(Utils.dig_value(result, *object_keys)).map do |object|
-            Struct::Object.new(object.merge(client: client))
-          end
+          directory_keys = %w(ListBucketResult CommonPrefixes)
+          Struct::Object.init_from_response(result, object_keys, client) + \
+            Struct::Object.init_from_response(result, directory_keys, client)
         end
 
         # create object of bucket

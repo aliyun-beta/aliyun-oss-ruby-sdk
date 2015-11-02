@@ -13,26 +13,9 @@ module Aliyun
         #
         # @return [Response]
         def list_buckets(options = {})
+          Utils.stringify_keys!(options)
           query = Utils.hash_slice(options, 'prefix', 'marker', 'max-keys')
           http.get('/', query: query)
-        end
-
-        # List objects in the bucket
-        #
-        # @see https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucket Get Bucket (List Object)
-        #
-        # @param options [Hash] options
-        # @option options [String] :prefix Filter objects with prefix
-        # @option options [String] :marker Result should after marker in alphabetical order
-        # @option options [Integer] :max-keys (100) Limit number of objects, the maxinum should <= 1000
-        # @option options [String] :delimiter Used to group objects with delimiter
-        # @option options [String] :encoding-type Encoding type used for unsupported character
-        #
-        # @return [Response]
-        def bucket_list_objects(options = {})
-          accepted_keys = ['prefix', 'marker', 'max-keys', 'delimiter', 'encoding-type']
-          query = Utils.hash_slice(options, *accepted_keys)
-          http.get('/', query: query, bucket: bucket)
         end
 
         # Create bucket

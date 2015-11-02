@@ -14,4 +14,11 @@ describe Aliyun::Oss::Utils do
     assert_equal({ 'c' => 3 }, Aliyun::Oss::Utils.dig_value(hash, 'a', 'b'))
     assert_equal(nil, Aliyun::Oss::Utils.dig_value(hash, 'a', 'b', 'c', 'd'))
   end
+
+  it 'stringify_keys should convert hash keys to string' do
+    a_hash = { a: 1, b: 2, c: 3 }
+    expected_hash = { 'a' => 1, 'b' => 2, 'c' => 3 }
+    Aliyun::Oss::Utils.stringify_keys!(a_hash)
+    assert_equal expected_hash, a_hash
+  end
 end

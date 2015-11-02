@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListBucketResult xmlns="http://doc.oss-cn-hangzhou.aliyuncs.com">
+<Name>oss-example</Name>
+<Prefix>fun/</Prefix>
+<Marker></Marker>
+<MaxKeys>100</MaxKeys>
+<Delimiter>/</Delimiter>
+    <IsTruncated>false</IsTruncated>
+    <Contents>
+        <Key>fun/test.jpg</Key>
+        <LastModified>2012-02-24T08:42:32.000Z</LastModified>
+        <ETag>&quot;5B3C1A2E053D763E1B002CC607C5A0FE&quot;</ETag>
+        <Type>Normal</Type>
+        <Size>344606</Size>
+        <StorageClass>Standard</StorageClass>
+        <Owner>
+            <ID>00220120222</ID>
+            <DisplayName>user_example</DisplayName>
+        </Owner>
+    </Contents>
+   <CommonPrefixes>
+        <Prefix>fun/movie/</Prefix>
+   </CommonPrefixes>
+</ListBucketResult>
