@@ -65,7 +65,28 @@ module Aliyun
         def meta!(*args)
           client.bucket_get_meta_object(*args.unshift(key)).headers
         end
+
+        class << self
+          def init_from_response(result, keys, client)
+            Utils.wrap(Utils.dig_value(result, *keys)).map do |object|
+              init_from_object(object, client)
+            end
+          end
+
+          def init_from_object(object, client)
+            if object.key?('Key') && object['Key'].end_with?('/')
+              Struct::Directory.new(object.merge(client: client))
+            elsif object.key?('Prefix') && object['Prefix'].end_with?('/')
+              Struct::Directory.new(object.merge(client: client))
+            else
+              Struct::File.new(object.merge(client: client))
+            end
+          end
+        end
       end
     end
   end
 end
+
+require 'aliyun/oss/struct/file'
+require 'aliyun/oss/struct/directory'

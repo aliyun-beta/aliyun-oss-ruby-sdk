@@ -202,6 +202,15 @@ Note:
 |[OPTIONS Object](https://docs.aliyun.com/#/pub/oss/api-reference/cors&OptionObject)|	bucket_get_meta_object|	object#meta!|
 
 
+## Test
+
+We use minitest for test and rubocop for Syntax checker, If you want to make contribute to this library. Confirm below Command is success:
+
+```
+bundle exec rake test
+```
+
+
 ## Authors && Contributors
 
 - [Newell Zhu](https://github.com/zlx_star)
