@@ -85,6 +85,12 @@ module Aliyun
           [object]
         end
       end
+
+      def self.stringify_keys!(hash)
+        hash.keys.each do |key|
+          hash[key.to_s] = hash.delete(key)
+        end
+      end
     end
   end
 end

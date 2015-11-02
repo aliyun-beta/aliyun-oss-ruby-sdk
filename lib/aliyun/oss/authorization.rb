@@ -7,6 +7,12 @@ module Aliyun
   module Oss
     class Authorization
       PROVIDER = 'OSS'
+      OVERRIDE_RESPONSE_LIST = %w(
+        response-content-type response-content-language response-cache-control
+        logging response-content-encoding acl uploadId uploads partNumber group
+        link delete website location objectInfo response-expires
+        response-content-disposition cors lifecycle restore qos referer append
+        position)
 
       # Get temporary Signature
       #
@@ -81,36 +87,17 @@ module Aliyun
           *options.values_at(:bucket, :key, :query)
         )
 
-        join_values(verb.upcase, time, headers, conon_headers, conon_resource)
+        join_values(verb, time, headers, conon_headers, conon_resource)
       end
 
-      def self.join_values(verb, time, headers, conon_headers, resource)
-        if conon_headers
-          join_with_conon_headers(verb, time, headers, conon_headers, resource)
-        else
-          join_without_conon_headers(verb, time, headers, resource)
-        end
-      end
-
-      def self.join_with_conon_headers(verb, time, headers, c_headers, resource)
+      def self.join_values(verb, time, headers, conon_headers, conon_resource)
         [
           verb,
-          headers['Content-MD5'],
-          headers['Content-Type'],
+          headers['Content-MD5'].to_s.strip,
+          headers['Content-Type'].to_s.strip,
           time,
-          c_headers,
-          resource
-        ].join("\n")
-      end
-
-      def self.join_without_conon_headers(verb, time, headers, resource)
-        [
-          verb,
-          headers['Content-MD5'],
-          headers['Content-Type'],
-          time,
-          resource
-        ].join("\n")
+          conon_headers
+        ].join("\n") + conon_resource
       end
 
       def self.signature(secret_key, content_string)
@@ -132,17 +119,19 @@ module Aliyun
 
         oss_headers.keys.sort.map do |key|
           "#{key.downcase}:#{oss_headers[key]}"
-        end.join("\n")
+        end.join("\n") + "\n"
       end
 
       def self.get_cononicalized_resource(bucket, key, query)
-        cononicalized_resource = '/'
-        cononicalized_resource += "#{bucket}/" if bucket
-        cononicalized_resource += key if key
-        return cononicalized_resource if query.nil? || query.empty?
+        conon_resource = '/'
+        conon_resource += "#{bucket}/" if bucket
+        conon_resource += key if key
+        return conon_resource if query.nil? || query.empty?
 
-        query_str = query.keys.sort.map { |k| "#{k}=#{query[k]}" }.join('&')
-        cononicalized_resource + '?' + query_str
+        query_str = query.keys.select { |k| OVERRIDE_RESPONSE_LIST.include?(k) }
+                    .sort.map { |k| "#{k}=#{query[k]}" }.join('&')
+
+        query_str.empty? ? conon_resource : conon_resource + '?' + query_str
       end
     end
   end

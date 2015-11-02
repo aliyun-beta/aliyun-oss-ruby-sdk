@@ -2,6 +2,25 @@ module Aliyun
   module Oss
     module Api
       module BucketObjects
+        # List objects in the bucket
+        #
+        # @see https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucket Get Bucket (List Object)
+        #
+        # @param options [Hash] options
+        # @option options [String] :prefix Filter objects with prefix
+        # @option options [String] :marker Result should after marker in alphabetical order
+        # @option options [Integer] :max-keys (100) Limit number of objects, the maxinum should <= 1000
+        # @option options [String] :delimiter Used to group objects with delimiter
+        # @option options [String] :encoding-type Encoding type used for unsupported character
+        #
+        # @return [Response]
+        def bucket_list_objects(options = {})
+          Utils.stringify_keys!(options)
+          accepted_keys = ['prefix', 'marker', 'max-keys', 'delimiter', 'encoding-type']
+          query = Utils.hash_slice(options, *accepted_keys)
+          http.get('/', query: query, bucket: bucket)
+        end
+
         # Upload file to bucket
         #
         # @see https://docs.aliyun.com/#/pub/oss/api-reference/object&PutObject Put Object
@@ -21,6 +40,7 @@ module Aliyun
         #
         # @return [Response]
         def bucket_create_object(key, file, headers = {})
+          Utils.stringify_keys!(headers)
           http.put("/#{key}", headers: headers, body: Utils.to_data(file), bucket: bucket, key: key)
         end
 
@@ -49,6 +69,7 @@ module Aliyun
           fail('source_bucket must be not empty!') if source_bucket.nil? || source_bucket.empty?
           fail('source_key must be not empty!') if source_key.nil? || source_key.empty?
 
+          Utils.stringify_keys!(headers)
           headers.merge!('x-oss-copy-source' => "/#{source_bucket}/#{source_key}")
 
           http.put("/#{key}", headers: headers, bucket: bucket, key: key)
@@ -67,8 +88,9 @@ module Aliyun
         #
         # @return [Response]
         def bucket_append_object(key, file, position = 0, headers = {})
-          query = { 'append' => true, 'position' => position }
+          Utils.stringify_keys!(headers)
 
+          query = { 'append' => true, 'position' => position }
           body = Utils.to_data(file)
 
           http.post("/#{key}", query: query, headers: headers, body: body, bucket: bucket, key: key)
@@ -95,6 +117,9 @@ module Aliyun
         #
         # @return [Response]
         def bucket_get_object(key, query = {}, headers = {})
+          Utils.stringify_keys!(query)
+          Utils.stringify_keys!(headers)
+
           http.get("/#{key}", query: query, headers: headers, bucket: bucket, key: key)
         end
 
@@ -140,6 +165,7 @@ module Aliyun
         #
         # @return [Response]
         def bucket_get_meta_object(key, headers = {})
+          Utils.stringify_keys!(headers)
           http.head("/#{key}", headers: headers, bucket: bucket, key: key)
         end
 

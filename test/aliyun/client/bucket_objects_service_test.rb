@@ -11,10 +11,20 @@ describe Aliyun::Oss::Client::BucketObjectsService do
 
   let(:object_key) { 'object-key' }
 
-  it '#list should return objects' do
-    stub_get_request("http://#{bucket}.#{host}/", 'bucket_objects/list.xml')
-    client.bucket_objects.list.each do |obj|
-      assert_kind_of(Aliyun::Oss::Struct::Object, obj)
+  describe '#list' do
+    it 'should return objects' do
+      stub_get_request("http://#{bucket}.#{host}/", 'bucket_objects/list.xml')
+      client.bucket_objects.list.each do |obj|
+        assert_kind_of(Aliyun::Oss::Struct::File, obj)
+      end
+    end
+
+    it 'should return directory' do
+      stub_get_request("http://#{bucket}.#{host}/", 'bucket_objects/list_dir.xml')
+      objs = client.bucket_objects.list
+
+      assert_kind_of(Aliyun::Oss::Struct::Directory, objs.last)
+      assert_equal('fun/movie/', objs.last.key)
     end
   end
 
