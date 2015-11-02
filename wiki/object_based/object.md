@@ -150,7 +150,7 @@ Note: You can set meta information only when create appendable object(the first 
     bucket = "bucket-name"
     client = Aliyun::Oss::Client.new(access_key, secret_key, host: host, bucket: bucket)
     
-    objects = client.bucket_objects.list
+    objects = client.bucket_objects.list    
     
 
 ### More Parameters
@@ -170,6 +170,51 @@ the method support many Parameters to get flexible results:
 
 It list results with prefix: pic and end with "/", for example: "pic-people/". More about the Paramters, visit: [BucketObjects#list](http://www.rubydoc.info/gems/aliyun-oss-sdk/0.1.1/Aliyun/Oss/Client/BucketObjects#list-instance_method)
 
+
+### Simulate Directory
+
+In OSS, there is not real directory, the direcory we have seen actually is object with key end with /.
+
+So, we can list objects by directory with prefix and delimiter.
+
+For example, We have four objects:
+
++ fun/movie/001.avi
++ fun/movie/007.avi
++ fun/test.jpg
++ oss.jpg
+
+There are two directory object: fun/ and fun/movie/;
+
+Now, If we invoke:
+
+1. list() will return 4 objects + two directory object;
+2. list(prefix: 'fun/') will return first 3 objects and two directory object;
+3. list(prefix: 'fun/', delimiter='/') will only return fun/test.jpg, fun/ and fun/movie/.
+
+So we can use this two paramters to list objects by directory.
+
+    require 'aliyun/oss'
+    
+    access_key, secret_key = "your id", "your secret"
+    host = "oss-cn-hangzhou.aliyuncs.com"
+    bucket = "bucket-name"
+    client = Aliyun::Oss::Client.new(access_key, secret_key, host: host, bucket: bucket)
+    
+    # list objects with prefix: fun/ and end with "/"
+    results = client.bucket_objects.list(prefix: 'fun/', delimiter: '/')
+    
+    results.each do |object|
+      if object.is_a?(Aliyun::Oss::Struct::Directory)
+        puts object.key
+        sub_objects = object.list(delimiter: '/')
+      else
+        puts object.key
+      end
+    end
+    
+Note: the results maybe instance of Aliyun::Oss::Struct::File or Aliyun::Oss::Struct::Directory, they are both subclass of Aliyun::Oss::Struct::Object, but Directory has method: #list to list objects under it.     
+    
 
 ### Get Object
 
