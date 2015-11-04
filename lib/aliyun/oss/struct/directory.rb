@@ -19,6 +19,10 @@ module Aliyun
           Utils.stringify_keys!(options)
           client.bucket_objects.list(options.merge('prefix' => key))
         end
+
+        def file?
+          false
+        end
       end
     end
   end

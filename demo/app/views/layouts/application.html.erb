@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Demo</title>
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Demo</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class='alert'>
+        <% if flash[:notice] -%>
+          <div class="alert alert-success" role="alert"><%= flash[:notice] %></div>
+        <% elsif flash[:alert] %>
+          <div class="alert alert-danger" role="alert"><%= flash[:alert] %></div>
+        <% end -%>
+      </div>
+
+      <%= yield %>
+    </div><!-- /.container -->
+</body>
+</html>

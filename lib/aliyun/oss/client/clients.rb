@@ -30,6 +30,11 @@ module Aliyun
           Client::BucketMultipartsService.new(self)
       end
 
+      def current_bucket
+        @services[:current_bucket] ||= \
+          Aliyun::Oss::Struct::Bucket.new(name: bucket, client: self)
+      end
+
       ClientService = ::Struct.new(:client)
 
       require 'aliyun/oss/client/buckets'

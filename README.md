@@ -19,7 +19,7 @@ It's a Ruby Gem, so you can install it like any Gem:
 
 If you use Gemfile manage your Gems, Add below to your Gemfile.
 
-    gem "aliyun-oss-sdk"
+    gem "aliyun-oss-sdk", require: 'aliyun/oss'
 
 And run:
 
