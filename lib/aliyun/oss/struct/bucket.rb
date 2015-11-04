@@ -25,7 +25,8 @@ module Aliyun
         # @see Client#bucket_get_location
         def location!
           result = client.bucket_get_location.parsed_response
-          Utils.dig_value(result, 'LocationConstraint', '__content__')
+          Utils.dig_value(result, 'LocationConstraint', '__content__') ||
+            Utils.dig_value(result, 'LocationConstraint')
         end
 
         # Get Logging configration for bucket

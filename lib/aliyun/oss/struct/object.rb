@@ -10,6 +10,7 @@ module Aliyun
 
         # etag of object
         attr_accessor :etag
+        alias_method :e_tag=, :etag=
 
         # type of object
         attr_accessor :type

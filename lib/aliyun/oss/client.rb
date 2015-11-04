@@ -1,8 +1,13 @@
+require 'aliyun/oss/xml_generator'
+# Function Based
 require 'aliyun/oss/api/buckets'
 require 'aliyun/oss/api/bucket_property'
 require 'aliyun/oss/api/bucket_objects'
 require 'aliyun/oss/api/bucket_multiparts'
+# Object Based
 require 'aliyun/oss/client/clients'
+
+require 'aliyun/oss/http'
 
 module Aliyun
   module Oss
