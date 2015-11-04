@@ -1,5 +1,9 @@
 # This is the configuration used to check the rubocop source code.
 
+AllCops:
+  Exclude:
+    - 'demo/**/*'
+
 Metrics/LineLength:
   Max: 100
   Enabled: false

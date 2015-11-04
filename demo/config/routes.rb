@@ -6,4 +6,5 @@ Rails.application.routes.draw do
   post 'new_put', to: 'home#create_put'
 
   get 'new_post', to: 'home#new_post'
+  get 'post_return', to: 'home#post_return'
 end

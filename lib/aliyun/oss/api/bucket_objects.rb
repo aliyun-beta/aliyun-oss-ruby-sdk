@@ -140,7 +140,7 @@ module Aliyun
             key: key
           )
 
-          "http://#{bucket}.#{@options[:host]}/#{key}?" \
+          Utils.get_endpoint(bucket, @options[:host]) + "#{key}?" \
             "OSSAccessKeyId=#{@access_key}&Expires=#{expire_time}&Signature=#{signature}"
         end
 

@@ -22,13 +22,34 @@ class HomeController < ApplicationController
     end
 
     service.bucket_objects.create(params[:name], params[:file].read)
-    redirect_to root_path, notice: "Upload Success"
+    redirect_to root_path, notice: 'Upload Success'
   rescue Aliyun::Oss::RequestError => e
     Rails.logger.error(e.inspect)
     redirect_to root_path, alert: e.message
   end
 
   def new_post
-    
+    @access_key = Rails.application.secrets.aliyun_oss['access_key']
+    secret_key = Rails.application.secrets.aliyun_oss['secret_key']
+    bucket = Rails.application.secrets.aliyun_oss['bucket']
+    host = Rails.application.secrets.aliyun_oss['host']
+    @key = '${filename}'
+    @acl = 'private'
+    @return_url = 'http://localhost:3001/post_return'
+    @username = 'newuser'
+    policy_hash = {
+      expiration: 15.minutes.since.strftime('%Y-%m-%dT%H:%M:%S.000Z'),
+      conditions: [
+        { bucket: bucket }
+      ]
+    }
+
+    @policy = Aliyun::Oss::Authorization.get_base64_policy(policy_hash)
+    @signature = Aliyun::Oss::Authorization.get_policy_signature(secret_key, policy_hash)
+    @bucket_endpoint = Aliyun::Oss::Utils.get_endpoint(bucket, host)
+  end
+
+  def post_return
+    redirect_to root_path, notice: 'Post Success'
   end
 end

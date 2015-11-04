@@ -6,6 +6,21 @@ require 'gyoku'
 module Aliyun
   module Oss
     class Utils
+      # Get endpoint
+      #
+      # @example
+      #
+      #   get_endpoint('bucket-name', 'oss-cn-hangzhou.aliyuncs.com')
+      #   # => 'http://bucket-name.oss-cn-hangzhou.aliyuncs.com'
+      #
+      # @param bucket [String] the Bucket name
+      # @param host [String] the host of Bucket
+      #
+      # @return [String]
+      def self.get_endpoint(bucket, host)
+        "http://#{bucket}.#{host}/"
+      end
+
       # Calculate content length
       #
       # @return [Integer]
