@@ -32,7 +32,7 @@ module Aliyun
 
       def current_bucket
         @services[:current_bucket] ||= \
-          Aliyun::Oss::Struct::Bucket.new(name: self.bucket, client: self)
+          Aliyun::Oss::Struct::Bucket.new(name: bucket, client: self)
       end
 
       ClientService = ::Struct.new(:client)

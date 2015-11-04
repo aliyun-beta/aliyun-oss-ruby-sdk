@@ -3,7 +3,7 @@ class HomeController < ApplicationController
     service = AliyunService.new
     @name = service.current_bucket.name
     @location = service.current_bucket.location!
-    @objects = service.bucket_objects.list.select {|object| object.file? }
+    @objects = service.bucket_objects.list.select(&:file?)
   end
 
   def download

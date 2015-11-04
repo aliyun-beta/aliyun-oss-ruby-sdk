@@ -30,8 +30,8 @@
         <td><%= object.size %></td>
         <td><%= object.last_modified %></td>
         <td>
-          <%= link_to 'Download', download_path(object.key) %>
-          <%= link_to 'Share Link', object.share_link, target: '_blank' %>
+          <%= link_to 'Download', download_path(key: object.key), method: :put %>
+          <%= link_to 'Share Link', object.share_link(1.hour), target: '_blank' %>
         </td>
       </tr>
     <% end %>

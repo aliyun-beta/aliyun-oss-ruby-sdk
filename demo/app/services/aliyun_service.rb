@@ -1,12 +1,12 @@
 class AliyunService < SimpleDelegator
   def initialize
+    aliyun_oss = Rails.application.secrets.aliyun_oss
     @client = Aliyun::Oss::Client.new(
-      Rails.application.secrets.aliyun_oss['access_key'],
-      Rails.application.secrets.aliyun_oss['secret_key'],
-      host: Rails.application.secrets.aliyun_oss['host'],
-      bucket: Rails.application.secrets.aliyun_oss['bucket']
+      aliyun_oss['access_key'],
+      aliyun_oss['secret_key'],
+      host: aliyun_oss['host'],
+      bucket: aliyun_oss['bucket']
     )
     super(@client)
   end
-
 end

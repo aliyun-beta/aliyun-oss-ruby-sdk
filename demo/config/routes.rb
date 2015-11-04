@@ -1,4 +1,4 @@
 Rails.application.routes.draw do
   root 'home#index'
-  get '/download/:key', to: 'home#download', as: :download
+  put '/download', to: 'home#download', as: :download
 end

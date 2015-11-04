@@ -123,6 +123,27 @@ module Aliyun
           http.get("/#{key}", query: query, headers: headers, bucket: bucket, key: key)
         end
 
+        # Get object share link
+        #
+        # @param key [String] the Object name
+        # @param expired_in_seconds [Integer] expire after specify seconds
+        #
+        # @return [String]
+        def bucket_get_object_share_link(key, expired_in_seconds)
+          expire_time = Time.now.to_i + expired_in_seconds
+
+          signature = Authorization.get_temporary_signature(
+            @secret_key,
+            expire_time,
+            verb: 'GET',
+            bucket: bucket,
+            key: key
+          )
+
+          "http://#{bucket}.#{@options[:host]}/#{key}?" \
+            "OSSAccessKeyId=#{@access_key}&Expires=#{expire_time}&Signature=#{signature}"
+        end
+
         # Delete object from bucket
         #
         # @see https://docs.aliyun.com/#/pub/oss/api-reference/object&DeleteObject Delete Object
