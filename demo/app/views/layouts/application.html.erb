@@ -23,6 +23,14 @@
     </nav>
 
     <div class="container">
+      <div class='alert'>
+        <% if flash[:notice] -%>
+          <div class="alert alert-success" role="alert"><%= flash[:notice] %></div>
+        <% elsif flash[:alert] %>
+          <div class="alert alert-danger" role="alert"><%= flash[:alert] %></div>
+        <% end -%>
+      </div>
+
       <%= yield %>
     </div><!-- /.container -->
 </body>
