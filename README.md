@@ -116,12 +116,23 @@ Here are some more guides for help you. Welcome to advice.
 	bucket = client.buckets.list.first  || Aliyun::Oss::Struct::Bucket.new(name: bucket_name, client: client)
 	multipart = client.bucket_multiparts.list.first || Aliyun::Oss::Struct::Multipart.new(upload_id: upload_id, key: object_key, client: client)
 	bucket_object = client.bucket_objects.list.first || Aliyun::Oss::Struct::Object.new(key: object_key, client: client)
+	file = client.bucket_objects.list.select(&:file?).first || Aliyun::Oss::Struct::File.new(key: object_key, client: client)
+	directory = Client.bucket_objects.list.reject(&:file?) || Aliyun::Oss::Struct::Directory.new(key: object_key, client: client)
 
 ### Share your files
 
-Sometimes, you want to share some file in your private bucket with your friends , but you donot want to share your AccessKey, thus, Aliyun provide alternative way: [Put signature in URL](https://docs.aliyun.com/#/pub/oss/api-reference/access-control&signature-url)
+Sometimes, you want to share some file from your private bucket with your friends , but you donot want to share your AccessKey, thus, Aliyun provide alternative way: [Put signature in URL](https://docs.aliyun.com/#/pub/oss/api-reference/access-control&signature-url)
 
-We provide a method to calculate signature for you:
+We provide a method to get share link for your object:
+
+    # Generate Share link expired in 3600 seconds
+    share_link = client.bucket_get_object_share_link('object-key', 3600)
+    
+    # OR
+    file = Aliyun::Oss::Struct::File.new(key: 'object-key', client: client)
+    share_link = file.share_link(3600)
+
+Besides, if you need more control for temporary signature:     
 
     # Return Singature string
     Aliyun::Oss::Authorization.get_temporary_signature('SECRET_KEY', Time.now.to_i + 60*60, verb: 'GET', bucket: 'bucket-name', key: 'object-name')
@@ -141,6 +152,7 @@ With Post Form, we need Post Policy to restrict permissions, here we provide two
      # Return Signature with policy, can used to fill your form field: Signature
      client.get_policy_signature(SECRET_KEY, policy)
 
+Here, we provide a [DEMO](demo/app/views/home/new_post.html.erb).
 
 ### API Mapping
 
@@ -151,55 +163,82 @@ Note:
 + All Function Based API are instance methods of `Aliyun::Oss::Client`
 + Object Based API belongs to some other class list below:
 
-  + buckets: `Aliyun::Oss::Client::BucketsService`
-  + bucket_objects: `Aliyun::Oss::Client::BucketObjectsService`
-  + bucket_multiparts: `Aliyun::Oss::Client::BucketMultipartsService`
-  + bucket: `Aliyun::Oss::Struct::Bucket`
-  + multipart: `Aliyun::Oss::Struct::Multipart`
-  + object: `Aliyun::Oss::Struct::Object`
+  + Bucket: `Aliyun::Oss::Client::BucketsService`
+  + BucketObject: `Aliyun::Oss::Client::BucketObjectsService`
+  + BucketMultipart: `Aliyun::Oss::Client::BucketMultipartsService`
+  + Bucket: `Aliyun::Oss::Struct::Bucket`
+  + Multipart: `Aliyun::Oss::Struct::Multipart`
+  + Object: `Aliyun::Oss::Struct::Object`
+  + File: `Aliyun::Oss::Struct::File`
+  + Directory: `Aliyun::Oss::Strcut:Directory`
 
+
+#### Service
 
 | Restful API  |  Function Based |  Object Based |
 | ------------ | --------------- | ------------- |
-|[GetService (ListBucket)](https://docs.aliyun.com/#/pub/oss/api-reference/service&GetService)	|bucket_list	|buckets#list	|
-|[Put Bucket](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucket)		|bucket_create	|	buckets#create|
-|[Put Bucket Acl](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketACL)	|bucket_set_acl	|	bucket#set_acl|
-|[Put Bucket Logging](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketLogging)|bucket_enable_logging	|	bucket#enable_logging|
-|[Put Bucket Website](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketWebsite)	|bucket_enable_website	|	bucket#enable_website|
-|[Put Bucket Referer](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketReferer)	|bucket_set_referer	|	bucket#set_referer|
-|[Put Bucket Lifecycle](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketLifecycle)	|	bucket_enable_lifecycle|	bucket#enable_lifecycle|
-|[Get Bucket (List Object)](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucket)	|	bucket_list_objects|	bucket_objects#list|
-|[Get Bucket ACL](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketAcl)	|	bucket_get_acl|	bucket#acl!|
-|[Get Bucket Location](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketLocation)|	bucket_get_location|	bucket#location!|
-|[Get Bucket Logging](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketLogging)	|	bucket_get_logging|	bucket#logging!|
-|[Get Bucket Website](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketWebsite)	|	bucket_get_website|	bucket#website!|
-|[Get Bucket Referer](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketReferer)	|	bucket_get_referer|	bucket#referer!|
-|[Get Bucket Lifecycle](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketLifecycle)	|	bucket_get_lifecycle|	bucket#lifecycle!|
-|[Delete Bucket](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&DeleteBucket)	|	bucket_delete|	buckets#delete|
-|[Delete Bucket Logging](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&DeleteBucketLogging)	|	bucket_disable_logging|	bucket#disable_logging|
-|[Delete Bucket Website](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&DeleteBucketWebsite)	|	bucket_disable_website|	bucket#disable_website|
-|[Delete Bucket Lifecycle](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&DeleteBucketLifecycle)	|	bucket_disable_lifecycle|	bucket#disable_lifecycle|
-|[Put Object](https://docs.aliyun.com/#/pub/oss/api-reference/object&PutObject)|	bucket_create_object|	bucket_objects#create|
-|[Copy Object](https://docs.aliyun.com/#/pub/oss/api-reference/object&CopyObject)	|	bucket_copy_object|	bucket_objects#copy|
-|[Get Object](https://docs.aliyun.com/#/pub/oss/api-reference/object&GetObject)	|	bucket_get_object|	bucket_objects#get|
-|[Append Object](https://docs.aliyun.com/#/pub/oss/api-reference/object&AppendObject)|	bucket_append_object|	bucket_objects#append|
-|[Delete Object](https://docs.aliyun.com/#/pub/oss/api-reference/object&DeleteObject)|	bucket_delete_object|	bucket_objects#delete|
-|[Delete Multiple Objects](https://docs.aliyun.com/#/pub/oss/api-reference/object&DeleteMultipleObjects)|	bucket_delete_objects|	bucket_objects#delete_multiple|
-|[Head Object](https://docs.aliyun.com/#/pub/oss/api-reference/object&HeadObject)	|	bucket_preflight|	bucket#preflight, bucket#options|
-|[Put Object ACL](https://docs.aliyun.com/#/pub/oss/api-reference/object&PutObjectACL)	|	bucket_set_object_acl|	object#set_acl|
-|[Get Object ACL](https://docs.aliyun.com/#/pub/oss/api-reference/object&GetObjectACL)	|	bucket_get_object_acl|	object#acl!|
-|[Post Object](https://docs.aliyun.com/#/pub/oss/api-reference/object&PostObject)	|	...|	...|
-|[Initiate Multipart Upload](https://docs.aliyun.com/#/pub/oss/api-reference/multipart-upload&InitiateMultipartUpload)	|	bucket_init_multipart|	bucket_multiparts#init|
-|[Upload Part](https://docs.aliyun.com/#/pub/oss/api-reference/multipart-upload&UploadPart)	|	bucket_multipart_upload|	multipart#upload|
-|[Upload Part Copy](https://docs.aliyun.com/#/pub/oss/api-reference/multipart-upload&UploadPartCopy)	|	bucket_multipart_copy_upload|	multipart#copy|
-|[Complete Multipart Upload](https://docs.aliyun.com/#/pub/oss/api-reference/multipart-upload&CompleteMultipartUpload)	|	bucket_complete_multipart|	multipart#complete|
-|[Abort Multipart Upload](https://docs.aliyun.com/#/pub/oss/api-reference/multipart-upload&AbortMultipartUpload)	|	bucket_abort_multipart|	multipart#abort|
-|[List Multipart Uploads](https://docs.aliyun.com/#/pub/oss/api-reference/multipart-upload&ListMultipartUploads)	|	bucket_list_multiparts|	bucket_multiparts#list|
-|[List Parts](https://docs.aliyun.com/#/pub/oss/api-reference/multipart-upload&ListParts)	|	bucket_list_parts|	multipart#list_parts|
-|[Put Bucket cors](https://docs.aliyun.com/#/pub/oss/api-reference/cors&PutBucketcors)	|	bucket_enable_cors|	bucket#enable_cors|
-|[Get Bucket cors](https://docs.aliyun.com/#/pub/oss/api-reference/cors&GetBucketcors)	|	bucket_get_cors|	bucket#cors!|
-|[Delete Bucket cors](https://docs.aliyun.com/#/pub/oss/api-reference/cors&DeleteBucketcors)	|	bucket_disable_cors|	bucket#disable_cors|
-|[OPTIONS Object](https://docs.aliyun.com/#/pub/oss/api-reference/cors&OptionObject)|	bucket_get_meta_object|	object#meta!|
+|[GetService (ListBucket)](https://docs.aliyun.com/#/pub/oss/api-reference/service&GetService)	|bucket_list	|Buckets#list	|
+
+#### Bucket
+
+| Restful API  |  Function Based |  Object Based |
+| ------------ | --------------- | ------------- |
+|[Put Bucket](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucket)		|bucket_create	|	Buckets#create|
+|[Put Bucket Acl](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketACL)	|bucket_set_acl	|	Bucket#set_acl|
+|[Put Bucket Logging](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketLogging)|bucket_enable_logging	|	Bucket#enable_logging|
+|[Put Bucket Website](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketWebsite)	|bucket_enable_website	|	Bucket#enable_website|
+|[Put Bucket Referer](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketReferer)	|bucket_set_referer	|	Bucket#set_referer|
+|[Put Bucket Lifecycle](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&PutBucketLifecycle)	|	bucket_enable_lifecycle|	Bucket#enable_lifecycle|
+|[Get Bucket (List Object)](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucket)	|	bucket_list_objects|	Bucket_objects#list, Directory#list|
+|[Get Bucket ACL](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketAcl)	|	bucket_get_acl|	Bucket#acl!|
+|[Get Bucket Location](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketLocation)|	bucket_get_location|	Bucket#location!|
+|[Get Bucket Logging](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketLogging)	|	bucket_get_logging|	Bucket#logging!|
+|[Get Bucket Website](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketWebsite)	|	bucket_get_website|	Bucket#website!|
+|[Get Bucket Referer](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketReferer)	|	bucket_get_referer|	Bucket#referer!|
+|[Get Bucket Lifecycle](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&GetBucketLifecycle)	|	bucket_get_lifecycle|	Bucket#lifecycle!|
+|[Delete Bucket](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&DeleteBucket)	|	bucket_delete|	Buckets#delete|
+|[Delete Bucket Logging](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&DeleteBucketLogging)	|	bucket_disable_logging|	Bucket#disable_logging|
+|[Delete Bucket Website](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&DeleteBucketWebsite)	|	bucket_disable_website|	Bucket#disable_website|
+|[Delete Bucket Lifecycle](https://docs.aliyun.com/#/pub/oss/api-reference/bucket&DeleteBucketLifecycle)	|	bucket_disable_lifecycle|	Bucket#disable_lifecycle|
+
+
+#### Object
+
+| Restful API  |  Function Based |  Object Based |
+| ------------ | --------------- | ------------- |
+|[Put Object](https://docs.aliyun.com/#/pub/oss/api-reference/object&PutObject)|	bucket_create_object|	BucketObject#create|
+|[Copy Object](https://docs.aliyun.com/#/pub/oss/api-reference/object&CopyObject)	|	bucket_copy_object|	BucketObject#copy|
+|[Get Object](https://docs.aliyun.com/#/pub/oss/api-reference/object&GetObject)	|	bucket_get_object|	BucketObject#get|
+|[Append Object](https://docs.aliyun.com/#/pub/oss/api-reference/object&AppendObject)|	bucket_append_object|	BucketObject#append|
+|[Delete Object](https://docs.aliyun.com/#/pub/oss/api-reference/object&DeleteObject)|	bucket_delete_object|	BucketObject#delete|
+|[Delete Multiple Objects](https://docs.aliyun.com/#/pub/oss/api-reference/object&DeleteMultipleObjects)|	bucket_delete_objects|	BucketObject#delete_multiple|
+|[Head Object](https://docs.aliyun.com/#/pub/oss/api-reference/object&HeadObject)	|	bucket_preflight|	Bucket#preflight, Bucket#options|
+|[Put Object ACL](https://docs.aliyun.com/#/pub/oss/api-reference/object&PutObjectACL)	|	bucket_set_object_acl|	Object#set_acl|
+|[Get Object ACL](https://docs.aliyun.com/#/pub/oss/api-reference/object&GetObjectACL)	|	bucket_get_object_acl|	Object#acl!|
+|[Post Object](https://docs.aliyun.com/#/pub/oss/api-reference/object&PostObject)	|	[DEMO](demo/app/views/home/new_post.html.erb)|	[DEMO](demo/app/views/home/new_post.html.erb)|
+| Share Link	| bucket_get_object_share_link	| file#share_link |
+
+
+#### Multipart Upload
+
+| Restful API  |  Function Based |  Object Based |
+| ------------ | --------------- | ------------- |
+|[Initiate Multipart Upload](https://docs.aliyun.com/#/pub/oss/api-reference/multipart-upload&InitiateMultipartUpload)	|	bucket_init_multipart|	BucketMultipart#init|
+|[Upload Part](https://docs.aliyun.com/#/pub/oss/api-reference/multipart-upload&UploadPart)	|	bucket_multipart_upload|	Multipart#upload|
+|[Upload Part Copy](https://docs.aliyun.com/#/pub/oss/api-reference/multipart-upload&UploadPartCopy)	|	bucket_multipart_copy_upload|	Multipart#copy|
+|[Complete Multipart Upload](https://docs.aliyun.com/#/pub/oss/api-reference/multipart-upload&CompleteMultipartUpload)	|	bucket_complete_multipart|	Multipart#complete|
+|[Abort Multipart Upload](https://docs.aliyun.com/#/pub/oss/api-reference/multipart-upload&AbortMultipartUpload)	|	bucket_abort_multipart|	Multipart#abort|
+|[List Multipart Uploads](https://docs.aliyun.com/#/pub/oss/api-reference/multipart-upload&ListMultipartUploads)	|	bucket_list_multiparts|	BucketMultipart#list|
+|[List Parts](https://docs.aliyun.com/#/pub/oss/api-reference/multipart-upload&ListParts)	|	bucket_list_parts|	Multipart#list_parts|
+
+#### CORS
+
+| Restful API  |  Function Based |  Object Based |
+| ------------ | --------------- | ------------- |
+|[Put Bucket cors](https://docs.aliyun.com/#/pub/oss/api-reference/cors&PutBucketcors)	|	bucket_enable_cors|	Bucket#enable_cors|
+|[Get Bucket cors](https://docs.aliyun.com/#/pub/oss/api-reference/cors&GetBucketcors)	|	bucket_get_cors|	Bucket#cors!|
+|[Delete Bucket cors](https://docs.aliyun.com/#/pub/oss/api-reference/cors&DeleteBucketcors)	|	bucket_disable_cors|	Bucket#disable_cors|
+|[OPTIONS Object](https://docs.aliyun.com/#/pub/oss/api-reference/cors&OptionObject)|	bucket_get_meta_object|	Object#meta!|
 
 
 ## Test
