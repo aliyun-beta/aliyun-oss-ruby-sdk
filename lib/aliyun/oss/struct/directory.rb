@@ -7,12 +7,10 @@ module Aliyun
 
         # List objects under directory
         #
-        # @see #bucket_list_objects
-        #
-        # @param (see #bucket_list_objects)
-        # @option (see #bucket_list_objects)
-        #
-        # @raise [RequestError]
+        # @see Api::BucketObjects#bucket_list_objects
+        # @example (see Api::BucketObjects#bucket_list_objects)
+        # @param (see Api::BucketObjects#bucket_list_objects)
+        # @raise (see Api::BucketObjects#bucket_list_objects)
         #
         # @return [Array<Aliyun::Oss::Struct::Object>]
         def list(options = {})

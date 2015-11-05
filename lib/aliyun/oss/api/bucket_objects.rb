@@ -52,15 +52,13 @@ module Aliyun
         # @param source_bucket [String] the source bucket name
         # @param source_key [String] the source object name
         # @param [Hash] headers
-        # @option options [String] :source_bucket the source bucket name
-        # @option options [String] :source_key the source object name
-        # @option options [String] :x-oss-copy-source-if-match If the specified ETag match the source object ETag, normal transfer and return 200; Otherwise return 412(precondition)
-        # @option options [String] :x-oss-copy-source-if-none-match If the specified ETag not match the source object ETag, normal transfer and return 200; Otherwise return 304(Not Modified)
-        # @option options [String] :x-oss-copy-source-if-unmodified-since If the specified time is equal to or later than the source object last modification time, normal transfer ans return 200; Otherwise returns 412(precondition)
-        # @option options [String] :x-oss-copy-source-if-modified-since If the specified time is earlier than the source object last modification time, normal transfer ans return 200; Otherwise returns 304(not modified)
-        # @option options [String] :x-oss-metadata-directive ('COPY') supported value: COPY, REPLACE;
-        # @option options [String] :x-oss-server-side-encryption supported value: AES256
-        # @option options [String] :x-oss-object-acl supported value: public-read, private, public-read-write
+        # @option headers [String] :x-oss-copy-source-if-match If the specified ETag match the source object ETag, normal transfer and return 200; Otherwise return 412(precondition)
+        # @option headers [String] :x-oss-copy-source-if-none-match If the specified ETag not match the source object ETag, normal transfer and return 200; Otherwise return 304(Not Modified)
+        # @option headers [String] :x-oss-copy-source-if-unmodified-since If the specified time is equal to or later than the source object last modification time, normal transfer ans return 200; Otherwise returns 412(precondition)
+        # @option headers [String] :x-oss-copy-source-if-modified-since If the specified time is earlier than the source object last modification time, normal transfer ans return 200; Otherwise returns 304(not modified)
+        # @option headers [String] :x-oss-metadata-directive ('COPY') supported value: COPY, REPLACE;
+        # @option headers [String] :x-oss-server-side-encryption supported value: AES256
+        # @option headers [String] :x-oss-object-acl supported value: public-read, private, public-read-write
         #
         # @raise [RequestError]
         #

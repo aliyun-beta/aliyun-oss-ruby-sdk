@@ -10,7 +10,7 @@ module Aliyun
         #
         # @param expired_in_seconds [Integer] expire after specify seconds
         #
-        # @return [String]
+        # @return [URL]
         def share_link(expired_in_seconds)
           client.bucket_get_object_share_link(key, expired_in_seconds)
         end

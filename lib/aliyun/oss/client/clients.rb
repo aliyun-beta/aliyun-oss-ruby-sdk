@@ -15,6 +15,10 @@ module Aliyun
     #
     #   client.bucket_multiparts
     #
+    # current_bucket: get current bucket
+    #
+    #   client.current_bucket
+    #
     #
     class Client
       def buckets

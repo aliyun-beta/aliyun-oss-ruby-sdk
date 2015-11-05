@@ -4,13 +4,12 @@ module Aliyun
       module BucketMultiparts
         # Init a Multipart Upload Event
         #
-        # @param (see #bucket_init_multipart)
+        # @see Api::BucketMultiparts#bucket_init_multipart
+        # @example (see Api::BucketMultiparts#bucket_init_multipart)
+        # @param (see Api::BucketMultiparts#bucket_init_multipart)
+        # @raise (see Api::BucketMultiparts#bucket_init_multipart)
         #
-        # @raise [RequestError]
-        #
-        # @return [Aliyun::Oss::Struct::Multipart]
-        #
-        # @see Client#bucket_init_multipart
+        # @return [Struct::Multipart]
         def init(*args)
           result = client.bucket_init_multipart(*args).parsed_response
 
@@ -20,15 +19,12 @@ module Aliyun
 
         # List exist Multipart Upload Events of bucket
         #
-        # @param (see #bucket_list_multiparts)
-        #
-        # @option (see #bucket_list_multiparts)
-        #
-        # @raise [RequestError]
+        # @see Api::BucketMultiparts#bucket_list_multiparts
+        # @example (see Api::BucketMultiparts#bucket_list_multiparts)
+        # @param (see Api::BucketMultiparts#bucket_list_multiparts)
+        # @raise (see Api::BucketMultiparts#bucket_list_multiparts)
         #
         # @return [Array<Aliyun::Oss::Struct::Multipart>]
-        #
-        # @see Client#bucket_list_multiparts
         def list(*args)
           result = client.bucket_list_multiparts(*args).parsed_response
 

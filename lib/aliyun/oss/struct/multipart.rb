@@ -23,10 +23,12 @@ module Aliyun
 
         # Upload part to Multipart Upload Event
         #
+        # @see Api::BucketMultiparts#bucket_multipart_upload
+        # @example (see Api::BucketMultiparts#bucket_multipart_upload)
+        # @raise (see Api::BucketMultiparts#bucket_multipart_upload)
+        #
         # @param number [Integer] the part number, Range in 1~10000.
         # @param file [File, bin data] the upload data
-        #
-        # @raise (see #bucket_multipart_upload)
         #
         # @return [HTTParty::Response::Headers]
         def upload(*args)
@@ -37,13 +39,12 @@ module Aliyun
         #
         # @param number [Integer] the part number, Range in 1~10000.
         # @param options [Hash] options
-        # @option (see #bucket_multipart_copy_upload)
         #
-        # @raise (see #bucket_multipart_copy_upload)
+        # @see Api::BucketMultiparts#bucket_multipart_copy_upload
+        # @example (see Api::BucketMultiparts#bucket_multipart_copy_upload)
+        # @raise (see Api::BucketMultiparts#bucket_multipart_copy_upload)
         #
         # @return [true]
-        #
-        # @see Client#bucket_list_parts
         def copy(*args)
           !!client.bucket_multipart_copy_upload(*args.unshift(upload_id, key))
         end
@@ -51,13 +52,12 @@ module Aliyun
         # List uploaded parts for the Multipart Upload Event
         #
         # @param options [Hash] options
-        # @option (see #bucket_list_parts)
         #
-        # @raise (see #bucket_list_parts)
+        # @see Api::BucketMultiparts#bucket_list_parts
+        # @example (see Api::BucketMultiparts#bucket_list_parts)
+        # @raise (see Api::BucketMultiparts#bucket_list_parts)
         #
         # @return [Array<Aliyun::Oss::Struct::Part>]
-        #
-        # @see Client#bucket_list_parts
         def list_parts(options = {})
           result = client.bucket_list_parts(upload_id, key, options)
                    .parsed_response
@@ -70,13 +70,13 @@ module Aliyun
 
         # Complete Multipart Upload Event
         #
-        # @param parts [Array<Multipart:Part>] parts
+        # @param parts [Array<Aliyun::Oss::Multipart:Part>] parts
         #
-        # @raise (see #bucket_complete_multipart)
+        # @see Api::BucketMultiparts#bucket_complete_multipart
+        # @example (see Api::BucketMultiparts#bucket_complete_multipart)
+        # @raise (see Api::BucketMultiparts#bucket_complete_multipart)
         #
         # @return [Struct::Object]
-        #
-        # @see Client#bucket_complete_multipart
         def complete(parts = [])
           resp = client.bucket_complete_multipart(upload_id, key, parts)
           keys = %w(CompleteMultipartUploadResult)
@@ -87,11 +87,12 @@ module Aliyun
 
         # Abort Multipart Upload Event
         #
-        # @raise (see #bucket_abort_multipart)
+        # @see Api::BucketMultiparts#bucket_abort_multipart
+        # @note (see Api::BucketMultiparts#bucket_abort_multipart)
+        # @example (see Api::BucketMultiparts#bucket_abort_multipart)
+        # @raise (see Api::BucketMultiparts#bucket_abort_multipart)
         #
         # @return [true]
-        #
-        # @see Client#bucket_abort_multipart
         def abort
           !!client.bucket_abort_multipart(upload_id, key)
         end

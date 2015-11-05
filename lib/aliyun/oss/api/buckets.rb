@@ -4,12 +4,14 @@ module Aliyun
       module Buckets
         # List buckets
         #
-        # @see https://docs.aliyun.com/#/pub/oss/api-reference/service&GetService GetService (ListBucket
+        # @see https://docs.aliyun.com/#/pub/oss/api-reference/service&GetService GetService (ListBucket)
         #
         # @param options [Hash] options
         # @option options [String] :prefix Filter buckets with prefix
         # @option options [String] :marker Bucket name should after marker in alphabetical order
         # @option options [Integer] :max-keys (100) Limit number of buckets, the maxinum should <= 1000
+        #
+        # @raise [RequestError]
         #
         # @return [Response]
         def list_buckets(options = {})
@@ -29,7 +31,7 @@ module Aliyun
         # @param location [String] Specify the bucket's data center location, can be one of below:
         #   oss-cn-hangzhou,oss-cn-qingdao,oss-cn-beijing,oss-cn-hongkong,
         #   oss-cn-shenzhen,oss-cn-shanghai,oss-us-west-1 ,oss-ap-southeast-1
-        # @param acl [String] Specify the bucket's access. (see #bucket_set_acl)
+        # @param acl [String] Specify the bucket's access. {Aliyun::Oss::Api::BucketProperty#bucket_set_acl}
         #
         # @raise [RequestError]
         #

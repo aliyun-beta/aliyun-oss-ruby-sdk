@@ -22,7 +22,7 @@ module Aliyun
         #
         # @return [String]
         #
-        # @see Client#bucket_get_location
+        # @see Api::BucketProperty#bucket_get_location
         def location!
           result = client.bucket_get_location.parsed_response
           Utils.dig_value(result, 'LocationConstraint', '__content__') ||
@@ -33,7 +33,7 @@ module Aliyun
         #
         # return [true]
         #
-        # @see Client#bucket_get_logging
+        # @see Api::BucketProperty#bucket_get_logging
         def logging!
           result = client.bucket_get_logging.parsed_response
           Struct::Logging.new(Utils.dig_value(result, 'BucketLoggingStatus'))
@@ -41,11 +41,12 @@ module Aliyun
 
         # Used to enable access logging.
         #
-        # @param (see #bucket_enable_logging)
+        # @see Api::BucketProperty#bucket_enable_logging
+        # @example (see Api::BucketProperty#bucket_enable_logging)
+        # @param (see Api::BucketProperty#bucket_enable_logging)
+        # @raise (see Api::BucketProperty#bucket_enable_logging)
         #
         # @return [true]
-        #
-        # @see Client#bucket_enable_logging
         def enable_logging(*args)
           !!client.bucket_enable_logging(*args)
         end
@@ -56,7 +57,7 @@ module Aliyun
         #
         # @return [true]
         #
-        # @see Client#bucket_disable_logging
+        # @see Api::BucketProperty#bucket_disable_logging
         def disable_logging
           !!client.bucket_disable_logging
         end
@@ -65,7 +66,7 @@ module Aliyun
         #
         # @return [String]
         #
-        # @see Client#bucket_get_acl
+        # @see Api::BucketProperty#bucket_get_acl
         def acl!
           result = client.bucket_get_acl.parsed_response
           acl_keys = %w(AccessControlPolicy AccessControlList Grant)
@@ -74,13 +75,12 @@ module Aliyun
 
         # Set ACL for bucket
         #
-        # @param (see #bucket_set_acl)
-        #
-        # @raise (see #bucket_set_acl)
+        # @see Api::BucketProperty#bucket_set_acl
+        # @example (see Api::BucketProperty#bucket_set_acl)
+        # @param (see Api::BucketProperty#bucket_set_acl)
+        # @raise (see Api::BucketProperty#bucket_set_acl)
         #
         # @return [true]
-        #
-        # @see Client#bucket_set_acl
         def set_acl(*args)
           !!client.bucket_set_acl(*args)
         end
@@ -89,7 +89,7 @@ module Aliyun
         #
         # @return [Array<Aliyun::Oss::Struct::Cors>]
         #
-        # @see Client#bucket_get_cors
+        # @see Api::BucketProperty#bucket_get_cors
         def cors!
           result = client.bucket_get_cors.parsed_response
           cors_keys = %w(CORSConfiguration CORSRule)
@@ -100,28 +100,21 @@ module Aliyun
 
         # Set CORS for bucket
         #
-        # @see (see #bucket_enable_cors)
-        #
-        # @param (see #bucket_enable_cors)
-        #
-        # @raise (see #bucket_enable_cors)
+        # @see Api::BucketProperty#bucket_enable_cors
+        # @example (see Api::BucketProperty#bucket_enable_cors)
+        # @param (see Api::BucketProperty#bucket_enable_cors)
+        # @raise (see Api::BucketProperty#bucket_enable_cors)
         #
         # @return [true]
-        #
-        # @see Client#bucket_enable_cors
         def enable_cors(*args)
           !!client.bucket_enable_cors(*args)
         end
 
         # Disable CORS for bucket
         #
-        # @see (see #bucket_disable_cors)
-        #
-        # @raise (see #bucket_disable_cors)
-        #
         # @return [true]
         #
-        # @see Client#bucket_disable_cors
+        # @see Api::BucketProperty#bucket_disable_cors
         def disable_cors
           !!client.bucket_disable_cors
         end
@@ -130,7 +123,7 @@ module Aliyun
         #
         # @return [Aliyun::Oss::Rule::Website]
         #
-        # @see Client#bucket_get_website
+        # @see Api::BucketProperty#bucket_get_website
         def website!
           result = client.bucket_get_website.parsed_response
           suffix_keys = %w(WebsiteConfiguration IndexDocument Suffix)
@@ -143,28 +136,21 @@ module Aliyun
 
         # Used to enable static website hosted mode.
         #
-        # @see (see #bucket_enable_website)
-        #
-        # @param (see #bucket_enable_website)
-        #
-        # @raise (see #bucket_enable_website)
+        # @see Api::BucketProperty#bucket_enable_website
+        # @example (see Api::BucketProperty#bucket_enable_website)
+        # @param (see Api::BucketProperty#bucket_enable_website)
+        # @raise (see Api::BucketProperty#bucket_enable_website)
         #
         # @return [true]
-        #
-        # @see Client#bucket_enable_website
         def enable_website(*args)
           !!client.bucket_enable_website(*args)
         end
 
         # Used to disable website hostted mode.
         #
-        # @see (see #bucket_disable_website)
+        # @return [true]
         #
-        # @raise (see #bucket_disable_website)
-        #
-        # @return [Response]
-        #
-        # @see Client#bucket_disable_website
+        # @see Api::BucketProperty#bucket_disable_website
         def disable_website
           !!client.bucket_disable_website
         end
@@ -173,7 +159,7 @@ module Aliyun
         #
         # @return [Aliyun::Oss::Struct::Referer]
         #
-        # @see Client#bucket_get_referer
+        # @see Api::BucketProperty#bucket_get_referer
         def referer!
           result = client.bucket_get_referer.parsed_response
           allow_empty = %w(RefererConfiguration AllowEmptyReferer)
@@ -186,15 +172,12 @@ module Aliyun
 
         # Used to set referer for bucket.
         #
-        # @see (see #bucket_set_referer)
-        #
-        # @param (see #bucket_set_referer)
-        #
-        # @raise (see #bucket_set_referer)
+        # @see Api::BucketProperty#bucket_set_referer
+        # @example (see Api::BucketProperty#bucket_set_referer)
+        # @param (see Api::BucketProperty#bucket_set_referer)
+        # @raise (see Api::BucketProperty#bucket_set_referer)
         #
         # @return [true]
-        #
-        # @see Client#set_referer
         def set_referer(*args)
           !!client.bucket_set_referer(*args)
         end
@@ -203,7 +186,7 @@ module Aliyun
         #
         # @return [Array<Aliyun::Oss::Struct::Lifecycle?]
         #
-        # @see Client#bucket_get_lifecycle
+        # @see Api::BucketProperty#bucket_get_lifecycle
         def lifecycle!
           result = client.bucket_get_lifecycle.parsed_response
           lifecycle_keys = %w(LifecycleConfiguration Rule)
@@ -227,26 +210,21 @@ module Aliyun
 
         # Used to disable lifecycle for bucket
         #
-        # @raise (see #bucket_disable_lifecycle)
-        #
         # @return [true]
         #
-        # @see Client#bucket_disable_lifecycle
+        # @see Api::BucketProperty#bucket_disable_lifecycle
         def disable_lifecycle
           !!client.bucket_disable_lifecycle
         end
 
         # OPTIONS Object
         #
-        # @see (see #bucket_preflight)
-        #
-        # @param (see #bucket_preflight)
-        #
-        # @raise (see #bucket_preflight)
+        # @see Api::BucketProperty#bucket_preflight
+        # @example (see Api::BucketProperty#bucket_preflight)
+        # @param (see Api::BucketProperty#bucket_preflight)
+        # @raise (see Api::BucketProperty#bucket_preflight)
         #
         # @return [true]
-        #
-        # @see Client#bucket_preflight
         def preflight(*args)
           !!client.bucket_preflight(*args)
         end

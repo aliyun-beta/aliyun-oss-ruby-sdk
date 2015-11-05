@@ -4,12 +4,12 @@ module Aliyun
       module Buckets
         # List buckets
         #
-        # @param (see #list_buckets)
-        # @option (see #list_buckets)
+        # @see Api::Buckets#list_buckets
+        # @example (see Api::Buckets#list_buckets)
+        # @param (see Api::Buckets#list_buckets)
+        # @raise (see Api::Buckets#list_buckets)
         #
         # @return [Array<Aliyun::Oss::Struct::Bucket>]
-        #
-        # @see Client#list_buckets
         def list(options = {})
           result = client.list_buckets(options).parsed_response
 
@@ -21,22 +21,24 @@ module Aliyun
 
         # Create bucket
         #
-        # @param (see #bucket_create)
+        # @see Api::Buckets#bucket_create
+        # @example (see Api::Buckets#bucket_create)
+        # @param (see Api::Buckets#bucket_create)
+        # @raise (see Api::Buckets#bucket_create)
         #
         # @return [true]
-        #
-        # @see Client#bucket_create
         def create(*args)
           !!client.bucket_create(*args)
         end
 
         # Delete bucket
         #
-        # @param (see #bucket_delete)
+        # @see Api::Buckets#bucket_delete
+        # @example (see Api::Buckets#bucket_delete)
+        # @param (see Api::Buckets#bucket_delete)
+        # @raise (see Api::Buckets#bucket_delete)
         #
         # @return [true]
-        #
-        # @see Client#bucket_delete
         def delete(*args)
           !!client.bucket_delete(*args)
         end
