@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'test_helper'
 
 describe Aliyun::Oss::Client::BucketObjectsService do
@@ -41,6 +42,11 @@ describe Aliyun::Oss::Client::BucketObjectsService do
       assert_raises(Aliyun::Oss::RequestError) do
         client.bucket_objects.create(object_key, 'Hello World!')
       end
+    end
+
+    it 'should create file with chinese characters key' do
+      stub_put_request("http://#{bucket}.#{host}/中文文件名.log", '')
+      assert client.bucket_objects.create('中文文件名.log', 'Hello World!')
     end
   end
 

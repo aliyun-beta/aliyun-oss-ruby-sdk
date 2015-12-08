@@ -73,7 +73,7 @@ Here are some more guides for help you. Welcome to advice.
     # Details: https://docs.aliyun.com/#/pub/oss/product-documentation/domain-region#menu2
     # bucket: your bucket name
 	
-	client = Aliyun::OSS::Client.new('ACCESS_KEY', 'SECRET_KEY', host: 'oss-cn-hangzhou.aliyuncs.com', bucket: 'oss-sdk-dev-hangzhou')
+	client = Aliyun::Oss::Client.new('ACCESS_KEY', 'SECRET_KEY', host: 'oss-cn-hangzhou.aliyuncs.com', bucket: 'oss-sdk-dev-hangzhou')
 	
 	
 	# Upload object
@@ -96,7 +96,7 @@ Here are some more guides for help you. Welcome to advice.
     # Details: https://docs.aliyun.com/#/pub/oss/product-documentation/domain-region#menu2
     # bucket: your bucket name
 	
-	client = Aliyun::OSS::Client.new('ACCESS_KEY', 'SECRET_KEY', host: 'oss-cn-hangzhou.aliyuncs.com', bucket: 'oss-sdk-dev-hangzhou')
+	client = Aliyun::Oss::Client.new('ACCESS_KEY', 'SECRET_KEY', host: 'oss-cn-hangzhou.aliyuncs.com', bucket: 'oss-sdk-dev-hangzhou')
 	
 	
 	# Upload object

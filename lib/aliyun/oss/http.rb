@@ -1,4 +1,5 @@
 require 'httparty'
+require 'addressable/uri'
 require 'aliyun/oss/error'
 
 module Aliyun
@@ -49,7 +50,7 @@ module Aliyun
         append_headers!(headers, verb, body, options)
 
         path = api_endpoint(headers['Host']) + resource
-        options = { headers: headers, query: query, body: body }
+        options = { headers: headers, query: query, body: body, uri_adapter: Addressable::URI }
 
         wrap(HTTParty.__send__(verb.downcase, path, options))
       end
