@@ -25,7 +25,7 @@ Here,
 # Error Code
 
 | code  |  summary |  HTTP Status|
-|---|---|
+|---|---|---|
 |AccessDenied	|Access denied | 403|
 |BucketAlreadyExists	| Bucket Already Exist|	409|
 |BucketNotEmpty	|Bucket Not Empty|	409|
