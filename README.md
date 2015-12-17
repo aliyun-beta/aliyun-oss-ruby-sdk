@@ -1,8 +1,7 @@
 # Aliyun OSS SDK
 
-[![Build Status](https://travis-ci.org/zlx/aliyun-oss-ruby-sdk.svg)](https://travis-ci.org/zlx/aliyun-oss-ruby-sdk)
-[![Coverage Status](https://coveralls.io/repos/zlx/aliyun-oss-ruby-sdk/badge.svg?branch=master&service=github)](https://coveralls.io/github/zlx/aliyun-oss-ruby-sdk?branch=master)
-[![Inline docs](http://inch-ci.org/github/zlx/aliyun-oss-ruby-sdk.svg?branch=master)](http://inch-ci.org/github/zlx/aliyun-oss-ruby-sdk)
+[![Build Status](https://travis-ci.org/aliyun-beta/aliyun-oss-ruby-sdk.svg)](https://travis-ci.org/aliyun-beta/aliyun-oss-ruby-sdk)
+[![Coverage Status](https://coveralls.io/repos/aliyun-beta/aliyun-oss-ruby-sdk/badge.svg?branch=master&service=github)](https://coveralls.io/github/aliyun-beta/aliyun-oss-ruby-sdk?branch=master)
 
 -----
 
