@@ -54,7 +54,7 @@ describe Aliyun::Oss::Authorization do
       key: 'oss-api.pdf',
       verb: 'GET'
     )
-    assert_equal('EwaNTn1erJGkimiJ9WmXgwnANLc=', temporary_signature)
+    assert_equal('EwaNTn1erJGkimiJ9WmXgwnANLc%3D', temporary_signature)
   end
 
   # Example from https://docs.aliyun.com/#/pub/oss/api-reference/object&PostObject#menu7
