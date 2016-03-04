@@ -2,6 +2,7 @@ require 'base64'
 require 'openssl'
 require 'digest'
 require 'json'
+require 'cgi'
 
 module Aliyun
   module Oss
@@ -30,7 +31,7 @@ module Aliyun
       # @return [String]
       def self.get_temporary_signature(secret_key, expire_time, options = {})
         content_string = concat_content_string(options[:verb], expire_time, options)
-        URI.escape(signature(secret_key, content_string).strip)
+        CGI.escape(signature(secret_key, content_string).strip)
       end
 
       # Get base64 encoded string, used to fill policy field

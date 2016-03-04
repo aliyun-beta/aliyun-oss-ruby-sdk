@@ -27,7 +27,7 @@ describe Aliyun::Oss::Struct::File do
   it '#share_link should get share link' do
     Timecop.freeze(Time.parse('2015-11-04 21:59:00 +0000')) do
       expected = 'http://bucket-name.oss-cn-beijing.aliyuncs.com/object-key?' \
-        "OSSAccessKeyId=#{access_key}&Expires=1446677940&Signature=4vOq8+Tnk2ZVBOWYtwu/iYEnUaM="
+        "OSSAccessKeyId=#{access_key}&Expires=1446677940&Signature=4vOq8%2BTnk2ZVBOWYtwu%2FiYEnUaM%3D"
       assert_equal(expected, struct_object.share_link(3600))
     end
   end
