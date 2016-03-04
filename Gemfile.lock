@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    aliyun-oss-sdk (0.1.5)
+    aliyun-oss-sdk (0.1.6)
       addressable
       gyoku
       httparty
@@ -90,3 +90,6 @@ DEPENDENCIES
   simplecov
   timecop
   webmock
+
+BUNDLED WITH
+   1.11.2
