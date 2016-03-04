@@ -12,7 +12,6 @@ task default: :test
 
 task :test do
   Rake::Task['test'].invoke
-  #Rake::Task['rubocop'].invoke
 end
 
 RuboCop::RakeTask.new do |task|
