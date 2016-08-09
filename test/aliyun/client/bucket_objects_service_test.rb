@@ -50,10 +50,10 @@ describe Aliyun::Oss::Client::BucketObjectsService do
     end
 
     it 'should create file with special charaters key' do
-      stub_put_request("http://#{bucket}.#{host}/special中文文件名.log", '')
+      stub_put_request("http://#{bucket}.#{host}/special%23中文文件名.log", '')
       assert client.bucket_objects.create('special#中文文件名.log', 'Hello World!')
 
-      stub_put_request("http://#{bucket}.#{host}/special25中文文件名.log", '')
+      stub_put_request("http://#{bucket}.#{host}/special%2525中文文件名.log", '')
       assert client.bucket_objects.create('special%25中文文件名.log', 'Hello World!')
     end
   end

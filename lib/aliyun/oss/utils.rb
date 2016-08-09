@@ -7,11 +7,6 @@ module Aliyun
   module Oss
     class Utils
 
-      # remove special charaters in object name https://github.com/aliyun-beta/aliyun-oss-ruby-sdk/issues/9
-      def self.clean_object_name!(key)
-        key.gsub!(/[#%]/, '')
-      end
-
       # Get endpoint
       #
       # @example

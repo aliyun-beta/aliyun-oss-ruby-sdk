@@ -13,31 +13,31 @@ module Aliyun
         @host = host
       end
 
-      def get(uri, options = {})
-        request('GET', uri, options)
+      def get(path, options = {})
+        request('GET', path, options)
       end
 
-      def put(uri, options = {})
+      def put(path, options = {})
         headers = default_content_type.merge(options[:headers] || {})
-        request('PUT', uri, options.merge(headers: headers))
+        request('PUT', path, options.merge(headers: headers))
       end
 
-      def post(uri, options = {})
+      def post(path, options = {})
         headers = default_content_type.merge(options[:headers] || {})
-        request('POST', uri, options.merge(headers: headers))
+        request('POST', path, options.merge(headers: headers))
       end
 
-      def delete(uri, options = {})
+      def delete(path, options = {})
         headers = default_content_type.merge(options[:headers] || {})
-        request('DELETE', uri, options.merge(headers: headers))
+        request('DELETE', path, options.merge(headers: headers))
       end
 
-      def options(uri, options = {})
-        request('OPTIONS', uri, options)
+      def options(path, options = {})
+        request('OPTIONS', path, options)
       end
 
-      def head(uri, options = {})
-        request('HEAD', uri, options)
+      def head(path, options = {})
+        request('HEAD', path, options)
       end
 
       private
@@ -49,7 +49,7 @@ module Aliyun
 
         append_headers!(headers, verb, body, options)
 
-        path = api_endpoint(headers['Host']) + resource
+        path = get_path(headers['Host'], resource)
         options = { headers: headers, query: query, body: body, uri_adapter: Addressable::URI }
 
         wrap(HTTParty.__send__(verb.downcase, path, options))
@@ -126,6 +126,11 @@ module Aliyun
 
       def api_endpoint(host)
         "http://#{host}"
+      end
+
+      def get_path(host, resource)
+        fixed = resource.split('/').map { |res| CGI.escape(res) }.join('/')
+        api_endpoint(host) + fixed
       end
 
       def user_agent
