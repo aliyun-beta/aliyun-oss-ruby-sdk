@@ -1,3 +1,8 @@
+0.1.8
+-----
+
+- Escape special charaters in object name;
+
 0.1.7
 -----
 
