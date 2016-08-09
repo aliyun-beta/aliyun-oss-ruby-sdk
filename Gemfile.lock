@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    aliyun-oss-sdk (0.1.6)
+    aliyun-oss-sdk (0.1.7)
       addressable
       gyoku
       httparty
