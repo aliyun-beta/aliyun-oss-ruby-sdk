@@ -40,6 +40,7 @@ module Aliyun
         #
         # @return [Response]
         def bucket_create_object(key, file, headers = {})
+          Utils.clean_object_name!(key)
           Utils.stringify_keys!(headers)
           http.put("/#{key}", headers: headers, body: Utils.to_data(file), bucket: bucket, key: key)
         end
@@ -67,6 +68,7 @@ module Aliyun
           fail('source_bucket must be not empty!') if source_bucket.nil? || source_bucket.empty?
           fail('source_key must be not empty!') if source_key.nil? || source_key.empty?
 
+          Utils.clean_object_name!(key)
           Utils.stringify_keys!(headers)
           headers.merge!('x-oss-copy-source' => "/#{source_bucket}/#{source_key}")
 
@@ -86,6 +88,7 @@ module Aliyun
         #
         # @return [Response]
         def bucket_append_object(key, file, position = 0, headers = {})
+          Utils.clean_object_name!(key)
           Utils.stringify_keys!(headers)
 
           query = { 'append' => true, 'position' => position }
@@ -115,6 +118,7 @@ module Aliyun
         #
         # @return [Response]
         def bucket_get_object(key, query = {}, headers = {})
+          Utils.clean_object_name!(key)
           Utils.stringify_keys!(query)
           Utils.stringify_keys!(headers)
 
@@ -130,6 +134,7 @@ module Aliyun
         def bucket_get_object_share_link(key, expired_in_seconds)
           expire_time = Time.now.to_i + expired_in_seconds
 
+          Utils.clean_object_name!(key)
           signature = Authorization.get_temporary_signature(
             @secret_key,
             expire_time,
@@ -150,6 +155,7 @@ module Aliyun
         #
         # @return [Response]
         def bucket_delete_object(key)
+          Utils.clean_object_name!(key)
           http.delete("/#{key}", bucket: bucket, key: key)
         end
 
@@ -184,6 +190,7 @@ module Aliyun
         #
         # @return [Response]
         def bucket_get_meta_object(key, headers = {})
+          Utils.clean_object_name!(key)
           Utils.stringify_keys!(headers)
           http.head("/#{key}", headers: headers, bucket: bucket, key: key)
         end
@@ -198,6 +205,7 @@ module Aliyun
         #
         # @return [Response]
         def bucket_get_object_acl(key)
+          Utils.clean_object_name!(key)
           query = { 'acl' => true }
           http.get("/#{key}", query: query, bucket: bucket, key: key)
         end
@@ -213,6 +221,7 @@ module Aliyun
         #
         # @return [Response]
         def bucket_set_object_acl(key, acl)
+          Utils.clean_object_name!(key)
           query = { 'acl' => true }
           headers = { 'x-oss-object-acl' => acl }
           http.put("/#{key}", query: query, headers: headers, bucket: bucket, key: key)

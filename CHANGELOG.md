@@ -1,3 +1,8 @@
+0.1.7
+-----
+
+- Remove special charaters in object name;
+
 0.1.6
 -----
 
